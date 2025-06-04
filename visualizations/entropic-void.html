@@ -121,40 +121,50 @@
         let initialized = false;
         let fontSize = 12;
         let charWidth = 7;
-        let charHeight = 14;
-          // ◦ Dynamic scaling initialization
+        let charHeight = 14;        // ◦ Enhanced dynamic scaling with precise character measurement
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight - 20; // Account for padding
+            const viewportHeight = window.innerHeight;
             
-            // More conservative character size calculation for better fit
-            const targetW = 80; // Base grid width
-            const targetH = 40; // Base grid height
+            // Precise character measurement for optimal fit
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '10px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.1';
+            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
             
-            // Improved font size calculation with better ratios
-            const fontSizeByWidth = viewportWidth / (targetW * 0.65); // Slightly wider chars
-            const fontSizeByHeight = viewportHeight / (targetH * 1.0); // More accurate height
-            fontSize = Math.max(4, Math.min(16, Math.min(fontSizeByWidth, fontSizeByHeight)));
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
             
-            // More accurate character dimensions for monospace
-            charWidth = fontSize * 0.6;
-            charHeight = fontSize * 1.0; // Better line height ratio
+            // Calculate grid size with buffer for perfect coverage
+            W = Math.ceil(viewportWidth / charWidth) + 1;
+            H = Math.ceil(viewportHeight / charHeight) + 1;
             
-            // Calculate grid that fits with some margin
-            const usableWidth = viewportWidth - 20; // Account for padding
-            const usableHeight = viewportHeight - 20;
+            // Apply reasonable limits
+            W = Math.max(40, Math.min(160, W));
+            H = Math.max(20, Math.min(100, H));
             
-            W = Math.floor(usableWidth / charWidth);
-            H = Math.floor(usableHeight / charHeight);
-            
-            // Apply reasonable limits and ensure minimum size
-            W = Math.max(30, Math.min(W, 120));
-            H = Math.max(15, Math.min(H, 60));
+            // Calculate optimal font size for perfect viewport fit
+            const optimalFontWidth = viewportWidth / W * 1.8;
+            const optimalFontHeight = viewportHeight / H * 1.2;
+            fontSize = Math.min(optimalFontWidth, optimalFontHeight);
+            fontSize = Math.max(6, Math.min(18, fontSize));
             
             // Apply calculated styles to display
             const display = document.getElementById('display');
             display.style.fontSize = fontSize + 'px';
-            display.style.lineHeight = fontSize + 'px'; // Match font size for proper spacing
+            display.style.lineHeight = (fontSize * 1.1) + 'px';
+            display.style.position = 'absolute';
+            display.style.top = '0';
+            display.style.left = '0';
+            display.style.margin = '0';
+            display.style.padding = '0';
             
             centerX = W / 2;
             centerY = H / 2;
@@ -195,9 +205,8 @@
                     emergenceField[i] = Math.random() * 0.05;
                 }
             }
-            
-            initialized = true;
-            console.log(`Grid scaled: ${W}×${H} = ${size} cells, fontSize: ${fontSize}px, charSize: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
+              initialized = true;
+            console.log(`∇ Entropic Grid: ${W}×${H} (${viewportWidth}×${viewportHeight}) fontSize: ${fontSize.toFixed(1)}px charSize: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
         }
           // ∿ Optimized evolution functions
         function evolveEntropy() {

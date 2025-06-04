@@ -52,16 +52,42 @@
         ESC: close | SPACE: pause | ←→: speed
     </div>
     
-    <pre id="gateway"></pre>
-
-    <script>
-        const W = Math.min(80, Math.floor(window.innerWidth / 12));
-        const H = Math.min(40, Math.floor(window.innerHeight / 16));
+    <pre id="gateway"></pre>    <script>
+        let W, H;
         let frame = 0;
         let speed = 0.02;
         let paused = false;
         
         const gateway = document.getElementById('gateway');
+        
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate optimal character dimensions
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = getComputedStyle(gateway).fontSize;
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1';
+            testDiv.textContent = '○'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            const charWidth = rect.width / 10;
+            const charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            // Calculate dynamic grid size for optimal display
+            W = Math.floor(viewportWidth / charWidth);
+            H = Math.floor(viewportHeight / charHeight);
+            
+            // Ensure reasonable bounds
+            W = Math.max(40, Math.min(120, W));
+            H = Math.max(20, Math.min(80, H));
+        }
         
         const glyphs = [' ', '·', '•', '◦', '○', '◉', '⊙', '⬢', '✦', '✺', '✼', '※'];
         
@@ -106,9 +132,12 @@
             }
             
             requestAnimationFrame(render);
-        }
+        }        
+        // Initialize dimensions and start render loop
+        updateDimensions();
         
         // Keyboard controls
+        window.addEventListener('resize', updateDimensions);
         document.addEventListener('keydown', (e) => {
             switch(e.key.toLowerCase()) {
                 case 'escape':

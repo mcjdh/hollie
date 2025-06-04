@@ -121,56 +121,56 @@
     <div id="grid"></div><script>
         // Dynamic viewport sizing - proper character measurement
         let W, H;
-        let charWidth, charHeight;        // Calculate optimal grid size based on viewport
+        let charWidth, charHeight;        // Enhanced dynamic viewport sizing with precise character measurement
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Responsive font sizing based on viewport
-            let fontSize = 10;
-            let lineHeight = 12;
-            
-            if (viewportWidth < 800 || viewportHeight < 600) {
-                fontSize = 8;
-                lineHeight = 10;
-            } else if (viewportWidth > 1400 && viewportHeight > 900) {
-                fontSize = 12;
-                lineHeight = 14;
-            }
-            
-            // Create character measurement element
+            // More robust character measurement
             const testDiv = document.createElement('div');
             testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = fontSize + 'px';
+            testDiv.style.fontSize = '10px';
             testDiv.style.position = 'absolute';
             testDiv.style.visibility = 'hidden';
             testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = lineHeight + 'px';
-            testDiv.textContent = '●○◆◇'.repeat(10) + '\n'.repeat(10);
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
             document.body.appendChild(testDiv);
             
             const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 40; // 10 chars * 4 symbols
+            charWidth = rect.width / 10;
             charHeight = rect.height / 10;
             document.body.removeChild(testDiv);
             
-            // Calculate grid size for optimal centered display
-            const maxWidth = viewportWidth * 0.85;
-            const maxHeight = viewportHeight * 0.85;
+            // Calculate grid size for maximum viewport utilization
+            W = Math.ceil(viewportWidth / charWidth) + 1;
+            H = Math.ceil(viewportHeight / charHeight) + 1;
             
-            W = Math.floor(maxWidth / charWidth);
-            H = Math.floor(maxHeight / charHeight);
+            // Apply reasonable bounds
+            W = Math.max(50, Math.min(200, W));
+            H = Math.max(30, Math.min(120, H));
             
-            // Ensure reasonable dimensions with better scaling
-            W = Math.max(50, Math.min(160, W));
-            H = Math.max(30, Math.min(100, H));            // Update grid element properties
+            // Calculate optimal font size for perfect viewport fit
+            const optimalFontWidth = viewportWidth / W * 1.8;
+            const optimalFontHeight = viewportHeight / H * 1.2;
+            const fontSize = Math.min(optimalFontWidth, optimalFontHeight);
+            const finalFontSize = Math.max(6, Math.min(16, fontSize));
+            const lineHeight = finalFontSize;
+            
+            // Update grid element properties for full viewport coverage
             const grid = document.getElementById('grid');
-            grid.style.fontSize = fontSize + 'px';
+            grid.style.fontSize = finalFontSize + 'px';
             grid.style.lineHeight = lineHeight + 'px';
-            grid.style.width = (W * charWidth) + 'px';
-            grid.style.height = (H * charHeight) + 'px';
+            grid.style.position = 'fixed';
+            grid.style.top = '0';
+            grid.style.left = '0';
+            grid.style.width = '100vw';
+            grid.style.height = '100vh';
+            grid.style.margin = '0';
+            grid.style.padding = '0';
+            grid.style.transform = 'none';
             
-            console.log(`◆ Responsive Centered Canvas: ${W}x${H} (${viewportWidth}x${viewportHeight}) fontSize: ${fontSize}px charSize: ${charWidth.toFixed(1)}x${charHeight.toFixed(1)}`);
+            console.log(`◆ Cellular Consciousness Grid: ${W}×${H} (${viewportWidth}×${viewportHeight}) fontSize: ${finalFontSize.toFixed(1)}px charSize: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
         }
         
         // Initialize dimensions
@@ -1115,12 +1115,102 @@
             // Decrease mutation when system is chaotic
             else if (systemEntropy > 0.8) {
                 mutationRate = Math.max(0.005, mutationRate * 0.95);
-            }
-            // Target moderate mutation for balanced evolution
+            }            // Target moderate mutation for balanced evolution
             else {
                 const target = 0.02 + globalEmergence * 0.03;
                 mutationRate = mutationRate * 0.9 + target * 0.1;
-            }        }
+            }
+        }
+        
+        // Dynamic array reallocation for responsive sizing
+        function reallocateArrays() {
+            const size = W * H;
+            const oldCells = cells;
+            const oldMemory = memory;
+            const oldComplexity = complexity;
+            
+            // Reallocate all consciousness fields
+            cells = new Float32Array(size);
+            nextCells = new Float32Array(size);
+            memory = new Float32Array(size);
+            complexity = new Float32Array(size);
+            consciousness = new Float32Array(size);
+            connections = new Float32Array(size);
+            quantum = new Float32Array(size);
+            patterns = new Float32Array(size);
+            energy = new Float32Array(size);
+            collective = new Float32Array(size);
+            informationFlow = new Float32Array(size);
+            emergence = new Float32Array(size);
+            entropy = new Float32Array(size);
+            stability = new Float32Array(size);
+            
+            // Reallocate temporal memory
+            temporalMemory = new Array(size).fill(null).map(() => new Float32Array(10));
+            
+            // If we had previous data, try to preserve some consciousness patterns
+            if (oldCells && oldCells.length > 0) {
+                const preservationScale = Math.min(1, size / oldCells.length);
+                for (let i = 0; i < Math.min(size, oldCells.length); i++) {
+                    if (oldCells[i] > 0.1) { // Preserve significant consciousness
+                        cells[i] = oldCells[i] * preservationScale;
+                        if (oldMemory) memory[i] = oldMemory[i] * preservationScale;
+                        if (oldComplexity) complexity[i] = oldComplexity[i] * preservationScale;
+                    }
+                }
+            } else {
+                // Initialize with sparse consciousness seeds
+                initializeConsciousnessSeeds();
+            }
+        }
+        
+        // Initialize consciousness seeds for new or resized grids
+        function initializeConsciousnessSeeds() {
+            const size = W * H;
+            const density = Math.max(0.02, Math.min(0.08, 400 / size)); // Adaptive density
+            
+            for (let i = 0; i < size; i++) {
+                if (Math.random() < density) {
+                    cells[i] = Math.random() * 0.6 + 0.3;
+                    if (Math.random() < 0.25) {
+                        consciousness[i] = Math.random() * 0.3;
+                    }
+                    quantum[i] = Math.random() * 0.4;
+                    energy[i] = Math.random() * 0.5 + 0.3;
+                }
+            }
+            
+            // Add some structured consciousness patterns
+            const centerX = Math.floor(W / 2);
+            const centerY = Math.floor(H / 2);
+            const numSeeds = Math.floor(Math.random() * 3) + 2;
+            
+            for (let s = 0; s < numSeeds; s++) {
+                const angle = (s / numSeeds) * 2 * Math.PI + Math.random() * 0.5;
+                const distance = Math.random() * Math.min(W, H) * 0.2;
+                const sx = Math.floor(centerX + Math.cos(angle) * distance);
+                const sy = Math.floor(centerY + Math.sin(angle) * distance);
+                const radius = Math.floor(Math.random() * 5) + 3;
+                
+                for (let y = Math.max(0, sy - radius); y < Math.min(H, sy + radius); y++) {
+                    for (let x = Math.max(0, sx - radius); x < Math.min(W, sx + radius); x++) {
+                        const dist = Math.sqrt((x - sx) ** 2 + (y - sy) ** 2);
+                        if (dist <= radius) {
+                            const i = y * W + x;
+                            const strength = 1 - (dist / radius);
+                            consciousness[i] = Math.max(consciousness[i], strength * 0.5);
+                            cells[i] = Math.max(cells[i], strength * 0.4);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Add resize event listener for responsive scaling
+        window.addEventListener('resize', () => {
+            updateDimensions();
+            reallocateArrays();
+        });
     </script>
 </body>
 </html>

@@ -55,52 +55,52 @@
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
-        let t = 0;
-          // Calculate optimal grid size based on viewport
+        let t = 0;        // Enhanced dynamic viewport sizing with robust character measurement
         function updateDimensions() {
             // Get actual viewport dimensions
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Fallback character dimensions if measurement fails
-            let defaultCharWidth = 6;
-            let defaultCharHeight = 12;
-            
             try {
-                // Create accurate character measurement
+                // Precise character measurement using actual font
                 const testDiv = document.createElement('div');
                 testDiv.style.fontFamily = 'Courier New, monospace';
-                testDiv.style.fontSize = '12px';
+                testDiv.style.fontSize = '10px';
                 testDiv.style.position = 'absolute';
                 testDiv.style.visibility = 'hidden';
                 testDiv.style.whiteSpace = 'pre';
                 testDiv.style.lineHeight = '1.0';
-                testDiv.style.left = '-9999px';
-                testDiv.style.top = '-9999px';
-                testDiv.textContent = 'M'.repeat(10) + '\n'.repeat(10);
+                testDiv.textContent = '⧖'.repeat(10) + '\n'.repeat(10);
                 document.body.appendChild(testDiv);
                 
                 const rect = testDiv.getBoundingClientRect();
-                charWidth = rect.width > 0 ? rect.width / 10 : defaultCharWidth;
-                charHeight = rect.height > 0 ? rect.height / 10 : defaultCharHeight;
+                charWidth = rect.width > 0 ? rect.width / 10 : 6;
+                charHeight = rect.height > 0 ? rect.height / 10 : 10;
                 document.body.removeChild(testDiv);
             } catch(e) {
                 // Fallback to default values if measurement fails
-                charWidth = defaultCharWidth;
-                charHeight = defaultCharHeight;
+                charWidth = 6;
+                charHeight = 10;
             }
             
-            // Calculate grid size to fill viewport perfectly
-            W = Math.max(60, Math.floor(viewportWidth / charWidth));
-            H = Math.max(30, Math.floor(viewportHeight / charHeight));
+            // Calculate grid size for perfect viewport coverage
+            W = Math.ceil(viewportWidth / charWidth) + 2; // Extra buffer for edge coverage
+            H = Math.ceil(viewportHeight / charHeight) + 2;
             
-            // Calculate optimal font size for perfect viewport fit
-            const fontSize = Math.min(viewportWidth / W * 0.8, viewportHeight / H * 0.9);
+            // Apply reasonable bounds
+            W = Math.max(60, Math.min(200, W));
+            H = Math.max(30, Math.min(120, H));
+            
+            // Calculate optimal font size for perfect fit
+            const optimalFontWidth = viewportWidth / W * 1.8;
+            const optimalFontHeight = viewportHeight / H * 1.2;
+            const fontSize = Math.min(optimalFontWidth, optimalFontHeight);
+            const finalFontSize = Math.max(6, Math.min(20, fontSize));
             
             const display = document.getElementById('display');
             if (display) {
-                display.style.fontSize = Math.max(8, fontSize) + 'px';
-                display.style.lineHeight = Math.max(8, fontSize) + 'px';
+                display.style.fontSize = finalFontSize + 'px';
+                display.style.lineHeight = finalFontSize + 'px';
                 
                 // Perfect positioning to eliminate gaps
                 display.style.position = 'absolute';
@@ -112,6 +112,8 @@
             
             // Reallocate arrays for new dimensions
             reallocateArrays();
+            
+            console.log(`⧖ Temporal Grid: ${W}×${H} (${viewportWidth}×${viewportHeight}) fontSize: ${finalFontSize.toFixed(1)}px charSize: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
         }
         
         // Temporal resonance fields - dynamically allocated

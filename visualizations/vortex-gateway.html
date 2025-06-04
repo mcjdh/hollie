@@ -52,17 +52,43 @@
         ESC: close | SPACE: pause | ←→: speed | ↑↓: intensity
     </div>
     
-    <pre id="vortex"></pre>
-
-    <script>
-        const W = Math.min(80, Math.floor(window.innerWidth / 12));
-        const H = Math.min(40, Math.floor(window.innerHeight / 16));
+    <pre id="vortex"></pre>    <script>
+        let W, H;
         let frame = 0;
         let speed = 0.04;
         let intensity = 1.0;
         let paused = false;
         
         const vortex = document.getElementById('vortex');
+        
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate optimal character dimensions
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = getComputedStyle(vortex).fontSize;
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1';
+            testDiv.textContent = '○'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            const charWidth = rect.width / 10;
+            const charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            // Calculate dynamic grid size for optimal display
+            W = Math.floor(viewportWidth / charWidth);
+            H = Math.floor(viewportHeight / charHeight);
+            
+            // Ensure reasonable bounds
+            W = Math.max(40, Math.min(120, W));
+            H = Math.max(20, Math.min(80, H));
+        }
         
         const glyphs = [' ', '·', '•', '◦', '○', '●', '◉', '⊙', '⬢', '✶', '✷', '✹', '✺', '✼', '※', '@'];
         
@@ -145,21 +171,17 @@
         // Click to close
         document.addEventListener('click', () => {
             window.parent?.postMessage('close', '*');
-        });
-        
+        });        
         // Touch support
         document.addEventListener('touchstart', (e) => {
             e.preventDefault();
             window.parent?.postMessage('close', '*');
         });
         
-        // Start animation
+        // Initialize dimensions and start animation
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
         render();
-        
-        // Resize handler
-        window.addEventListener('resize', () => {
-            location.reload();
-        });
     </script>
 </body>
 </html>
