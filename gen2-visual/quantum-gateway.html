@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quantum Glyph Gateway</title>
+<style>
+  body{
+    margin:0;
+    background:#000;
+    color:#0ff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #field{
+    font-size:12px;
+    line-height:1;
+    white-space:pre;
+  }
+  span{display:inline-block;width:0.6em;}
+</style>
+</head>
+<body>
+<pre id="field"></pre>
+<script>
+const W=64,H=32;
+let f=new Float32Array(W*H).fill(0.5);
+let t=0;
+const field=document.getElementById('field');
+function evolve(){
+  for(let i=0;i<f.length;i++){
+    const r=3.7+0.1*Math.sin(t*0.02+i);
+    f[i]=r*f[i]*(1-f[i]);
+  }
+}
+function render(){
+  evolve();
+  let out='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const i=y*W+x;
+      const v=f[i];
+      const symbols=[' ','`','·','*','✧','✦','✹'];
+      const idx=Math.floor(v*(symbols.length-1));
+      const hue=(v*360+t*2+x*y)%360;
+      out+=`<span style="color:hsl(${hue},80%,${40+50*v}%)">${symbols[idx]}</span>`;
+    }
+    out+='\n';
+  }
+  field.innerHTML=out;
+  t++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>
