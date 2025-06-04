@@ -189,12 +189,11 @@
                 this.radius = Math.max(5, Math.min(15, Math.min(W, H) * 0.1));
                 this.frequency = 0.001;
                 this.evolution = 0;
-                this.memory = new Array(10).fill(0);
-                this.oscillators = [
-                    { freq: 0.003, phase: 0, amp: 1.0 },
-                    { freq: 0.007, phase: CONFIG.PI/3, amp: 0.8 },
-                    { freq: 0.011, phase: 2*CONFIG.PI/3, amp: 0.6 },
-                    { freq: 0.013, phase: CONFIG.PI, amp: 0.4 }
+                this.memory = new Array(10).fill(0);                this.oscillators = [
+                    { freq: 0.008, phase: 0, amp: 1.0 },
+                    { freq: 0.015, phase: CONFIG.PI/3, amp: 0.8 },
+                    { freq: 0.022, phase: 2*CONFIG.PI/3, amp: 0.6 },
+                    { freq: 0.028, phase: CONFIG.PI, amp: 0.4 }
                 ];
             }
             
@@ -224,15 +223,14 @@
                 
                 // Evolution pressure from complexity
                 this.evolution += this.complexity * 0.001;
-                
-                // Dynamic position based on consciousness flow
-                this.x += Math.sin(time * 0.002 + this.phase) * 0.5;
-                this.y += Math.cos(time * 0.0015 + this.phase) * 0.3;
+                  // Dynamic position based on consciousness flow - faster movement
+                this.x += Math.sin(time * 0.005 + this.phase) * 1.2;
+                this.y += Math.cos(time * 0.004 + this.phase) * 0.8;
                   // Keep kernel within bounds
                 this.x = Math.max(10, Math.min(W - 10, this.x));
                 this.y = Math.max(5, Math.min(H - 5, this.y));
                 
-                this.phase += 0.02;
+                this.phase += 0.05; // Faster phase progression
             }
               sampleGlobalField(field) {
                 const fx = Math.floor(this.x);
@@ -276,17 +274,16 @@
             
             update(time, kernel, agents, globalField) {
                 this.age++;
-                
-                // Kernel influence
+                  // Kernel influence - faster consciousness evolution
                 const kernelInfluence = kernel.getInfluence(this.x, this.y);
                 this.lastKernelInfluence = kernelInfluence;
                 
-                // Consciousness evolution through kernel interaction
-                this.consciousness = Math.tanh(this.consciousness + kernelInfluence * 0.1);
+                // Consciousness evolution through kernel interaction - faster rates
+                this.consciousness = Math.tanh(this.consciousness + kernelInfluence * 0.2);
                 
-                // Awareness emerges from consciousness
-                if (this.consciousness > 0.2) {
-                    this.awareness = Math.tanh(this.awareness + this.consciousness * 0.05);
+                // Awareness emerges from consciousness - faster emergence
+                if (this.consciousness > 0.15) {
+                    this.awareness = Math.tanh(this.awareness + this.consciousness * 0.1);
                 }
                   // Local field sampling
                 const fx = Math.floor(this.x);
@@ -307,14 +304,13 @@
                     
                     if (dist < 8) {
                         this.connections.push(other);
-                        
-                        // Consciousness resonance
+                          // Consciousness resonance - faster social influence
                         const resonance = Math.abs(this.consciousness - other.consciousness);
-                        socialInfluence += Math.exp(-resonance * 5) * 0.02;
+                        socialInfluence += Math.exp(-resonance * 5) * 0.04;
                         
-                        // Attraction/repulsion based on consciousness similarity
+                        // Attraction/repulsion based on consciousness similarity - stronger forces
                         const similarity = 1 - resonance;
-                        const force = similarity > 0.7 ? 0.001 : -0.0005;
+                        const force = similarity > 0.7 ? 0.002 : -0.001;
                         
                         this.vx += (dx / dist) * force;
                         this.vy += (dy / dist) * force;
@@ -327,19 +323,18 @@
                 // Movement influenced by consciousness and field gradients
                 const gradientX = this.sampleGradient(globalField, 1, 0);
                 const gradientY = this.sampleGradient(globalField, 0, 1);
-                
-                // Higher consciousness seeks complexity gradients
-                const seekingStrength = this.consciousness * 0.001;
+                  // Higher consciousness seeks complexity gradients - faster seeking
+                const seekingStrength = this.consciousness * 0.003;
                 this.vx += gradientX * seekingStrength;
                 this.vy += gradientY * seekingStrength;
                 
-                // Random exploration
-                this.vx += (Math.random() - 0.5) * 0.01;
-                this.vy += (Math.random() - 0.5) * 0.01;
+                // Random exploration - more dynamic
+                this.vx += (Math.random() - 0.5) * 0.02;
+                this.vy += (Math.random() - 0.5) * 0.02;
                 
-                // Velocity damping
-                this.vx *= 0.95;
-                this.vy *= 0.95;
+                // Velocity damping - less damping for faster movement
+                this.vx *= 0.92;
+                this.vy *= 0.92;
                 
                 // Update position
                 this.x += this.vx;
@@ -378,14 +373,13 @@
                 this.generation = 0;
                 this.mode = 0;
                 this.frameCount = 0;
-                
-                // Camera system for following the kernel
+                  // Camera system for following the kernel - faster smoothing
                 this.camera = {
                     x: 0,
                     y: 0,
                     targetX: 0,
                     targetY: 0,
-                    smoothing: 0.05
+                    smoothing: 0.08
                 };
                 
                 // Initialize dimensions
@@ -547,7 +541,7 @@
                 
                 return connections > 0 ? Math.tanh(integration / connections) : 0;
             }            update() {
-                this.time += 1;
+                this.time += 3; // Faster time progression
                 this.frameCount++;
                 
                 // Update kernel
@@ -566,18 +560,18 @@
                 
                 // Calculate metrics
                 this.updateMetrics();
-                  // Agent evolution and spawning
-                if (this.frameCount % 200 === 0) {
+                  // Agent evolution and spawning - faster cycles
+                if (this.frameCount % 100 === 0) {
                     this.evolveSystem();
                 }
                 
-                // Auto mode cycling - automatically switch between visualization modes
-                if (this.frameCount % 800 === 0) {
+                // Auto mode cycling - faster switching between visualization modes
+                if (this.frameCount % 400 === 0) {
                     this.cycleMode();
                 }
                 
-                // Auto reset for continuous evolution - prevents stagnation
-                if (this.frameCount % 3000 === 0) {
+                // Auto reset for continuous evolution - faster resets
+                if (this.frameCount % 1500 === 0) {
                     this.softReset();
                 }
             }
@@ -767,15 +761,14 @@
                     agent.vy += (Math.random() - 0.5) * 0.02;
                 }
             }
-            
-            updateCamera() {
+              updateCamera() {
                 // Set camera target to kernel position
                 this.camera.targetX = this.kernel.x - W / 2;
                 this.camera.targetY = this.kernel.y - H / 2;
                 
-                // Smooth camera movement
-                this.camera.x += (this.camera.targetX - this.camera.x) * this.camera.smoothing;
-                this.camera.y += (this.camera.targetY - this.camera.y) * this.camera.smoothing;
+                // Faster camera movement for more responsive following
+                this.camera.x += (this.camera.targetX - this.camera.x) * 0.08;
+                this.camera.y += (this.camera.targetY - this.camera.y) * 0.08;
             }
         }
           // Initialize simulation
