@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ant Colony</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #222; }
+        .c1 { color: #554400; }
+        .c2 { color: #886600; }
+        .c3 { color: #aa8800; }
+        .c4 { color: #ffcc33; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        const ants = [];
+        const NUM = 60;
+        let pher;
+
+        function idx(x, y) {
+            return ((y + H) % H) * W + ((x + W) % W);
+        }
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        function init() {
+            ants.length = 0;
+            for (let i = 0; i < NUM; i++) {
+                ants.push({x: Math.floor(Math.random()*W), y: Math.floor(Math.random()*H)});
+            }
+            pher = new Float32Array(W * H);
+        }
+
+        const dirs = [
+            {dx:1, dy:0},
+            {dx:-1, dy:0},
+            {dx:0, dy:1},
+            {dx:0, dy:-1}
+        ];
+
+        function step() {
+            for (let a of ants) {
+                pher[idx(a.x, a.y)] += 1;
+                let weights = [];
+                let total = 0;
+                for (let dir of dirs) {
+                    const nx = a.x + dir.dx;
+                    const ny = a.y + dir.dy;
+                    const val = 0.1 + pher[idx(nx, ny)];
+                    weights.push(val);
+                    total += val;
+                }
+                let r = Math.random()*total;
+                for (let i=0;i<dirs.length;i++){
+                    if(r<weights[i]){
+                        a.x = (a.x + dirs[i].dx + W) % W;
+                        a.y = (a.y + dirs[i].dy + H) % H;
+                        break;
+                    }
+                    r-=weights[i];
+                }
+            }
+            for (let i=0;i<pher.length;i++) {
+                pher[i]*=0.95;
+            }
+        }
+
+        function render() {
+            step();
+            let out='';
+            for(let y=0;y<H;y++){
+                for(let x=0;x<W;x++){
+                    const p=pher[idx(x,y)];
+                    const antHere=ants.find(a=>a.x===x&&a.y===y);
+                    if(antHere){
+                        out+='<span class="c4">@</span>';
+                    }else if(p>0.5){
+                        out+='<span class="c3">#</span>';
+                    }else if(p>0.2){
+                        out+='<span class="c2">.</span>';
+                    }else if(p>0.05){
+                        out+='<span class="c1">.</span>';
+                    }else{
+                        out+='<span class="c0"> </span>';
+                    }
+                }
+                out+='\n';
+            }
+            document.getElementById('canvas').innerHTML=out;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', ()=>{updateDimensions(); init();});
+        updateDimensions();
+        init();
+        render();
+        document.addEventListener('keydown', e=>{
+            if(e.key==='Escape' && window.parent!==window){
+                window.parent.postMessage('close','*');
+            }
+        });
+    </script>
+</body>
+</html>

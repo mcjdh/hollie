@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swarming Seeds</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #002200; }
+        .c1 { color: #004400; }
+        .c2 { color: #008800; }
+        .c3 { color: #00cc00; }
+        .c4 { color: #66ff66; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        const seeds = [];
+        const NUM = 50;
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        function init() {
+            seeds.length = 0;
+            for (let i = 0; i < NUM; i++) {
+                seeds.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: 0,
+                    vy: 0
+                });
+            }
+        }
+
+        function step() {
+            let cx = 0, cy = 0;
+            for (let s of seeds) { cx += s.x; cy += s.y; }
+            cx /= seeds.length; cy /= seeds.length;
+            for (let s of seeds) {
+                s.vx += (cx - s.x) * 0.002 + (Math.random() - 0.5) * 0.05;
+                s.vy += (cy - s.y) * 0.002 + (Math.random() - 0.5) * 0.05;
+                const sp = Math.hypot(s.vx, s.vy);
+                if (sp > 0.5) {
+                    s.vx *= 0.5 / sp;
+                    s.vy *= 0.5 / sp;
+                }
+                s.x = (s.x + s.vx + W) % W;
+                s.y = (s.y + s.vy + H) % H;
+            }
+        }
+
+        function render() {
+            step();
+            const grid = new Array(W * H).fill(0);
+            for (let s of seeds) {
+                const x = Math.floor(s.x);
+                const y = Math.floor(s.y);
+                const i = y * W + x;
+                grid[i] = Math.min(4, grid[i] + 1);
+            }
+            let out='';
+            for(let y=0;y<H;y++){
+                for(let x=0;x<W;x++){
+                    const val=grid[y*W+x];
+                    if(val===0){
+                        out+=' ';
+                    }else{
+                        out+=`<span class="c${val}">•</span>`;
+                    }
+                }
+                out+='\n';
+            }
+            document.getElementById('canvas').innerHTML=out;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', ()=>{updateDimensions(); init();});
+        updateDimensions();
+        init();
+        render();
+        document.addEventListener('keydown', e=>{
+            if(e.key==='Escape' && window.parent!==window){
+                window.parent.postMessage('close','*');
+            }
+        });
+    </script>
+</body>
+</html>
