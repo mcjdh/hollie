@@ -85,7 +85,7 @@
         updateDimensions();
         render();
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && window.parent !== window) {
                 window.parent.postMessage('close', '*');
             }
         });
