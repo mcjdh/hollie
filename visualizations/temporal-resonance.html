@@ -56,66 +56,90 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
-        
-        // Calculate optimal grid size based on viewport
+          // Calculate optimal grid size based on viewport
         function updateDimensions() {
             // Get actual viewport dimensions
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Create accurate character measurement
-            const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '8px';
-            testDiv.style.position = 'absolute';
-            testDiv.style.visibility = 'hidden';
-            testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1.0';
-            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(testDiv);
+            // Fallback character dimensions if measurement fails
+            let defaultCharWidth = 6;
+            let defaultCharHeight = 12;
             
-            const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);
+            try {
+                // Create accurate character measurement
+                const testDiv = document.createElement('div');
+                testDiv.style.fontFamily = 'Courier New, monospace';
+                testDiv.style.fontSize = '12px';
+                testDiv.style.position = 'absolute';
+                testDiv.style.visibility = 'hidden';
+                testDiv.style.whiteSpace = 'pre';
+                testDiv.style.lineHeight = '1.0';
+                testDiv.style.left = '-9999px';
+                testDiv.style.top = '-9999px';
+                testDiv.textContent = 'M'.repeat(10) + '\n'.repeat(10);
+                document.body.appendChild(testDiv);
+                
+                const rect = testDiv.getBoundingClientRect();
+                charWidth = rect.width > 0 ? rect.width / 10 : defaultCharWidth;
+                charHeight = rect.height > 0 ? rect.height / 10 : defaultCharHeight;
+                document.body.removeChild(testDiv);
+            } catch(e) {
+                // Fallback to default values if measurement fails
+                charWidth = defaultCharWidth;
+                charHeight = defaultCharHeight;
+            }
             
             // Calculate grid size to fill viewport perfectly
-            W = Math.ceil(viewportWidth / charWidth) + 1; // Small buffer
-            H = Math.ceil(viewportHeight / charHeight) + 1; // Small buffer
-            
-            // Ensure minimum viable grid for temporal patterns
-            W = Math.max(60, W);
-            H = Math.max(30, H);
+            W = Math.max(60, Math.floor(viewportWidth / charWidth));
+            H = Math.max(30, Math.floor(viewportHeight / charHeight));
             
             // Calculate optimal font size for perfect viewport fit
-            const optimalFontWidth = viewportWidth / W;
-            const optimalFontHeight = viewportHeight / H;
-            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            const fontSize = Math.min(viewportWidth / W * 0.8, viewportHeight / H * 0.9);
             
             const display = document.getElementById('display');
-            display.style.fontSize = fontSize + 'px';
-            display.style.lineHeight = (fontSize * 1.0) + 'px';
-            
-            // Perfect positioning to eliminate gaps
-            display.style.position = 'absolute';
-            display.style.top = '0';
-            display.style.left = '0';
-            display.style.margin = '0';
-            display.style.padding = '0';
+            if (display) {
+                display.style.fontSize = Math.max(8, fontSize) + 'px';
+                display.style.lineHeight = Math.max(8, fontSize) + 'px';
+                
+                // Perfect positioning to eliminate gaps
+                display.style.position = 'absolute';
+                display.style.top = '0';
+                display.style.left = '0';
+                display.style.margin = '0';
+                display.style.padding = '0';
+            }
             
             // Reallocate arrays for new dimensions
             reallocateArrays();
         }
         
         // Temporal resonance fields - dynamically allocated
-        let temporal, resonance, memory, echo;        
-        // Dynamic array reallocation for responsive sizing
+        let temporal, resonance, memory, echo;          // Dynamic array reallocation for responsive sizing
         function reallocateArrays() {
-            const size = W * H;
-            temporal = new Float32Array(size);    // Time echoing through consciousness layers
-            resonance = new Float32Array(size);   // Consciousness oscillations
-            memory = new Float32Array(size);      // Past states bleeding through
-            echo = new Float32Array(size);        // Delayed temporal patterns
+            const size = Math.max(1, W * H); // Ensure minimum size
+            try {
+                temporal = new Float32Array(size);    // Time echoing through consciousness layers
+                resonance = new Float32Array(size);   // Consciousness oscillations
+                memory = new Float32Array(size);      // Past states bleeding through
+                echo = new Float32Array(size);        // Delayed temporal patterns
+                
+                // Initialize with small random values to prevent static start
+                for (let i = 0; i < size; i++) {
+                    temporal[i] = (Math.random() - 0.5) * 0.01;
+                    resonance[i] = (Math.random() - 0.5) * 0.005;
+                    memory[i] = 0;
+                    echo[i] = 0;
+                }
+            } catch(e) {
+                console.error('Failed to allocate arrays:', e);
+                // Fallback to smaller arrays if memory allocation fails
+                const fallbackSize = 1800; // 60x30 minimum
+                temporal = new Float32Array(fallbackSize);
+                resonance = new Float32Array(fallbackSize);
+                memory = new Float32Array(fallbackSize);
+                echo = new Float32Array(fallbackSize);
+            }
         }
         
         // Time-consciousness symbols - temporal echo patterns
@@ -182,50 +206,67 @@
                     }
                 }
             }
-        }        
-        function render() {
-            updateFields();
-            let output = '';
-            
-            // Enhanced temporal breathing with multiple harmonics
-            const breath1 = Math.sin(t * 0.05) * 0.15 + 0.85;
-            const breath2 = Math.cos(t * 0.037) * 0.08 + 0.92;
-            const breath3 = Math.sin(t * 0.063) * 0.04 + 0.96;
-            const globalBreath = (breath1 + breath2 + breath3) / 3;
-            
-            // Ensure we render exactly what fills the viewport
-            const renderH = Math.min(H, Math.ceil(window.innerHeight / (charHeight || 8)) + 1);
-            const renderW = Math.min(W, Math.ceil(window.innerWidth / (charWidth || 6)) + 1);
-            
-            for (let y = 0; y < renderH; y++) {
-                for (let x = 0; x < renderW; x++) {
-                    const i = Math.min(y * W + x, W * H - 1); // Bounds safety
-                    
-                    // Enhanced temporal layer combination with resonance modulation
-                    let intensity = (temporal[i] || 0) * 0.5 + 
-                                  (resonance[i] || 0) * 0.3 + 
-                                  (memory[i] || 0) * 0.1 + 
-                                  (echo[i] || 0) * 0.1;
-                    
-                    // Apply temporal breathing - time itself breathing
-                    intensity *= globalBreath;
-                    
-                    // Enhanced temporal noise - quantum fluctuations in time with coherence
-                    const coherentNoise = Math.sin(t * 0.1 + x * 0.05 + y * 0.07) * 0.02;
-                    intensity += (Math.random() - 0.5) * 0.03 + coherentNoise;                    
-                    // Normalize and select representation with enhanced mapping
-                    intensity = Math.max(0, Math.min(1, (intensity + 1) / 2));
-                    const symIdx = Math.min(Math.floor(intensity * (symbols.length - 1)), symbols.length - 1);
-                    const colorIdx = Math.min(Math.floor(intensity * colors.length), colors.length - 1);
-                    
-                    output += `<span class="${colors[colorIdx]}">${symbols[symIdx]}</span>`;
+        }          function render() {
+            try {
+                updateFields();
+                let output = '';
+                
+                // Enhanced temporal breathing with multiple harmonics
+                const breath1 = Math.sin(t * 0.05) * 0.15 + 0.85;
+                const breath2 = Math.cos(t * 0.037) * 0.08 + 0.92;
+                const breath3 = Math.sin(t * 0.063) * 0.04 + 0.96;
+                const globalBreath = (breath1 + breath2 + breath3) / 3;
+                
+                // Ensure we render exactly what fills the viewport
+                const renderH = Math.min(H, Math.ceil(window.innerHeight / (charHeight || 12)) + 1);
+                const renderW = Math.min(W, Math.ceil(window.innerWidth / (charWidth || 6)) + 1);
+                
+                for (let y = 0; y < renderH; y++) {
+                    for (let x = 0; x < renderW; x++) {
+                        const i = Math.min(y * W + x, (W * H) - 1); // Bounds safety
+                        
+                        // Enhanced temporal layer combination with resonance modulation
+                        let intensity = (temporal[i] || 0) * 0.5 + 
+                                      (resonance[i] || 0) * 0.3 + 
+                                      (memory[i] || 0) * 0.1 + 
+                                      (echo[i] || 0) * 0.1;
+                        
+                        // Apply temporal breathing - time itself breathing
+                        intensity *= globalBreath;
+                        
+                        // Enhanced temporal noise - quantum fluctuations in time with coherence
+                        const coherentNoise = Math.sin(t * 0.1 + x * 0.05 + y * 0.07) * 0.02;
+                        intensity += (Math.random() - 0.5) * 0.03 + coherentNoise;                    
+                        
+                        // Normalize and select representation with enhanced mapping
+                        intensity = Math.max(0, Math.min(1, (intensity + 1) / 2));
+                        const symIdx = Math.min(Math.floor(intensity * (symbols.length - 1)), symbols.length - 1);
+                        const colorIdx = Math.min(Math.floor(intensity * colors.length), colors.length - 1);
+                        
+                        output += `<span class="${colors[colorIdx]}">${symbols[symIdx]}</span>`;
+                    }
+                    if (y < renderH - 1) output += '\n';
                 }
-                if (y < renderH - 1) output += '\n';
+                
+                const display = document.getElementById('display');
+                if (display) {
+                    display.innerHTML = output;
+                }
+                
+                t += 0.5;
+                requestAnimationFrame(render);
+            } catch(e) {
+                console.error('Render error:', e);
+                // Try to restart after a delay
+                setTimeout(() => {
+                    try {
+                        updateDimensions();
+                        requestAnimationFrame(render);
+                    } catch(e2) {
+                        console.error('Failed to restart render:', e2);
+                    }
+                }, 1000);
             }
-            
-            document.getElementById('display').innerHTML = output;
-            t += 0.5;
-            requestAnimationFrame(render);
         }
         
         // Anti-equilibrium enhancement - prevent static temporal patterns
@@ -245,15 +286,25 @@
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
         });
-        
-        // Enhanced initialization with temporal field setup
+          // Enhanced initialization with temporal field setup
         function initialize() {
             updateDimensions();
             addTemporalChaos(); // Initial temporal disturbance
             render();
         }
         
-        // Initialize with dynamic sizing and ensure proper startup        setTimeout(initialize, 50);
+        // Initialize with dynamic sizing and ensure proper startup
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initialize, 50);
+        });
+        
+        // Fallback initialization in case DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            // DOM is still loading
+        } else {
+            // DOM is already loaded
+            setTimeout(initialize, 50);
+        }
     </script>
 </body>
 </html>
