@@ -1,44 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>temporal crystals</title>
     <style>
         body {
-            background: black;
+            margin: 0;
+            padding: 0;
+            background: #000;
             color: #88aaff;
             font-family: 'Courier New', monospace;
-            font-size: 9px;
-            line-height: 0.9;
-            letter-spacing: 0px;
-            margin: 0;
-            padding: 20px;
             overflow: hidden;
+            width: 100vw;
+            height: 100vh;
         }
         #canvas {
             white-space: pre;
             font-feature-settings: 'kern' 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            line-height: 1.0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
     <div id="canvas"></div>
     <script>
-        const W = 130, H = 60;
+        let W, H;
+        let charWidth, charHeight;
         let time = 0;
-        
+
         // Multi-dimensional temporal fields
-        let crystallineField = new Array(W * H).fill(0);
-        let temporalFlow = new Array(W * H).fill(0);
-        let memoryDecay = new Array(W * H).fill(0);
-        let futureEcho = new Array(W * H).fill(0);
+        let crystallineField, temporalFlow, memoryDecay, futureEcho;
         
         // Time crystal nucleation sites - points where temporal order emerges
-        let crystalSeeds = [
-            { x: 25, y: 15, growth: 0, symmetry: 6, frequency: 0.08, phase: 0 },
-            { x: 75, y: 35, growth: 0, symmetry: 4, frequency: 0.12, phase: Math.PI/4 },
-            { x: 105, y: 20, growth: 0, symmetry: 8, frequency: 0.06, phase: Math.PI/2 },
-            { x: 45, y: 45, growth: 0, symmetry: 3, frequency: 0.15, phase: Math.PI }
-        ];
+        let crystalSeeds = [];
+
+        function initSeeds() {
+            crystalSeeds = [
+                { x: W * 0.2,  y: H * 0.25, growth: 0, symmetry: 6, frequency: 0.08, phase: 0 },
+                { x: W * 0.55, y: H * 0.60, growth: 0, symmetry: 4, frequency: 0.12, phase: Math.PI/4 },
+                { x: W * 0.80, y: H * 0.33, growth: 0, symmetry: 8, frequency: 0.06, phase: Math.PI/2 },
+                { x: W * 0.35, y: H * 0.75, growth: 0, symmetry: 3, frequency: 0.15, phase: Math.PI }
+            ];
+        }
+
+        function reallocateArrays() {
+            const size = W * H;
+            crystallineField = new Float32Array(size);
+            temporalFlow = new Float32Array(size);
+            memoryDecay = new Float32Array(size);
+            futureEcho = new Float32Array(size);
+        }
+
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '8px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+
+            W = Math.ceil(viewportWidth / charWidth) + 1;
+            H = Math.ceil(viewportHeight / charHeight) + 1;
+            W = Math.max(60, W);
+            H = Math.max(30, H);
+
+            const optimalFontWidth = viewportWidth / W;
+            const optimalFontHeight = viewportHeight / H;
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = fontSize + 'px';
+            canvas.style.lineHeight = (fontSize * 1.0) + 'px';
+
+            reallocateArrays();
+            initSeeds();
+        }
         
         // Temporal defects - points where time breaks down
         let temporalDefects = [];
@@ -187,8 +243,15 @@
             render();
             requestAnimationFrame(evolve);
         }
-        
-        evolve();
+
+        window.addEventListener('resize', () => {
+            setTimeout(updateDimensions, 100);
+        });
+
+        setTimeout(() => {
+            updateDimensions();
+            evolve();
+        }, 50);
     </script>
 </body>
-</html> 
+</html>
