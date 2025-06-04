@@ -2,26 +2,26 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>⠿ ⠿⧖⠿</title>
-    <style>        body { margin:0; padding:0; background:#000; overflow:hidden; width:100vw; height:100vh; }
-        #display { 
-            font-family:'Courier New',monospace; color:#0ff; white-space:pre; 
-            padding:0; margin:0; background:#000;
+    <title>Whispering Sands ⠿⧖</title>
+    <style>        body { margin:0; padding:0; background:#0e0904; overflow:hidden; width:100vw; height:100vh; }
+        #display {
+            font-family:'Courier New',monospace; color:#f0d8b4; white-space:pre;
+            padding:0; margin:0; background:#0e0904;
             position: absolute;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
         }
-        .v{color:#f0f} .u{color:#0ff} .s{color:#ff0} .e{color:#0f0} .m{color:#f80}
-        .t{color:#f44} .q{color:#84f} .d{color:#48f} .w{color:#fff} .c{color:#8ff}
-        .g{color:#4f4} .y{color:#ff4} .r{color:#f44} .p{color:#f8f} .b{color:#44f}
-        .o{color:#fa0} .a{color:#aaa} .f{color:#f88} .n{color:#8f8} .l{color:#88f}
+        .v{color:#382b1b} .u{color:#423423} .s{color:#4c3e2c} .e{color:#564835} .m{color:#60523d}
+        .t{color:#6a5c46} .q{color:#74664f} .d{color:#7f7057} .w{color:#897a60} .c{color:#938469}
+        .g{color:#9d8d71} .y{color:#a7977a} .r{color:#b1a183} .p{color:#bcab8b} .b{color:#c6b594}
+        .o{color:#d0bf9d} .a{color:#dac9a5} .f{color:#e4d3ae} .n{color:#eeddb7} .l{color:#f9e7c0}
         
         .info {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: #f0d8b4;
             z-index: 100;
             background: rgba(0,0,0,0.7);
             padding: 10px;
@@ -30,9 +30,9 @@
         }
     </style>
 </head>
-<body>    <div class="info">
-        ⠿ ⠿⧖⠿<br>
-        ⠤⠤⠤⠤<br>
+    <body>    <div class="info">
+        Whispering Sands<br>
+        ~ desert murmurs ~<br>
         ESC ◦ ↩
     </div>
     <div id="display"></div>    <script>
@@ -119,11 +119,14 @@
                     const nx = (x - W/2) / Math.max(W, H);
                     const ny = (y - H/2) / Math.max(W, H);
                     
-                    // Desert wind patterns with chaos
-                    const windX = Math.sin(ny * 4 + τ * 0.7 + chaosLevel) * Math.cos(nx * 3 + τ * 0.5);
-                    const windY = Math.cos(nx * 5 - τ * 0.3 + chaosLevel) * Math.sin(ny * 2 + τ * 0.8);
-                    
-                    wind[i] = (windX + windY + chaosLevel * 0.5) * 0.5;
+                    // Swirling desert winds
+                    const dist = Math.hypot(nx, ny);
+                    const swirl = (1 - dist) * 0.5;
+                    const angle = τ * 0.3;
+                    const windX = swirl * (-ny * Math.cos(angle) + nx * Math.sin(angle));
+                    const windY = swirl * (nx * Math.cos(angle) + ny * Math.sin(angle));
+
+                    wind[i] = windX + windY + chaosLevel * 0.3;
                     
                     // Whisper field - voices carried by wind with temporal layers
                     const whisperWave = Math.sin((nx + ny) * 8 + τ * 2 + chaosLevel * 3);
@@ -133,6 +136,7 @@
                     if (Math.random() < 0.001 + Math.abs(chaosLevel) * 0.001) {
                         memory[i] += Math.random() * 0.1;
                     }
+                    memory[i] *= 0.995;
                     
                     // Clear grain field for particle update
                     grains[i] *= 0.95;
