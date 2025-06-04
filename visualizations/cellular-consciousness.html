@@ -118,7 +118,6 @@
     </style>
 </head>
 <body>
-    <div id="metrics" style="font-family: monospace; font-size: 10px; color: #666; margin: 5px; text-align: center; position: fixed; top: 5px; left: 5px; z-index: 100; background: rgba(0,0,0,0.7); padding: 5px; border-radius: 3px;"></div>
     <div id="grid"></div><script>
         // Dynamic viewport sizing - proper character measurement
         let W, H;
@@ -645,13 +644,11 @@
                     }
                 }
             }
-              updateTemporalMemory();
+            updateTemporalMemory();
             propagateInformation();
             detectEmergence();
             calculateEntropy();
             updateAdaptiveMutation();
-            updateMetrics();
-            updateMetrics();
             
             let output = '';
             for (let y = 0; y < H; y++) {
@@ -665,7 +662,9 @@
             
             document.getElementById('grid').innerHTML = output;
             t++;
-        }        function seedRandom() {
+        }
+
+        function seedRandom() {
             // Reduce density significantly for less visual noise
             const density = Math.max(0.02, Math.min(0.08, 400 / (W * H))); // Much lower density
             for (let i = 0; i < W * H; i++) {
@@ -1044,28 +1043,6 @@
             else {
                 const target = 0.02 + globalEmergence * 0.03;
                 mutationRate = mutationRate * 0.9 + target * 0.1;
-            }
-        }
-
-        // System metrics display
-        function updateMetrics() {
-            if (t % 60 === 0) { // Update every 60 frames
-                const totalLiving = cells.filter(c => c > 0.1).length;
-                const avgConsciousness = consciousness.reduce((a, b) => a + b, 0) / (W * H);
-                const avgQuantum = quantum.reduce((a, b) => a + b, 0) / (W * H);
-                const avgEmergence = emergence.reduce((a, b) => a + b, 0) / (W * H);
-                
-                const metricsDiv = document.getElementById('metrics');
-                if (metricsDiv) {
-                    metricsDiv.innerHTML = `
-                        Population: ${totalLiving} | 
-                        Consciousness: ${(avgConsciousness * 100).toFixed(1)}% | 
-                        Quantum: ${(avgQuantum * 100).toFixed(1)}% | 
-                        Emergence: ${(avgEmergence * 100).toFixed(1)}% | 
-                        Entropy: ${(systemEntropy * 100).toFixed(1)}% | 
-                        Mutation: ${(mutationRate * 100).toFixed(2)}%
-                    `;
-                }
             }
         }
     </script>

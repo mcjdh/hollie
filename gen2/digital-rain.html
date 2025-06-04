@@ -17,11 +17,16 @@
             line-height: 1.1;
             font-size: 10px;
         }
-        .c0 { color: #003300; }
-        .c1 { color: #00aa00; }
-        .c2 { color: #00ff00; }
-        .c3 { color: #66ff66; }
-        .c4 { color: #ccffcc; }
+        /* Extended green gradient for smoother trails */
+        .c0 { color: #002200; }
+        .c1 { color: #004400; }
+        .c2 { color: #006600; }
+        .c3 { color: #009900; }
+        .c4 { color: #00cc00; }
+        .c5 { color: #33ff33; }
+        .c6 { color: #77ff77; }
+        .c7 { color: #bbffbb; }
+        .c8 { color: #e6ffe6; }
     </style>
 </head>
 <body>
@@ -29,8 +34,9 @@
     <script>
         let W, H;
         let charWidth, charHeight;
+        // Each column holds current drop position and speed
         let columns = [];
-        let velocity = [];
+        const trailLength = 20;
         let t = 0;
 
         function measureCharSize() {
@@ -65,8 +71,12 @@
             canvas.style.fontSize = '12px';
             canvas.style.lineHeight = '12px';
 
-            columns = Array.from({ length: W }, () => Math.random() * (H + 10));
-            velocity = Array.from({ length: W }, () => 0.5 + Math.random());
+            columns = Array.from({
+                length: W
+            }, () => ({
+                pos: Math.random() * (H + trailLength),
+                speed: 0.5 + Math.random()
+            }));
         }
 
         const symbols = 'abcdefghijklmnopqrstuvwxyz0123456789@#$%&'.split('');
@@ -74,10 +84,12 @@
             let out = '';
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
-                    const drop = columns[x] - y;
-                    if (drop > 0 && drop < 10) {
+                    const column = columns[x];
+                    const drop = column.pos - y;
+                    if (drop > 0 && drop < trailLength) {
                         const idx = Math.floor(Math.random() * symbols.length);
-                        const colorIdx = Math.floor((10 - drop) / 2);
+                        const intensity = 1 - drop / trailLength;
+                        const colorIdx = Math.floor(intensity * 9);
                         out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
                     } else {
                         out += ' ';
@@ -87,7 +99,8 @@
             }
             document.getElementById('canvas').innerHTML = out;
             for (let i = 0; i < columns.length; i++) {
-                columns[i] = (columns[i] + velocity[i] + 0.5 * Math.sin((i + t) * 0.02)) % (H + 10);
+                const col = columns[i];
+                col.pos = (col.pos + col.speed + 0.5 * Math.sin((i + t) * 0.02)) % (H + trailLength);
             }
             t += 0.5;
             requestAnimationFrame(render);
