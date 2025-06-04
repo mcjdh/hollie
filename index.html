@@ -320,11 +320,13 @@
 
         function toggle_fs() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen?.().catch(() => {});
+                const req = document.documentElement.requestFullscreen?.();
+                req?.catch(() => {});
             } else {
                 document.exitFullscreen?.();
             }
-        }        function about() {
+        }
+        function about() {
             alert('∞ ◉ ∞\n\n⟨ ☰∿☰ ⟩\n\n◦ ∫∂∇\n◦ ⧖→∞  \n◦ ◎js◎html5\n\n⟨ ESC ◦ × ⟩');
         }
 
