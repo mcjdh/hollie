@@ -324,11 +324,9 @@
         <button class="ctrl-btn" onclick="toggle_fs()">⛶</button>
         <button class="ctrl-btn" onclick="random_viz()">◉</button>
         <button class="ctrl-btn" onclick="about()">?</button>
-    </div>    <div class="fullscreen" id="fs">
-        <div class="close-x" onclick="close_viz_force();">×</div>
+    </div>    <div class="fullscreen" id="fs">        <div class="close-x" onclick="close_viz_force();">×</div>
         <div class="exit-overlay" id="exitOverlay"></div>
         <iframe class="frame" id="frame"></iframe>
-        <div class="exit-hint" id="exitHint">Click anywhere or press ESC to return</div>
     </div>
 
     <script>        const vizs = [
@@ -351,7 +349,6 @@
         ];        const fsElem = document.getElementById('fs');
         const frameElem = document.getElementById('frame');
         const exitOverlay = document.getElementById('exitOverlay');
-        const exitHint = document.getElementById('exitHint');
         
         let isFullscreenOpen = false;
         let exitListeners = [];
@@ -361,23 +358,8 @@
             fsElem.style.display = 'block';
             document.body.style.overflow = 'hidden';
             isFullscreenOpen = true;
-            
-            // Setup multiple exit mechanisms
+              // Setup multiple exit mechanisms
             setupExitMechanisms();
-            
-            // Show hint briefly
-            setTimeout(() => {
-                if (exitHint && isFullscreenOpen) {
-                    exitHint.style.opacity = '0.7';
-                }
-            }, 1000);
-            
-            // Hide hint after 4 seconds
-            setTimeout(() => {
-                if (exitHint) {
-                    exitHint.style.opacity = '0';
-                }
-            }, 5000);
         }
 
         function close_viz_force() {
