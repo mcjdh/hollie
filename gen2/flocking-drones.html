@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flocking Drones</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #001133; }
+        .c1 { color: #003366; }
+        .c2 { color: #005599; }
+        .c3 { color: #3377cc; }
+        .c4 { color: #88bbff; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        const drones = [];
+        const NUM = 40;
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        function init() {
+            drones.length = 0;
+            for (let i = 0; i < NUM; i++) {
+                drones.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: Math.random() - 0.5,
+                    vy: Math.random() - 0.5
+                });
+            }
+        }
+
+        function step() {
+            for (let d of drones) {
+                let ax = 0, ay = 0, count = 0, sx = 0, sy = 0;
+                for (let n of drones) {
+                    if (n === d) continue;
+                    const dx = n.x - d.x;
+                    const dy = n.y - d.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < 8) {
+                        ax += dx;
+                        ay += dy;
+                        count++;
+                    }
+                    if (dist < 2) {
+                        sx -= dx;
+                        sy -= dy;
+                    }
+                }
+                if (count) {
+                    ax = ax / count * 0.01;
+                    ay = ay / count * 0.01;
+                }
+                d.vx += ax + sx * 0.05 + (Math.random() - 0.5) * 0.02;
+                d.vy += ay + sy * 0.05 + (Math.random() - 0.5) * 0.02;
+                const sp = Math.hypot(d.vx, d.vy);
+                if (sp > 0.6) {
+                    d.vx *= 0.6 / sp;
+                    d.vy *= 0.6 / sp;
+                }
+                d.x = (d.x + d.vx + W) % W;
+                d.y = (d.y + d.vy + H) % H;
+            }
+        }
+
+        const symbols = [' ', '.', 'o'];
+        function render() {
+            step();
+            const grid = new Array(W * H).fill(' ');
+            for (let d of drones) {
+                const x = Math.floor(d.x);
+                const y = Math.floor(d.y);
+                if (x >= 0 && x < W && y >= 0 && y < H) {
+                    grid[y * W + x] = d;
+                }
+            }
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const cell = grid[y * W + x];
+                    if (cell === ' ') {
+                        out += ' ';
+                    } else {
+                        const speed = Math.hypot(cell.vx, cell.vy);
+                        const idx = Math.min(4, Math.floor(speed / 0.15));
+                        out += `<span class="c${idx}">o</span>`;
+                    }
+                }
+                out += '\n';
+            }
+            document.getElementById('canvas').innerHTML = out;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', () => {updateDimensions(); init();});
+        updateDimensions();
+        init();
+        render();
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && window.parent !== window) {
+                window.parent.postMessage('close', '*');
+            }
+        });
+    </script>
+</body>
+</html>
