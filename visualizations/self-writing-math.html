@@ -2,24 +2,29 @@
 <html>
 <head>
     <title>Self-Writing Mathematics</title>
-    <style>
-        body {
+    <style>        body {
             background: #000;
             color: #fff;
             font-family: 'Courier New', monospace;
-            font-size: 8px;
-            line-height: 1.0;
             margin: 0;
             padding: 0;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
         }
         #canvas {
             white-space: pre;
             font-feature-settings: 'kern' 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            line-height: 1.0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         .v { color: #ffffff; } .u { color: #ffccff; } .s { color: #ccffff; }
         .e { color: #ffffcc; } .m { color: #ccffcc; } .t { color: #ffcccc; }
@@ -49,10 +54,61 @@
         Genetic algorithm evolving math<br>
         Press ESC to return to menu
     </div>
-    <div id="canvas"></div>
-    <script>
-        const W = 80, H = 48;
+    <div id="canvas"></div>    <script>
+        // Dynamic viewport sizing - responsive to window dimensions
+        let W, H;
+        let charWidth, charHeight;
         let t = 0;
+        
+        // Calculate optimal grid size based on viewport
+        function updateDimensions() {
+            // Get actual viewport dimensions
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Create accurate character measurement
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '8px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            // Calculate grid size with padding buffer
+            W = Math.ceil(viewportWidth / charWidth) + 2; // Extra columns
+            H = Math.ceil(viewportHeight / charHeight) + 2; // Extra rows
+            
+            // Ensure minimum viable grid
+            W = Math.max(40, W);
+            H = Math.max(20, H);
+            
+            // Calculate optimal font size for perfect fit
+            const optimalFontWidth = viewportWidth / W;
+            const optimalFontHeight = viewportHeight / H;
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = fontSize + 'px';
+            canvas.style.lineHeight = (fontSize * 1.0) + 'px';
+            
+            // Perfect positioning to eliminate gaps
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.margin = '0';
+            canvas.style.padding = '0';
+            
+            // Reallocate arrays for new dimensions
+            reallocateArrays();
+        }
         
         // Mathematical constants
         const phi = 1.618033988749895;
@@ -77,14 +133,15 @@
             
             // Dynamic functions cache
             functions: new Map(),
-            
-            // Mutation
+              // Mutation with viewport-aware parameters
             mutate() {
+                const scaleFactor = Math.sqrt(W * H) / 100;
+                
                 for (let gen of this.generators) {
-                    // Frequency drift
+                    // Frequency drift adapted to viewport size
                     const harmony = this.calculateHarmony();
-                    gen.freq += Math.sin(t * 0.0001 + harmony) * 0.000001;
-                    gen.freq = Math.max(0.001, Math.min(0.1, gen.freq));
+                    gen.freq += Math.sin(t * 0.0001 + harmony) * 0.000001 * scaleFactor;
+                    gen.freq = Math.max(0.001, Math.min(0.1 / scaleFactor, gen.freq));
                     
                     // Amplitude response to complexity
                     const complexity = this.calculateComplexity();
@@ -122,12 +179,16 @@
                 return complexity / this.generators.length;
             }
         };
+          // Field arrays - will be dynamically allocated
+        let field, memory, evolution, gradient;
         
-        // Field arrays
-        const field = new Float32Array(W * H);
-        const memory = new Float32Array(W * H);
-        const evolution = new Float32Array(W * H);
-        const gradient = new Float32Array(W * H * 2);
+        function reallocateArrays() {
+            const size = W * H;
+            field = new Float32Array(size);
+            memory = new Float32Array(size);
+            evolution = new Float32Array(size);
+            gradient = new Float32Array(size * 2);
+        }
         
         // Symbol sets for different complexity levels
         const symbols = [
@@ -136,27 +197,37 @@
             ['⊛', '⊜', '⊝', '◈', '◊', '◆', '▲', '△'],      // Consciousness
             ['✧', '✦', '✶', '✷', '✸', '✹', '✺', '❋']       // Transcendence
         ];
-        
-        // Generator functions
+        // Generator functions with proper centering
         function generateField(x, y, gen) {
-            const cx = W / 2;
-            const cy = H / 2;
+            // Perfect centering accounting for padding buffer
+            // Since we add +2 to W and H, we need to center on the actual visible grid
+            const actualW = W - 2; // Remove padding for centering calculation
+            const actualH = H - 2; // Remove padding for centering calculation
+            const cx = actualW / 2 + 1; // Add back 1 to account for 0-indexing + padding offset
+            const cy = actualH / 2 + 1; // Add back 1 to account for 0-indexing + padding offset
             const dx = x - cx;
             const dy = y - cy;
-            const r = Math.sqrt(dx*dx + dy*dy);
-            const theta = Math.atan2(dy, dx);
+            
+            // Perfect normalization using actual display dimensions
+            const normFactorX = actualW * 0.4; // Slightly larger factor for better spread
+            const normFactorY = actualH * 0.4; // Slightly larger factor for better spread
+            const nx = dx / normFactorX; // Normalized x in proper range
+            const ny = dy / normFactorY; // Normalized y in proper range
+            const r = Math.sqrt(nx*nx + ny*ny);
+            const theta = Math.atan2(ny, nx);
+            
+            // Scale factor for viewport adaptation
+            const scaleFactor = Math.sqrt(W * H) / 100;
             
             switch(gen.type) {
-                case 0: // wave
-                    return Math.sin(r * gen.freq + t * gen.freq * 10 + gen.phase) * gen.amp;
+                case 0: // wave - centered and scaled
+                    return Math.sin(r * gen.freq * scaleFactor + t * gen.freq * 10 + gen.phase) * gen.amp;
                     
-                case 1: // spiral
-                    return Math.sin(theta * 3 + r * gen.freq + t * gen.freq * 5 + gen.phase) * gen.amp;
+                case 1: // spiral - centered rotation
+                    return Math.sin(theta * 3 + r * gen.freq * scaleFactor + t * gen.freq * 5 + gen.phase) * gen.amp;
                     
-                case 2: // fractal
-                    const xi = dx / 20;
-                    const yi = dy / 20;
-                    let zr = xi, zi = yi;
+                case 2: // fractal - properly centered
+                    let zr = nx, zi = ny;
                     for (let i = 0; i < 4; i++) {
                         const temp = zr*zr - zi*zi + gen.freq;
                         zi = 2*zr*zi + gen.freq * 0.7;
@@ -165,12 +236,12 @@
                     }
                     return Math.atan2(zi, zr) * gen.amp;
                     
-                case 3: // quantum
-                    const prob = Math.exp(-r * gen.freq) * Math.sin(t * gen.freq * 8 + gen.phase);
+                case 3: // quantum - centered probability field
+                    const prob = Math.exp(-r * gen.freq * scaleFactor) * Math.sin(t * gen.freq * 8 + gen.phase);
                     return prob * gen.amp;
-                    
-                case 4: // neural
-                    const activation = Math.tanh((r - 25) * gen.freq + Math.sin(t * gen.freq * 6) + gen.phase);
+                      case 4: // neural - centered activation
+                    const centerDistance = r * scaleFactor;
+                    const activation = Math.tanh((centerDistance - 0.8) * gen.freq + Math.sin(t * gen.freq * 6) + gen.phase);
                     return activation * gen.amp;
             }
         }
@@ -190,19 +261,19 @@
             totalField += Math.sin(totalField * pi + t * 0.003) * 0.2;
             
             return { field: totalField, complexity };
-        }
-        
-        // Generate symbol from field properties
+        }        // Enhanced symbol generation with perfect centering
         function generateSymbol(intensity, gradMag, temporal, complexity) {
             const magnitude = Math.abs(intensity);
             const flow = gradMag;
             const change = Math.abs(temporal);
             const chaos = complexity % 1;
             
-            // Mathematical mapping to symbol space
-            const symbolSpace = magnitude + flow * 2 + change * 3 + chaos * 5;
+            // Perfect mathematical mapping with corrected viewport scaling
+            const actualSize = Math.sqrt((W-2) * (H-2)); // Use actual display area
+            const scaleFactor = actualSize / 100;
+            const symbolSpace = (magnitude + flow * 2 + change * 3 + chaos * 5) * scaleFactor * 0.5;
             
-            // Determine complexity level
+            // Determine complexity level with adaptive thresholds
             let level = 0;
             for (let i = 0; i < genome.thresholds.length; i++) {
                 if (symbolSpace >= genome.thresholds[i]) level = i + 1;
@@ -260,9 +331,7 @@
                     }
                 }
             }
-        }
-        
-        // Main render loop
+        }        // Enhanced render with perfect coverage and centering
         function render() {
             updateFields();
             
@@ -275,32 +344,67 @@
                 Math.sin(t * genome.generators[2].freq * 100 / phi)
             ) / 3 * 0.15 + 0.85;
             
-            for (let y = 0; y < H; y++) {
-                for (let x = 0; x < W; x++) {
-                    const idx = y * W + x;
+            // Perfect viewport coverage - render exactly what we see
+            const viewportCols = Math.ceil(window.innerWidth / (charWidth || 6));
+            const viewportRows = Math.ceil(window.innerHeight / (charHeight || 8));
+            const renderW = Math.min(W, viewportCols + 1); // Small buffer for smoothness
+            const renderH = Math.min(H, viewportRows + 1); // Small buffer for smoothness
+            
+            for (let y = 0; y < renderH; y++) {
+                for (let x = 0; x < renderW; x++) {
+                    // Safely access array with bounds checking
+                    const idx = Math.min(y * W + x, W * H - 1);
                     
-                    const intensity = field[idx] * breath;
-                    const gradMag = Math.sqrt(gradient[idx*2]**2 + gradient[idx*2+1]**2);
-                    const temporal = field[idx] - memory[idx];
-                    const complexity = evolution[idx];
+                    const intensity = (field[idx] || 0) * breath;
+                    const gradMag = Math.sqrt((gradient[idx*2] || 0)**2 + (gradient[idx*2+1] || 0)**2);
+                    const temporal = (field[idx] || 0) - (memory[idx] || 0);
+                    const complexity = evolution[idx] || 0;
                     
                     // Generate symbol from pure mathematics
                     const symbol = generateSymbol(intensity, gradMag, temporal, complexity);
-                    const colorClass = getColorClass(intensity, complexity, evolution[idx]);
+                    const colorClass = getColorClass(intensity, complexity, evolution[idx] || 0);
                     
                     output += `<span class="${colorClass}">${symbol}</span>`;
                 }
-                output += '\n';
+                if (y < renderH - 1) output += '\n';
             }
             
             document.getElementById('canvas').innerHTML = output;
             t++;
         }
         
-        function evolve() {
+        // Anti-equilibrium enhancement - prevent static patterns
+        function addDynamicChaos() {
+            const tau = t * 0.0001;
+            
+            // Inject controlled chaos to prevent stagnation
+            for (let i = 0; i < W * H; i++) {
+                if (Math.random() < 0.001) {
+                    field[i] += (Math.random() - 0.5) * 0.1;
+                }
+                
+                // Temporal wave injection
+                if (Math.sin(tau * 100 + i * 0.01) > 0.99) {
+                    evolution[i] += Math.random() * 0.05;
+                }
+            }
+        }
+          function evolve() {
             render();
+            addDynamicChaos(); // Prevent equilibrium
             requestAnimationFrame(evolve);
         }
+        
+        // Responsive event handling with immediate update
+        window.addEventListener('resize', () => {
+            setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
+        });
+        
+        // Initialize with dynamic sizing and ensure proper startup
+        setTimeout(() => {
+            updateDimensions();
+            evolve();
+        }, 50);
         
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
@@ -308,8 +412,6 @@
                 window.parent.postMessage('close', '*');
             }
         });
-        
-        evolve();
     </script>
 </body>
 </html>
