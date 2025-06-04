@@ -17,14 +17,23 @@
             line-height: 1.1;
             font-size: 10px;
         }
-        .c0 { color: #001100; }
-        .c1 { color: #223300; }
-        .c2 { color: #445500; }
-        .c3 { color: #667700; }
-        .c4 { color: #889900; }
-        .c5 { color: #aacc33; }
-        .c6 { color: #ccff66; }
-        .c7 { color: #eeffbb; }
+        /* Expanded color palette for smoother gradients */
+        .c0  { color: #001100; }
+        .c1  { color: #112200; }
+        .c2  { color: #223300; }
+        .c3  { color: #335500; }
+        .c4  { color: #447700; }
+        .c5  { color: #669900; }
+        .c6  { color: #77aa11; }
+        .c7  { color: #88bb22; }
+        .c8  { color: #99cc33; }
+        .c9  { color: #aacc33; }
+        .c10 { color: #bbdd66; }
+        .c11 { color: #ccee88; }
+        .c12 { color: #ddff99; }
+        .c13 { color: #eefeaa; }
+        .c14 { color: #eeffbb; }
+        .c15 { color: #f8ffdd; }
     </style>
 </head>
 <body>
@@ -56,9 +65,56 @@
             canvas.style.lineHeight = '10px';
         }
 
-        const symbols = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
+        /* Higher resolution symbol set */
+        const symbols = [' ', '.', ':', ';', '-', '=', '+', '*', 'o', 'O', '&', '8', '#', '%', '$', '@'];
+
+        /* Simplex-style gradient noise */
+        const perm = new Uint8Array(512);
+        for (let i = 0; i < 256; i++) perm[i] = i;
+        for (let i = 255; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [perm[i], perm[j]] = [perm[j], perm[i]];
+        }
+        for (let i = 0; i < 256; i++) perm[i + 256] = perm[i];
+
+        function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+        function lerp(a, b, t) { return a + t * (b - a); }
+        function grad(hash, x, y) {
+            const h = hash & 3;
+            return ((h & 1) ? -x : x) + ((h & 2) ? -y : y);
+        }
+        function noise(x, y) {
+            const X = Math.floor(x) & 255;
+            const Y = Math.floor(y) & 255;
+            x -= Math.floor(x);
+            y -= Math.floor(y);
+            const u = fade(x);
+            const v = fade(y);
+            const A = perm[X] + Y;
+            const AA = perm[A];
+            const AB = perm[A + 1];
+            const B = perm[X + 1] + Y;
+            const BA = perm[B];
+            const BB = perm[B + 1];
+            return lerp(
+                lerp(grad(perm[AA], x, y), grad(perm[BA], x - 1, y), u),
+                lerp(grad(perm[AB], x, y - 1), grad(perm[BB], x - 1, y - 1), u),
+                v
+            );
+        }
+
+        function fbm(x, y) {
+            let total = 0, amplitude = 0.5, freq = 1;
+            for (let i = 0; i < 4; i++) {
+                total += amplitude * noise(x * freq, y * freq);
+                freq *= 2;
+                amplitude *= 0.5;
+            }
+            return total;
+        }
         function render() {
             let out = '';
+            const tOff = t * 0.02;
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
                     const dx = x - W / 2;
@@ -68,10 +124,14 @@
                     const fall = Math.cos(dy * 0.1 - t * 0.03);
                     const ripple = Math.sin((dx + dy) * 0.07 + t * 0.02);
 
-                    let val = (rise + fall + ripple) / 6 + 0.5;
+                    const nx = x * 0.08;
+                    const ny = y * 0.08;
+                    const noiseVal = (fbm(nx + tOff, ny - tOff) + 1) / 2;
+
+                    let val = ((rise + fall + ripple) / 6 + 0.5 + noiseVal) / 2;
                     val = Math.max(0, Math.min(1, val));
                     const idx = Math.floor(val * (symbols.length - 1));
-                    const colorIdx = Math.floor(val * 7.999);
+                    const colorIdx = Math.floor(val * 15.999);
                     out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
                 }
                 out += '\n';
