@@ -54,6 +54,7 @@
         ESC ◦ ↩
     </div>
     <div id="display"></div>    <script>
+        const display = document.getElementById('display');
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
@@ -87,7 +88,6 @@
             W = Math.max(40, W);
             H = Math.max(20, H);
             
-            const display = document.getElementById('display');
             display.style.fontSize = '8px';
             display.style.lineHeight = '8px';
         }
@@ -218,7 +218,7 @@
                 output += '\n';
             }
             
-            document.getElementById('display').innerHTML = output;
+            display.innerHTML = output;
         }
         
         function loop() {

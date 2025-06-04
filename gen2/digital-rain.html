@@ -32,6 +32,7 @@
 <body>
     <div id="canvas"></div>
     <script>
+        const canvas = document.getElementById('canvas');
         let W, H;
         let charWidth, charHeight;
         // Each column holds current drop position and speed
@@ -55,7 +56,6 @@
             W = Math.ceil(window.innerWidth / charWidth) + 1;
             H = Math.ceil(window.innerHeight / charHeight) + 1;
 
-            const canvas = document.getElementById('canvas');
             canvas.style.fontSize = '10px';
             canvas.style.lineHeight = '10px';
 
@@ -68,6 +68,7 @@
         }
 
         const symbols = 'abcdefghijklmnopqrstuvwxyz0123456789@#$%&'.split('');
+        const symbolCount = symbols.length;
         function render() {
             let out = '';
             for (let y = 0; y < H; y++) {
@@ -75,7 +76,7 @@
                     const column = columns[x];
                     const drop = column.pos - y;
                     if (drop > 0 && drop < trailLength) {
-                        const idx = Math.floor(Math.random() * symbols.length);
+                    const idx = Math.floor(Math.random() * symbolCount);
                         const intensity = 1 - drop / trailLength;
                         const colorIdx = Math.floor(intensity * 9);
                         out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
@@ -85,7 +86,7 @@
                 }
                 out += '\n';
             }
-            document.getElementById('canvas').innerHTML = out;
+            canvas.innerHTML = out;
             for (let column of columns) {
                 column.pos += column.speed;
                 if (column.pos > H + trailLength) {
