@@ -324,7 +324,9 @@
             } else {
                 document.exitFullscreen?.();
             }
-        }        function about() {
+        }
+
+        function about() {
             alert('∞ ◉ ∞\n\n⟨ ☰∿☰ ⟩\n\n◦ ∫∂∇\n◦ ⧖→∞  \n◦ ◎js◎html5\n\n⟨ ESC ◦ × ⟩');
         }
 
@@ -332,10 +334,10 @@
             if (e.data === 'close') close_viz();
         });
 
+        const keyActions = { escape: close_viz, r: random_viz, f: toggle_fs };
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') close_viz();
-            else if (e.key === 'r' || e.key === 'R') random_viz();
-            else if (e.key === 'f' || e.key === 'F') toggle_fs();
+            const action = keyActions[e.key.toLowerCase()];
+            if (action) action();
         });
 
         // Prevent zoom on double tap
