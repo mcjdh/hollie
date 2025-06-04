@@ -1,211 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>✦ ✦∞✦</title>
-    <style>        body {
-            margin:0;
-            overflow:hidden;
-            background:black;
-            width:100vw;
-            height:100vh;
+    <title>∞ ⋆∞⋆</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: #000; 
+            overflow: hidden; 
+            width: 100vw; 
+            height: 100vh; 
+            font-family: 'Courier New', monospace;
         }
-        #canvas {
-            display:block;
-            width:100vw;
-            height:100vh;
+        #display { 
+            font-family: 'Courier New', monospace; 
+            color: #64ffda; 
+            white-space: pre; 
+            padding: 0; 
+            margin: 0;
+            width: 100vw; 
+            height: 100vh; 
+            background: #000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            line-height: 1.0;
+            overflow: hidden;
+            font-size: 8px;
         }
+        .v{color:#64ffda} .u{color:#0ff} .s{color:#ff0} .e{color:#0f0} .m{color:#f80}
+        .t{color:#f44} .q{color:#84f} .d{color:#48f} .w{color:#fff} .c{color:#8ff}
+        .g{color:#4f4} .y{color:#ff4} .r{color:#f44} .p{color:#f8f} .b{color:#44f}
+        .o{color:#fa0} .a{color:#aaa} .f{color:#f88} .n{color:#8f8} .l{color:#88f}
+        
         .info {
-            position:fixed;
-            top:10px;
-            left:10px;
-            color:#0f0;
-            font-family:'Courier New', monospace;
-            background:rgba(0,0,0,0.5);
-            padding:5px 10px;
-            border-radius:5px;
-            font-size:14px;
-        }
-    </style>
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #64ffda;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }    </style>
 </head>
 <body>
-    <div class="info">✦∞✦ &mdash; ESC ◦ ↩</div>
-    <canvas id="canvas"></canvas>    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, centerX, centerY;
-        let time = 0;
+    <div class="info">
+        ∞ ⋆∞⋆<br>
+        ∇×E = -∂B/∂t<br>
+        ESC ◦ ↩
+    </div>
+    <div id="display"></div>    <script>
+        // Dynamic viewport sizing - responsive to window dimensions
+        let W, H;
+        let charWidth, charHeight;
+        let t = 0;
         
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            centerX = width / 2;
-            centerY = height / 2;
+        // Calculate optimal grid size based on viewport
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
             
-            // Reinitialize stars when window resizes
-            initializeStars();
+            // Create character measurement
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '8px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = '⋆'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            // Calculate grid size
+            W = Math.ceil(viewportWidth / charWidth) + 2;
+            H = Math.ceil(viewportHeight / charHeight) + 2;
+            
+            W = Math.max(40, W);
+            H = Math.max(20, H);
+            
+            const display = document.getElementById('display');
+            display.style.fontSize = '8px';
+            display.style.lineHeight = '8px';
         }
-          window.addEventListener('resize', resize);
         
-        let stars = [];
+        // Mathematical constants
+        const phi = 1.618033988749895;  // Golden ratio
+        const e = 2.718281828459045;
+        const pi = 3.141592653589793;
+        const sqrt2 = 1.4142135623730951;
         
-        function initializeStars() {
-            const starCount = Math.floor((width * height) / 2000); // Dynamic star count based on screen size
-            stars = [];
+        // Stellar field arrays
+        let field, velocity, density, luminosity;
+        
+        function initializeFields() {
+            const size = W * H;
+            field = new Float32Array(size);        // Gravitational field
+            velocity = new Float32Array(size);     // Stellar motion
+            density = new Float32Array(size);      // Star density
+            luminosity = new Float32Array(size);   // Brightness field
             
-            for (let i = 0; i < starCount; i++) {
-                stars.push({
-                    x: (Math.random() - 0.5) * width * 2,
-                    y: (Math.random() - 0.5) * height * 2,
-                    z: Math.random() * width + 1,
-                    originalZ: 0,
-                    color: {
-                        r: 200 + Math.random() * 55,
-                        g: 200 + Math.random() * 55,
-                        b: 200 + Math.random() * 55
-                    },
-                    twinkle: Math.random() * Math.PI * 2,
-                    speed: 0.5 + Math.random() * 1.5                });
+            // Initialize with quantum noise
+            for (let i = 0; i < size; i++) {
+                field[i] = (Math.random() - 0.5) * 0.1;
+                velocity[i] = (Math.random() - 0.5) * 0.05;
+                density[i] = Math.random() * 0.3;
+                luminosity[i] = Math.random();
             }
         }
         
-        resize();
+        // Stellar symbols - mathematical progression
+        const starSymbols = [
+            '·', '∘', '○', '●', '⋆', '✦', '✧', '✩', '✪', '✫', '⭐',
+            '∗', '∙', '⁂', '※', '⊙', '⊚', '⊛', '⊜', '⊝',
+            '∞', '∅', '∩', '∪', '⊕', '⊗', '⊙', '⊛'
+        ];
+        
+        const colorClasses = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
+        
+        // Stellar field equations
+        function stellarField(x, y, time) {
+            const xi = (x - W/2) / (W/4);
+            const yi = (y - H/2) / (H/4);
+            const r = Math.sqrt(xi*xi + yi*yi);
+            
+            // Gravitational wave equation
+            const wave1 = Math.sin(r * 3 - time * 2) * Math.exp(-r * 0.5);
+            const wave2 = Math.cos(r * 5 + time * 1.5) * Math.exp(-r * 0.3);
+            const wave3 = Math.sin(xi * 7 + yi * 11 - time * 3) * 0.3;
+            
+            // Stellar density modulation
+            const density = (wave1 + wave2 * 0.7 + wave3) * 0.5 + 0.5;
+            
+            // Doppler shift simulation
+            const velocity = Math.sin(r * 2 - time) * 0.3;
+            
+            return { density, velocity, phase: r * 3 - time * 2 };
+        }
+        
         function update() {
-            time += 0.01;
+            t += 0.02;
             
-            // Dynamic speed variation
-            const baseSpeed = 2 + Math.sin(time * 0.5) * 1;
-            const warpEffect = Math.sin(time * 0.3) * 0.5 + 1;
-            
-            for (const s of stars) {
-                // Individual star speed with base speed modification
-                s.z -= baseSpeed * s.speed * warpEffect;
-                
-                // Update twinkle animation
-                s.twinkle += 0.1;
-                
-                // Anti-equilibrium: slight movement perpendicular to motion
-                const chaos = Math.sin(time * 2 + s.x * 0.01) * 0.2;
-                s.x += chaos;
-                s.y += Math.cos(time * 1.7 + s.y * 0.01) * 0.15;
-                
-                // Reset star when it reaches the viewer
-                if (s.z <= 0) {
-                    s.x = (Math.random() - 0.5) * width * 2;
-                    s.y = (Math.random() - 0.5) * height * 2;
-                    s.z = width + Math.random() * width;
-                    s.speed = 0.5 + Math.random() * 1.5;
-                    s.twinkle = Math.random() * Math.PI * 2;
+            // Update stellar field
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const idx = y * W + x;
+                    const stellar = stellarField(x, y, t);
                     
-                    // Occasionally change color for variety
-                    if (Math.random() < 0.1) {
-                        s.color = {
-                            r: 150 + Math.random() * 105,
-                            g: 150 + Math.random() * 105,
-                            b: 150 + Math.random() * 105
-                        };
+                    // Field evolution with memory
+                    field[idx] = field[idx] * 0.95 + stellar.density * 0.05;
+                    velocity[idx] = velocity[idx] * 0.98 + stellar.velocity * 0.02;
+                    
+                    // Non-linear coupling
+                    const coupling = Math.sin(stellar.phase) * field[idx];
+                    density[idx] = Math.max(0, Math.min(1, 
+                        density[idx] * 0.97 + coupling * 0.03
+                    ));
+                    
+                    // Luminosity with twinkling
+                    const twinkle = Math.sin(t * 5 + x * 0.1 + y * 0.07) * 0.2 + 0.8;
+                    luminosity[idx] = density[idx] * twinkle;
+                }
+            }
+        }
+        
+        function render() {
+            let output = '';
+            
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const idx = y * W + x;
+                    const intensity = luminosity[idx];
+                    const motion = velocity[idx];
+                    
+                    if (intensity > 0.7) {
+                        // Bright stars - complex symbols
+                        const symbolIdx = Math.floor(intensity * starSymbols.length * 0.8) + 
+                                        Math.floor(starSymbols.length * 0.2);
+                        const colorIdx = Math.floor((intensity + motion * 0.5) * colorClasses.length);
+                        const symbol = starSymbols[Math.min(symbolIdx, starSymbols.length - 1)];
+                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorClasses.length - 1)];
+                        output += `<span class="${colorClass}">${symbol}</span>`;
+                    } else if (intensity > 0.4) {
+                        // Medium stars
+                        const symbolIdx = Math.floor(intensity * starSymbols.length * 0.5);
+                        const colorIdx = Math.floor(intensity * colorClasses.length * 0.7);
+                        const symbol = starSymbols[Math.min(symbolIdx, starSymbols.length - 1)];
+                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorClasses.length - 1)];
+                        output += `<span class="${colorClass}">${symbol}</span>`;
+                    } else if (intensity > 0.2) {
+                        // Dim stars
+                        const symbol = starSymbols[Math.floor(intensity * 5)];
+                        output += `<span class="l">${symbol}</span>`;
+                    } else {
+                        // Empty space with occasional cosmic background
+                        if (Math.random() < 0.001) {
+                            output += '<span class="l">∘</span>';
+                        } else {
+                            output += ' ';
+                        }
                     }
                 }
-            }
-        }        
-        function render() {
-            // Clear with fade effect for star trails
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(0, 0, width, height);
-            
-            // Deep space background with subtle gradient
-            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height));
-            gradient.addColorStop(0, 'rgba(5, 5, 20, 0.02)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0.05)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            // Sort stars by distance for proper rendering order
-            stars.sort((a, b) => b.z - a.z);
-            
-            for (const s of stars) {
-                const k = 128 / s.z;
-                const x = centerX + s.x * k;
-                const y = centerY + s.y * k;
-                
-                // Skip stars outside viewport
-                if (x < -10 || x > width + 10 || y < -10 || y > height + 10) continue;
-                
-                // Calculate star properties
-                const distance = s.z / width;
-                const size = (1 - distance) * 4 + 0.5;
-                const brightness = (1 - distance) * 0.9 + 0.1;
-                
-                // Twinkling effect
-                const twinkle = Math.sin(s.twinkle) * 0.3 + 0.7;
-                const finalBrightness = brightness * twinkle;
-                
-                // Motion blur effect for fast-moving stars
-                const speed = s.speed * (2 + Math.sin(time * 0.5) * 1);
-                if (distance < 0.3 && speed > 2) {
-                    // Draw motion trail
-                    ctx.beginPath();
-                    const trailLength = (1 - distance) * 20;
-                    const prevX = centerX + s.x * (128 / (s.z + speed * 2));
-                    const prevY = centerY + s.y * (128 / (s.z + speed * 2));
-                    
-                    const gradient = ctx.createLinearGradient(prevX, prevY, x, y);
-                    gradient.addColorStop(0, `rgba(${s.color.r}, ${s.color.g}, ${s.color.b}, 0)`);
-                    gradient.addColorStop(1, `rgba(${s.color.r}, ${s.color.g}, ${s.color.b}, ${finalBrightness})`);
-                    
-                    ctx.strokeStyle = gradient;
-                    ctx.lineWidth = size * 0.5;
-                    ctx.moveTo(prevX, prevY);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                }
-                
-                // Draw star
-                const alpha = finalBrightness;
-                ctx.fillStyle = `rgba(${s.color.r}, ${s.color.g}, ${s.color.b}, ${alpha})`;
-                
-                // Different rendering based on distance
-                if (distance < 0.2) {
-                    // Close stars: draw with glow effect
-                    ctx.beginPath();
-                    const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
-                    glowGradient.addColorStop(0, `rgba(${s.color.r}, ${s.color.g}, ${s.color.b}, ${alpha})`);
-                    glowGradient.addColorStop(0.5, `rgba(${s.color.r}, ${s.color.g}, ${s.color.b}, ${alpha * 0.5})`);
-                    glowGradient.addColorStop(1, `rgba(${s.color.r}, ${s.color.g}, ${s.color.b}, 0)`);
-                    ctx.fillStyle = glowGradient;
-                    ctx.arc(x, y, size * 2, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Core
-                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-                    ctx.fillRect(x - size/2, y - size/2, size, size);
-                } else {
-                    // Distant stars: simple points
-                    ctx.fillRect(x - size/2, y - size/2, size, size);
-                }
+                output += '\n';
             }
             
-            // Add some cosmic dust/nebula effects
-            if (Math.random() < 0.003) {
-                const dustX = Math.random() * width;
-                const dustY = Math.random() * height;
-                const dustSize = Math.random() * 3 + 1;
-                const dustAlpha = Math.random() * 0.1;
-                
-                ctx.fillStyle = `rgba(100, 50, 150, ${dustAlpha})`;
-                ctx.beginPath();
-                ctx.arc(dustX, dustY, dustSize, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }        
+            document.getElementById('display').innerHTML = output;
+        }
+        
         function loop() {
             update();
             render();
             requestAnimationFrame(loop);
         }
         
-        // Initialize stars after setup
-        initializeStars();
+        // Initialize
+        window.addEventListener('resize', () => {
+            updateDimensions();
+            initializeFields();
+        });
+        
+        updateDimensions();
+        initializeFields();
         loop();
 
         document.addEventListener('keydown', (e) => {

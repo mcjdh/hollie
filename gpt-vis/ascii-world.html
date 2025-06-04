@@ -2,69 +2,330 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ASCII World Generation</title>
+    <title>◊ Living Paradox World ∞</title>
     <style>
-        body { margin:0; overflow:hidden; background:#000; }
-        #display {
-            font-family:'Courier New',monospace;
-            font-size:8px;
-            line-height:10px;
-            white-space:pre;
-            color:#0ff;
-            padding:0; margin:0;
-            width:640px; height:480px;
-            margin:auto;
-            margin-top:50px;
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
         }
-        .water { color:#08f; }
-        .light { color:#ff0; }
-        .earth { color:#0f0; }
+        #canvas {
+            white-space: pre;
+            font-feature-settings: 'kern' 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            line-height: 1.0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        /* Life state colors */
+        .void { color: #111111; } .dust { color: #333333; } .spark { color: #555555; }
+        .seed { color: #777777; } .grow { color: #22aa22; } .bloom { color: #44cc44; }
+        .flow { color: #2288bb; } .dream { color: #6644aa; } .think { color: #aa4466; }
+        .love { color: #ffaa44; } .birth { color: #ff6666; } .death { color: #884444; }
+        .rebirth { color: #66ff88; } .wisdom { color: #ccccff; } .transcend { color: #ffffff; }
+        
+        .info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #64ffda;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
     </style>
 </head>
 <body>
-    <div class="info" style="position:fixed;top:10px;left:10px;color:#64ffda;font-family:'Courier New',monospace;background:rgba(0,0,0,0.7);padding:10px;border-radius:5px;border:1px solid rgba(100,255,218,0.3);font-size:12px;">
-        ASCII World Generation &mdash; press ESC to close
+    <div class="info">
+        ◊ Living Paradox World ∞<br>
+        0=1 → ∞=0 → Life<br>
+        ESC ◦ ↩
     </div>
-    <div id="display"></div>
+    <div id="canvas"></div>
+    
     <script>
-        const W = 80, H = 48;
+        // Dynamic viewport and world parameters
+        let W, H;
+        let charWidth, charHeight;
         let t = 0;
-        const stageDur = 400; // frames per stage
-
-        function symbol(x, y, stage) {
-            if (stage === 0) return ' ';
-            let ch = ' ';
-            let cls = '';
-            if (stage >= 1) { // water
-                const waterLevel = H*0.6 + Math.sin(x*0.3 + t*0.05)*2;
-                if (y > waterLevel) { ch = '~'; cls = 'water'; }
-            }
-            if (stage >= 2) { // light / stars
-                if (Math.random() < 0.02) { ch = '*'; cls = 'light'; }
-            }
-            if (stage >= 3) { // earth
-                if (y > H*0.8 + Math.sin(x*0.2)*2) { ch = '#'; cls = 'earth'; }
-            }
-            return cls ? `<span class="${cls}">${ch}</span>` : ch;
+        
+        // Calculate optimal grid dimensions
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Character measurement for perfect fit
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '8px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            W = Math.ceil(viewportWidth / charWidth) + 2;
+            H = Math.ceil(viewportHeight / charHeight) + 2;
+            W = Math.max(60, W);
+            H = Math.max(30, H);
+            
+            const optimalFontWidth = viewportWidth / W;
+            const optimalFontHeight = viewportHeight / H;
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = fontSize + 'px';
+            canvas.style.lineHeight = (fontSize * 1.0) + 'px';
+            
+            reallocateLife();
         }
-
-        function render() {
-            t++;
-            const stage = Math.floor(t / stageDur);
-            let out = '';
-            for (let y=0; y<H; y++) {
-                for (let x=0; x<W; x++) {
-                    out += symbol(x, y, stage);
+        
+        // Paradox constants - where contradiction creates emergence
+        const phi = 1.618033988749895;  // Golden ratio
+        const e = 2.718281828459045;    // Natural constant
+        const pi = 3.141592653589793;   // Circle constant
+        const zeno = 0.5;               // Zeno's paradox seed
+        
+        // Living world data structures
+        let lifeField, consciousness, memory, paradox;
+        
+        function reallocateLife() {
+            const size = W * H;
+            lifeField = new Float32Array(size);
+            consciousness = new Float32Array(size);
+            memory = new Float32Array(size);
+            paradox = new Float32Array(size);
+            
+            // Initialize with paradox seeds
+            for (let i = 0; i < size; i++) {
+                paradox[i] = Math.random() - 0.5;
+            }
+        }
+        
+        // Paradox math: where 0=1 creates infinite possibility
+        function paradoxFunction(x, y, t) {
+            const cx = W / 2;
+            const cy = H / 2;
+            const dx = x - cx;
+            const dy = y - cy;
+            const r = Math.sqrt(dx*dx + dy*dy);
+            const theta = Math.atan2(dy, dx);
+            
+            // The fundamental paradox: division by zero creates infinity
+            const zeroOne = Math.sin(t * 0.01) * 0.001 + 0.001; // Never quite zero
+            const infinity = 1 / zeroOne; // Approaches infinity
+            
+            // Zeno's paradox: infinite steps in finite time
+            let zenoSum = 0;
+            let step = 1;
+            for (let i = 0; i < 20; i++) {
+                zenoSum += step;
+                step *= zeno; // Each step is half the previous
+            }
+            
+            // Schrödinger's equation: superposition of states
+            const alive = Math.sin(r * 0.1 + t * 0.03 + theta);
+            const dead = Math.cos(r * 0.1 + t * 0.03 - theta);
+            const superposition = (alive + dead) / Math.sqrt(2);
+            
+            // Gödel incompleteness: self-reference creates emergence
+            const selfRef = Math.sin(infinity * 0.0001 + zenoSum * 0.1 + superposition);
+            
+            return {
+                life: superposition * Math.sin(t * 0.02 + r * 0.05),
+                consciousness: selfRef * Math.cos(t * 0.01 + theta * 3),
+                paradox: infinity * 0.0001 + zenoSum * 0.01,
+                emergence: (alive * dead) / (Math.abs(alive * dead) + 0.001)
+            };
+        }
+        
+        // Life symbols representing different states of emergence
+        const lifeSymbols = {
+            void: [' ', '·', '°'],
+            matter: ['·', '◦', '○', '●'],
+            plant: ['·', '♦', '♠', '♣', '♥', '✦', '✧'],
+            animal: ['○', '◊', '◈', '◇', '⬡', '⬢', '⬣'],
+            mind: ['●', '◆', '◉', '⊙', '⊚', '⊛', '⊜'],
+            soul: ['✦', '✧', '✩', '✪', '✫', '✬', '✭'],
+            god: ['◊', '◈', '◇', '♦', '♠', '♣', '♥'],
+            transcend: ['∞', '∂', '∇', '∫', '∑', '∏', '√']
+        };
+        
+        // Determine life state from field values
+        function getLifeState(life, consciousness, memory, paradoxVal) {
+            const intensity = Math.abs(life) + Math.abs(consciousness) * 0.7 + memory * 0.3;
+            const complexity = Math.abs(paradoxVal) + Math.abs(life * consciousness);
+            
+            if (intensity < 0.1) return 'void';
+            if (intensity < 0.3) return 'matter';
+            if (complexity < 0.5) return 'plant';
+            if (consciousness > 0.3) return 'mind';
+            if (memory > 0.5) return 'soul';
+            if (paradoxVal > 1.0) return 'god';
+            if (intensity > 1.5) return 'transcend';
+            return 'animal';
+        }
+        
+        // Color class based on life complexity
+        function getLifeColor(state, life, consciousness) {
+            const stateColors = {
+                void: ['void', 'dust', 'spark'],
+                matter: ['dust', 'spark', 'seed'],
+                plant: ['seed', 'grow', 'bloom'],
+                animal: ['flow', 'dream', 'think'],
+                mind: ['think', 'love', 'birth'],
+                soul: ['love', 'birth', 'death'],
+                god: ['death', 'rebirth', 'wisdom'],
+                transcend: ['wisdom', 'transcend', 'transcend']
+            };
+            
+            const colors = stateColors[state] || stateColors.void;
+            const phase = Math.abs(life + consciousness) * 2;
+            const index = Math.floor(phase) % colors.length;
+            return colors[index];
+        }
+        
+        // Get symbol from life state
+        function getLifeSymbol(state, life, consciousness, time) {
+            const symbols = lifeSymbols[state] || lifeSymbols.void;
+            const animation = Math.sin(time * 0.05 + life * 10 + consciousness * 8);
+            const index = Math.floor((animation + 1) * symbols.length / 2) % symbols.length;
+            return symbols[index];
+        }
+        
+        // Update world with emergent life
+        function updateWorld() {
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const idx = y * W + x;
+                    
+                    // Calculate paradox-based field
+                    const result = paradoxFunction(x, y, t);
+                    
+                    // Evolve life field with memory
+                    lifeField[idx] = lifeField[idx] * 0.9 + result.life * 0.1;
+                    consciousness[idx] = consciousness[idx] * 0.95 + result.consciousness * 0.05;
+                    memory[idx] = memory[idx] * 0.99 + Math.abs(lifeField[idx]) * 0.01;
+                    paradox[idx] = paradox[idx] * 0.8 + result.paradox * 0.2;
+                    
+                    // Emergence through neighbor interaction
+                    if (x > 0 && x < W-1 && y > 0 && y < H-1) {
+                        let neighborSum = 0;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                if (dx === 0 && dy === 0) continue;
+                                const nIdx = (y + dy) * W + (x + dx);
+                                neighborSum += lifeField[nIdx] || 0;
+                            }
+                        }
+                        
+                        // Conway-like rules but with continuous values
+                        const avgNeighbor = neighborSum / 8;
+                        const currentLife = lifeField[idx];
+                        
+                        // Birth: empty space with active neighbors
+                        if (Math.abs(currentLife) < 0.1 && Math.abs(avgNeighbor) > 0.3) {
+                            lifeField[idx] += avgNeighbor * 0.1;
+                        }
+                        
+                        // Growth: moderate life with good neighbors
+                        if (Math.abs(currentLife) > 0.1 && Math.abs(currentLife) < 0.8) {
+                            lifeField[idx] += avgNeighbor * 0.05;
+                        }
+                        
+                        // Death: overcrowding or isolation
+                        if (Math.abs(avgNeighbor) > 1.2 || Math.abs(avgNeighbor) < 0.05) {
+                            lifeField[idx] *= 0.95;
+                        }
+                    }
                 }
-                out += '\n';
             }
-            document.getElementById('display').innerHTML = out;
-            requestAnimationFrame(render);
         }
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') window.parent.postMessage('close','*');
+        
+        // Render the living world
+        function render() {
+            updateWorld();
+            
+            const viewportCols = Math.ceil(window.innerWidth / (charWidth || 6));
+            const viewportRows = Math.ceil(window.innerHeight / (charHeight || 8));
+            const renderW = Math.min(W, viewportCols + 1);
+            const renderH = Math.min(H, viewportRows + 1);
+            
+            let output = '';
+            
+            for (let y = 0; y < renderH; y++) {
+                for (let x = 0; x < renderW; x++) {
+                    const idx = Math.min(y * W + x, W * H - 1);
+                    
+                    const life = lifeField[idx] || 0;
+                    const cons = consciousness[idx] || 0;
+                    const mem = memory[idx] || 0;
+                    const para = paradox[idx] || 0;
+                    
+                    const state = getLifeState(life, cons, mem, para);
+                    const color = getLifeColor(state, life, cons);
+                    const symbol = getLifeSymbol(state, life, cons, t + idx);
+                    
+                    output += `<span class="${color}">${symbol}</span>`;
+                }
+                if (y < renderH - 1) output += '\n';
+            }
+            
+            document.getElementById('canvas').innerHTML = output;
+            t++;
+        }
+        
+        // Evolution loop
+        function evolve() {
+            render();
+            
+            // Inject random paradox seeds to prevent stagnation
+            if (t % 500 === 0) {
+                for (let i = 0; i < 10; i++) {
+                    const idx = Math.floor(Math.random() * W * H);
+                    paradox[idx] += (Math.random() - 0.5) * 0.5;
+                }
+            }
+            
+            requestAnimationFrame(evolve);
+        }
+        
+        // Initialize
+        window.addEventListener('resize', () => {
+            setTimeout(updateDimensions, 100);
         });
-        render();
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.parent.postMessage('close', '*');
+            }
+        });
+        
+        setTimeout(() => {
+            updateDimensions();
+            evolve();
+        }, 50);
     </script>
 </body>
 </html>
