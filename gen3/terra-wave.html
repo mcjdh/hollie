@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Terra Wave</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #001100; }
+        .c1 { color: #223300; }
+        .c2 { color: #445500; }
+        .c3 { color: #667700; }
+        .c4 { color: #889900; }
+        .c5 { color: #aacc33; }
+        .c6 { color: #ccff66; }
+        .c7 { color: #eeffbb; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        let t = 0;
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        const symbols = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
+        function render() {
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const dx = x - W / 2;
+                    const dy = y - H / 2;
+
+                    const rise = Math.sin(dx * 0.1 + t * 0.03);
+                    const fall = Math.cos(dy * 0.1 - t * 0.03);
+                    const ripple = Math.sin((dx + dy) * 0.07 + t * 0.02);
+
+                    let val = (rise + fall + ripple) / 6 + 0.5;
+                    val = Math.max(0, Math.min(1, val));
+                    const idx = Math.floor(val * (symbols.length - 1));
+                    const colorIdx = Math.floor(val * 7.999);
+                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
+                }
+                out += '\n';
+            }
+            document.getElementById('canvas').innerHTML = out;
+            t += 1;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', updateDimensions);
+        updateDimensions();
+        render();
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && window.parent !== window) {
+                window.parent.postMessage('close', '*');
+            }
+        });
+    </script>
+</body>
+</html>
