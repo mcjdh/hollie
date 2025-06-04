@@ -128,7 +128,7 @@
         
         // Enhanced temporal field updates with viewport scaling
         function updateFields() {
-            const τ = t * 0.02;
+            const tau = t * 0.02;
             const scaleFactor = Math.sqrt(W * H) / 100; // Viewport adaptation
             
             for (let y = 0; y < H; y++) {
@@ -140,25 +140,25 @@
                     
                     // Enhanced temporal waves with viewport scaling
                     // Low frequency temporal wave - deep time rhythms
-                    const slow = Math.sin(nx * 3 * scaleFactor + τ * 0.5) * Math.cos(ny * 2.5 * scaleFactor - τ * 0.3);
+                    const slow = Math.sin(nx * 3 * scaleFactor + tau * 0.5) * Math.cos(ny * 2.5 * scaleFactor - tau * 0.3);
                     
                     // Mid frequency resonance - consciousness oscillations with harmonics
-                    const mid = Math.sin((nx + ny) * 5 * scaleFactor + τ * 1.2) * 0.7;
-                    const harmonicMid = Math.cos((nx - ny) * 3 * scaleFactor + τ * 0.8) * 0.3;
+                    const mid = Math.sin((nx + ny) * 5 * scaleFactor + tau * 1.2) * 0.7;
+                    const harmonicMid = Math.cos((nx - ny) * 3 * scaleFactor + tau * 0.8) * 0.3;
                     
                     // High frequency echo - temporal reflections with golden ratio
-                    const φ = 1.618033988749895;
-                    const fast = Math.sin(r * 12 * scaleFactor - τ * 2.5) * 0.5;
-                    const fastHarmonic = Math.cos(r * 8 * scaleFactor / φ - τ * 1.8) * 0.2;
+                    const phi = 1.618033988749895;
+                    const fast = Math.sin(r * 12 * scaleFactor - tau * 2.5) * 0.5;
+                    const fastHarmonic = Math.cos(r * 8 * scaleFactor / phi - tau * 1.8) * 0.2;
                     
                     // Enhanced circular wave - time ripples from center with depth
-                    const ripple = Math.sin((r * 15 * scaleFactor - τ * 3) * Math.PI) * (1 - r);
-                    const deepRipple = Math.cos((r * 9 * scaleFactor - τ * 2.2) * Math.PI) * (1 - r * 0.7) * 0.4;                    
+                    const ripple = Math.sin((r * 15 * scaleFactor - tau * 3) * Math.PI) * (1 - r);
+                    const deepRipple = Math.cos((r * 9 * scaleFactor - tau * 2.2) * Math.PI) * (1 - r * 0.7) * 0.4;
                     // Enhanced temporal interference pattern with multiple layers
                     const interference = slow + (mid + harmonicMid) + (fast + fastHarmonic) + (ripple + deepRipple);
                     
                     // Temporal quantum fluctuations - uncertainty in time itself
-                    const quantum = Math.sin(τ * 15 + i * 0.01) * 0.05;
+                    const quantum = Math.sin(tau * 15 + i * 0.01) * 0.05;
                     
                     // Update fields with enhanced temporal persistence and cross-coupling
                     temporal[i] = temporal[i] * 0.94 + (interference + quantum) * 0.06;
@@ -166,7 +166,7 @@
                     
                     // Enhanced memory trace - past states bleeding through with temporal decay
                     if (Math.random() < 0.01 * scaleFactor) {
-                        memory[i] = temporal[i] + Math.sin(τ * 7) * 0.1;
+                        memory[i] = temporal[i] + Math.sin(tau * 7) * 0.1;
                     } else {
                         memory[i] *= 0.999;
                     }
