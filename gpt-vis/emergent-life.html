@@ -28,10 +28,10 @@
 <body>
     <div class="info">Emergent Life &mdash; press ESC to close</div>
     <canvas id="canvas"></canvas>
-    <script>
-        const canvas = document.getElementById('canvas');
+    <script>        const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
+        
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
@@ -40,59 +40,145 @@
         resize();
 
         const gridSize = 120;
-        let cellSize = Math.floor(Math.min(width, height) / gridSize);
-        if (cellSize < 2) cellSize = 2;
-        canvas.width = cellSize * gridSize;
-        canvas.height = cellSize * gridSize;
-
-        let grid = new Float32Array(gridSize * gridSize).map(() => Math.random());
+        let cellWidth, cellHeight;
+        
+        function updateCellSize() {
+            cellWidth = width / gridSize;
+            cellHeight = height / gridSize;
+        }
+        updateCellSize();let grid = new Float32Array(gridSize * gridSize).map(() => Math.random());
+        let time = 0;
 
         function idx(x, y) {
             return ((y + gridSize) % gridSize) * gridSize + ((x + gridSize) % gridSize);
-        }
-
-        function step() {
+        }        function step() {
             const next = new Float32Array(gridSize * gridSize);
+            time += 0.02;
+            
             for (let y = 0; y < gridSize; y++) {
                 for (let x = 0; x < gridSize; x++) {
                     let sum = 0;
-                    for (let dy = -1; dy <= 1; dy++) {
-                        for (let dx = -1; dx <= 1; dx++) {
+                    let activeNeighbors = 0;
+                    
+                    // Calculate neighborhood with varying influence
+                    for (let dy = -2; dy <= 2; dy++) {
+                        for (let dx = -2; dx <= 2; dx++) {
                             if (dx === 0 && dy === 0) continue;
-                            sum += grid[idx(x + dx, y + dy)];
+                            const dist = Math.sqrt(dx*dx + dy*dy);
+                            const neighbor = grid[idx(x + dx, y + dy)];
+                            const weight = 1 / (1 + dist); // Distance-weighted influence
+                            sum += neighbor * weight;
+                            if (neighbor > 0.3) activeNeighbors++;
                         }
                     }
-                    const avg = sum / 8;
+                    
                     const self = grid[idx(x, y)];
-                    // Continuous update using sine-based growth
-                    const growth = Math.sin(Math.PI * (avg - 0.35));
-                    let val = self + 0.25 * growth - 0.05 * (self - 0.5);
-                    if (val < 0) val = 0;
-                    if (val > 1) val = 1;
+                    let val = self;
+                    
+                    // Multi-phase dynamics
+                    const phase1 = Math.sin(time + x * 0.1 + y * 0.1) * 0.1;
+                    const phase2 = Math.sin(time * 1.3 + x * 0.05) * 0.05;
+                    const phase3 = Math.cos(time * 0.7 + y * 0.08) * 0.03;
+                    const timeWave = phase1 + phase2 + phase3;
+                    
+                    // Reaction-diffusion inspired rules
+                    const activator = sum * 0.1;
+                    const inhibitor = activeNeighbors * 0.05;
+                    
+                    // Growth in optimal conditions
+                    if (sum > 0.8 && sum < 3.0 && self < 0.8) {
+                        val += (0.15 * (1 - self) * Math.sin(Math.PI * sum / 3)) + timeWave;
+                    }
+                    
+                    // Spreading effect
+                    if (activeNeighbors >= 3 && activeNeighbors <= 8 && self < 0.5) {
+                        val += 0.08 * (activeNeighbors / 8) * (1 - self);
+                    }
+                    
+                    // Competition and die-off
+                    if (activeNeighbors > 12 || sum > 4.5) {
+                        val -= 0.12 * (sum / 4.5);
+                    }
+                    
+                    // Oscillation to prevent stasis
+                    const oscillation = Math.sin(time * 2 + x * 0.2 + y * 0.15) * 0.02;
+                    val += oscillation;
+                    
+                    // Natural diffusion
+                    val += (sum * 0.02 - self * 0.08);
+                    
+                    // Periodic seeding of new life
+                    if (Math.random() < 0.0005) {
+                        val += Math.random() * 0.3;
+                    }
+                    
+                    // Age-based changes
+                    if (self > 0.9) {
+                        val -= 0.05; // Aging effect
+                    }
+                    
+                    // Clamp values
+                    val = Math.max(0, Math.min(1, val));
+                    
                     next[idx(x, y)] = val;
                 }
             }
             grid = next;
-        }
-
-        function render() {
+        }        function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let y = 0; y < gridSize; y++) {
                 for (let x = 0; x < gridSize; x++) {
                     const val = grid[idx(x, y)];
-                    const color = Math.floor(val * 255);
-                    ctx.fillStyle = `rgb(${color}, ${Math.floor(color * 0.7)}, ${255 - color})`;
-                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                    
+                    // Enhanced color mapping for emergent life patterns
+                    let r, g, b;
+                    if (val < 0.2) {
+                        // Dead/dormant - dark blue to black
+                        r = Math.floor(val * 50);
+                        g = Math.floor(val * 30);
+                        b = Math.floor(val * 100);
+                    } else if (val < 0.4) {
+                        // Emerging - blue to cyan
+                        const t = (val - 0.2) / 0.2;
+                        r = Math.floor(t * 50);
+                        g = Math.floor(100 + t * 155);
+                        b = Math.floor(200 + t * 55);
+                    } else if (val < 0.6) {
+                        // Active - cyan to green
+                        const t = (val - 0.4) / 0.2;
+                        r = Math.floor(50 - t * 50);
+                        g = Math.floor(255);
+                        b = Math.floor(255 - t * 100);
+                    } else if (val < 0.8) {
+                        // Thriving - green to yellow
+                        const t = (val - 0.6) / 0.2;
+                        r = Math.floor(t * 255);
+                        g = Math.floor(255);
+                        b = Math.floor(155 - t * 155);
+                    } else {
+                        // Peak life - yellow to white
+                        const t = (val - 0.8) / 0.2;
+                        r = Math.floor(255);
+                        g = Math.floor(255);
+                        b = Math.floor(t * 255);
+                    }
+                    
+                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth + 1, cellHeight + 1);
                 }
             }
-        }
-
-        function loop() {
+        }        function loop() {
             step();
             render();
             requestAnimationFrame(loop);
         }
         loop();
+
+        // Update cell sizes when window is resized
+        window.addEventListener('resize', () => {
+            resize();
+            updateCellSize();
+        });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
