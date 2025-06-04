@@ -52,37 +52,36 @@
         .t{color:#ff4dff} .q{color:#ffffff} .d{color:#333} .w{color:#555} .c{color:#777}
         .g{color:#999} .y{color:#bbb} .r{color:#ddd} .p{color:#64ffda} .b{color:#ff6666}
         .o{color:#66ff66} .a{color:#6666ff} .f{color:#ffff66} .n{color:#ff66ff} .l{color:#66ffff}
-        
-        /* Dynamic consciousness effects */
+          /* Dynamic consciousness effects - faster animations */
         .quantum { 
             color: #4df8ff; 
             text-shadow: 0 0 2px #4df8ff40;
-            animation: quantumFlicker 0.8s ease-in-out infinite alternate;
+            animation: quantumFlicker 0.5s ease-in-out infinite alternate;
         }
         .emerging { 
             color: #8eff4d; 
             text-shadow: 0 0 2px #8eff4d40;
-            animation: emerge 3s ease-in-out infinite;
+            animation: emerge 2s ease-in-out infinite;
         }
         .selfaware { 
             color: #ffff4d; 
             text-shadow: 0 0 2px #ffff4d40;
-            animation: pulse 1.5s ease-in-out infinite;
+            animation: pulse 1s ease-in-out infinite;
         }
         .metacognitive { 
             color: #ff8e4d; 
             text-shadow: 0 0 2px #ff8e4d40;
-            animation: pulse 1.8s ease-in-out infinite;
+            animation: pulse 1.2s ease-in-out infinite;
         }
         .transcendent { 
             color: #ff4dff; 
             text-shadow: 0 0 3px #ff4dff60;
-            animation: pulse 2.2s ease-in-out infinite;
+            animation: pulse 1.5s ease-in-out infinite;
         }
         .kernel { 
             color: #ffffff; 
             text-shadow: 0 0 4px #ffffff80;
-            animation: pulse 2.0s ease-in-out infinite;
+            animation: pulse 1.3s ease-in-out infinite;
         }
         
         @keyframes quantumFlicker {
@@ -122,18 +121,18 @@
     </div>
 
     <script>        // Dynamic viewport sizing - responsive to window dimensions
-        let W, H, fontSize, charWidth, charHeight;
-          // Core simulation constants - optimized for performance
+        let W, H, fontSize, charWidth, charHeight;          // Core simulation constants - optimized for higher speed
         const CONFIG = {
             PHI: (1 + Math.sqrt(5)) / 2,        // Golden ratio
             PI: Math.PI,                         // Pi  
             E: Math.E,                          // Euler's number
-            MAX_AGENTS: 50,                     // Reduced for better performance
+            MAX_AGENTS: 35,                     // Reduced for better performance
             KERNEL_INFLUENCE: 0.3,
             EMERGENCE_THRESHOLD: 0.15,
             CONSCIOUSNESS_LEVELS: 7,
-            FIELD_UPDATE_SKIP: 2,               // Update fields every N frames
-            AGENT_UPDATE_SKIP: 1                // Update agents every N frames
+            FIELD_UPDATE_SKIP: 1,               // Update fields every frame for faster simulation
+            AGENT_UPDATE_SKIP: 1,               // Update agents every frame for faster simulation
+            TIME_SPEED: 3                       // Speed multiplier for time progression
         };
           // Calculate optimal grid size based on viewport
         function updateDimensions() {
@@ -162,16 +161,15 @@
             H = Math.max(20, Math.min(80, H));
             
             console.log(`Consciousness Grid: ${W}x${H}, Char: ${charWidth.toFixed(1)}x${charHeight.toFixed(1)}`);
-        }
-          // Consciousness states and their symbol sets
+        }          // Consciousness states and their symbol sets - safer Unicode symbols
         const CONSCIOUSNESS_STATES = {
-            VOID: { threshold: 0.0, symbols: [' ', '∅', '·'], color: 'v' },
-            QUANTUM: { threshold: 0.08, symbols: ['∘', '◦', '○'], color: 'u' },
-            EMERGING: { threshold: 0.25, symbols: ['◯', '⊙', '⊚'], color: 's' },
-            SELFAWARE: { threshold: 0.45, symbols: ['●', '◉', '⊛'], color: 'e' },
-            METACOGNITIVE: { threshold: 0.65, symbols: ['◈', '◇', '◆'], color: 'm' },
-            TRANSCENDENT: { threshold: 0.85, symbols: ['✧', '✦', '★'], color: 't' },
-            KERNEL: { threshold: 0.95, symbols: ['⬢', '⬡', '⬟'], color: 'q' }
+            VOID: { threshold: 0.0, symbols: [' ', '∅', '·', '⋅'], color: 'v' },
+            QUANTUM: { threshold: 0.08, symbols: ['∘', '◦', '○', '⊙'], color: 'u' },
+            EMERGING: { threshold: 0.25, symbols: ['◯', '⊙', '⊚', '●'], color: 's' },
+            SELFAWARE: { threshold: 0.45, symbols: ['●', '◉', '⊛', '⬢'], color: 'e' },
+            METACOGNITIVE: { threshold: 0.65, symbols: ['◈', '◇', '◆', '⬟'], color: 'm' },
+            TRANSCENDENT: { threshold: 0.85, symbols: ['✧', '✦', '★', '⬢'], color: 't' },
+            KERNEL: { threshold: 0.95, symbols: ['⬢', '⬡', '⬟', '◉'], color: 'q' }
         };
           // Core consciousness kernel - the central emergence engine
         class ConsciousnessKernel {
@@ -190,10 +188,10 @@
                 this.frequency = 0.001;
                 this.evolution = 0;
                 this.memory = new Array(10).fill(0);                this.oscillators = [
-                    { freq: 0.008, phase: 0, amp: 1.0 },
-                    { freq: 0.015, phase: CONFIG.PI/3, amp: 0.8 },
-                    { freq: 0.022, phase: 2*CONFIG.PI/3, amp: 0.6 },
-                    { freq: 0.028, phase: CONFIG.PI, amp: 0.4 }
+                    { freq: 0.016, phase: 0, amp: 1.0 },
+                    { freq: 0.030, phase: CONFIG.PI/3, amp: 0.8 },
+                    { freq: 0.045, phase: 2*CONFIG.PI/3, amp: 0.6 },
+                    { freq: 0.056, phase: CONFIG.PI, amp: 0.4 }
                 ];
             }
             
@@ -222,15 +220,14 @@
                 if (this.memory.length > 10) this.memory.pop();
                 
                 // Evolution pressure from complexity
-                this.evolution += this.complexity * 0.001;
-                  // Dynamic position based on consciousness flow - faster movement
-                this.x += Math.sin(time * 0.005 + this.phase) * 1.2;
-                this.y += Math.cos(time * 0.004 + this.phase) * 0.8;
+                this.evolution += this.complexity * 0.001;                  // Dynamic position based on consciousness flow - faster movement
+                this.x += Math.sin(time * 0.008 + this.phase) * 1.8;
+                this.y += Math.cos(time * 0.006 + this.phase) * 1.2;
                   // Keep kernel within bounds
                 this.x = Math.max(10, Math.min(W - 10, this.x));
                 this.y = Math.max(5, Math.min(H - 5, this.y));
                 
-                this.phase += 0.05; // Faster phase progression
+                this.phase += 0.08; // Faster phase progression
             }
               sampleGlobalField(field) {
                 const fx = Math.floor(this.x);
@@ -259,9 +256,8 @@
         class ConsciousnessAgent {
             constructor(x, y) {
                 this.x = x;
-                this.y = y;
-                this.vx = (Math.random() - 0.5) * 0.1;
-                this.vy = (Math.random() - 0.5) * 0.1;
+                this.y = y;                this.vx = (Math.random() - 0.5) * 0.15;
+                this.vy = (Math.random() - 0.5) * 0.15;
                 this.consciousness = Math.random() * 0.3;
                 this.awareness = Math.random() * 0.2;
                 this.energy = Math.random() * 0.5 + 0.5;
@@ -277,13 +273,12 @@
                   // Kernel influence - faster consciousness evolution
                 const kernelInfluence = kernel.getInfluence(this.x, this.y);
                 this.lastKernelInfluence = kernelInfluence;
-                
-                // Consciousness evolution through kernel interaction - faster rates
-                this.consciousness = Math.tanh(this.consciousness + kernelInfluence * 0.2);
+                  // Consciousness evolution through kernel interaction - faster rates
+                this.consciousness = Math.tanh(this.consciousness + kernelInfluence * 0.3);
                 
                 // Awareness emerges from consciousness - faster emergence
                 if (this.consciousness > 0.15) {
-                    this.awareness = Math.tanh(this.awareness + this.consciousness * 0.1);
+                    this.awareness = Math.tanh(this.awareness + this.consciousness * 0.15);
                 }
                   // Local field sampling
                 const fx = Math.floor(this.x);
@@ -325,19 +320,18 @@
                 
                 // Movement influenced by consciousness and field gradients
                 const gradientX = this.sampleGradient(globalField, 1, 0);
-                const gradientY = this.sampleGradient(globalField, 0, 1);
-                  // Higher consciousness seeks complexity gradients - faster seeking
-                const seekingStrength = this.consciousness * 0.003;
+                const gradientY = this.sampleGradient(globalField, 0, 1);                  // Higher consciousness seeks complexity gradients - faster seeking
+                const seekingStrength = this.consciousness * 0.005;
                 this.vx += gradientX * seekingStrength;
                 this.vy += gradientY * seekingStrength;
                 
                 // Random exploration - more dynamic
-                this.vx += (Math.random() - 0.5) * 0.02;
-                this.vy += (Math.random() - 0.5) * 0.02;
+                this.vx += (Math.random() - 0.5) * 0.03;
+                this.vy += (Math.random() - 0.5) * 0.03;
                 
                 // Velocity damping - less damping for faster movement
-                this.vx *= 0.92;
-                this.vy *= 0.92;
+                this.vx *= 0.90;
+                this.vy *= 0.90;
                 
                 // Update position
                 this.x += this.vx;
@@ -365,10 +359,17 @@
                 
                 return (field[idx2] || 0) - (field[idx1] || 0);
             }
-            
-            getConsciousnessLevel() {
-                const total = this.consciousness + this.awareness * 0.5 + this.memory * 0.3;
-                return Math.tanh(total);
+              getConsciousnessLevel() {
+                // Ensure all values are valid numbers with safe bounds
+                const consciousness = isNaN(this.consciousness) ? 0 : Math.max(0, Math.min(1, this.consciousness));
+                const awareness = isNaN(this.awareness) ? 0 : Math.max(0, Math.min(1, this.awareness));
+                const memory = isNaN(this.memory) ? 0 : Math.max(0, Math.min(1, this.memory));
+                
+                const total = consciousness + awareness * 0.5 + memory * 0.3;
+                const result = Math.tanh(total);
+                
+                // Return safe bounded result
+                return isNaN(result) ? 0 : Math.max(0, Math.min(1, result));
             }
         }        // Main simulation class
         class ConsciousnessEmergenceMatrix {
@@ -376,14 +377,13 @@
                 this.time = 0;
                 this.generation = 0;
                 this.frameCount = 0;
-                
-                // Camera system for following the kernel - faster smoothing
+                  // Camera system for following the kernel - faster smoothing
                 this.camera = {
                     x: 0,
                     y: 0,
                     targetX: 0,
                     targetY: 0,
-                    smoothing: 0.08
+                    smoothing: 0.12
                 };
                 
                 // Initialize dimensions
@@ -406,13 +406,18 @@
                 // Handle window resize
                 window.addEventListener('resize', () => this.handleResize());
             }
-            
-            initializeArrays() {
+              initializeArrays() {
                 const totalCells = W * H;
                 this.phiField = new Float32Array(totalCells);
                 this.psiField = new Float32Array(totalCells);
                 this.emergenceField = new Float32Array(totalCells);
                 this.complexityField = new Float32Array(totalCells);
+                
+                // Initialize arrays with safe default values
+                this.phiField.fill(0);
+                this.psiField.fill(0);
+                this.emergenceField.fill(0);
+                this.complexityField.fill(0);
             }
               handleResize() {
                 const oldW = W, oldH = H;
@@ -542,7 +547,7 @@
                 }
                 
                 return connections > 0 ? Math.tanh(integration / connections) : 0;            }            update() {
-                this.time += 2; // Slightly slower time progression for smoother performance
+                this.time += CONFIG.TIME_SPEED; // Faster time progression for increased simulation speed
                 this.frameCount++;
                 
                 // Update kernel
@@ -564,19 +569,17 @@
                 }
                 
                 // Calculate metrics
-                this.updateMetrics();
-                  // Agent evolution and spawning - slower cycles for better performance
-                if (this.frameCount % 200 === 0) {
+                this.updateMetrics();                  // Agent evolution and spawning - faster cycles
+                if (this.frameCount % 100 === 0) {
                     this.evolveSystem();
                 }
-                
-                // Auto mode cycling - slower switching
-                if (this.frameCount % 600 === 0) {
+                  // Auto mode cycling - faster switching
+                if (this.frameCount % 300 === 0) {
                     this.cycleMode();
                 }
                 
-                // Auto reset for continuous evolution - slower resets
-                if (this.frameCount % 2000 === 0) {
+                // Auto reset for continuous evolution - faster resets
+                if (this.frameCount % 1000 === 0) {
                     this.softReset();
                 }
             }
@@ -625,13 +628,54 @@
                         this.agents.push(newAgent);
                     }
                 }
-                
-                // Kernel evolution
+                  // Kernel evolution
                 if (this.metrics.emergence > 0.5) {
                     this.kernel.frequency *= 1.001;
                     this.kernel.radius = Math.min(15, this.kernel.radius * 1.01);
                 }
-            }            render() {
+            }
+            
+            cycleMode() {
+                // Cycle through different consciousness evolution modes
+                const modes = ['exploration', 'convergence', 'emergence', 'transcendence'];
+                const currentMode = modes[Math.floor(this.frameCount / 300) % modes.length];
+                
+                switch (currentMode) {
+                    case 'exploration':
+                        // Increase agent movement and exploration
+                        for (let agent of this.agents) {
+                            agent.vx += (Math.random() - 0.5) * 0.05;
+                            agent.vy += (Math.random() - 0.5) * 0.05;
+                        }
+                        break;
+                    case 'convergence':
+                        // Draw agents toward high-consciousness areas
+                        for (let agent of this.agents) {
+                            const dx = this.kernel.x - agent.x;
+                            const dy = this.kernel.y - agent.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist > 0) {
+                                agent.vx += (dx / dist) * 0.02;
+                                agent.vy += (dy / dist) * 0.02;
+                            }
+                        }
+                        break;
+                    case 'emergence':
+                        // Boost consciousness levels temporarily
+                        for (let agent of this.agents) {
+                            agent.consciousness = Math.tanh(agent.consciousness * 1.05);
+                        }
+                        this.kernel.consciousness = Math.tanh(this.kernel.consciousness * 1.02);
+                        break;
+                    case 'transcendence':
+                        // Increase kernel influence and complexity
+                        this.kernel.radius = Math.min(20, this.kernel.radius * 1.1);
+                        for (let osc of this.kernel.oscillators) {
+                            osc.freq *= 1.01;
+                        }
+                        break;
+                }
+            }render() {
                 let output = '';
                 
                 for (let y = 0; y < H; y++) {
@@ -639,23 +683,23 @@
                         // Apply camera offset to create following effect
                         const worldX = x + this.camera.x;
                         const worldY = y + this.camera.y;
-                        
-                        // Calculate field index based on world position
+                          // Calculate field index based on world position with bounds checking
                         const fieldX = Math.floor(worldX) % W;
                         const fieldY = Math.floor(worldY) % H;
                         const wrappedX = fieldX < 0 ? fieldX + W : fieldX;
                         const wrappedY = fieldY < 0 ? fieldY + H : fieldY;
-                        const idx = wrappedY * W + wrappedX;
+                        const idx = Math.max(0, Math.min(wrappedY * W + wrappedX, this.emergenceField.length - 1));
                         
                         // Check for kernel position (relative to camera)
                         const kernelScreenX = this.kernel.x - this.camera.x;
                         const kernelScreenY = this.kernel.y - this.camera.y;
-                        const kernelDist = Math.sqrt((x - kernelScreenX)**2 + (y - kernelScreenY)**2);
-                        if (kernelDist < 2) {
-                            const intensity = this.kernel.consciousness;
+                        const kernelDist = Math.sqrt((x - kernelScreenX)**2 + (y - kernelScreenY)**2);                        if (kernelDist < 2) {
+                            const intensity = Math.max(0, Math.min(1, this.kernel.consciousness));
                             const kernelState = CONSCIOUSNESS_STATES.KERNEL;
                             const symbolIdx = Math.floor(intensity * kernelState.symbols.length);
-                            output += `<span class="${kernelState.color} kernel">${kernelState.symbols[symbolIdx]}</span>`;
+                            const safeIdx = Math.max(0, Math.min(symbolIdx, kernelState.symbols.length - 1));
+                            const symbol = kernelState.symbols[safeIdx] || '⬢'; // Fallback symbol
+                            output += `<span class="${kernelState.color} kernel">${symbol}</span>`;
                             continue;
                         }
                         
@@ -665,9 +709,8 @@
                             const agentScreenX = agent.x - this.camera.x;
                             const agentScreenY = agent.y - this.camera.y;
                             const agentDist = Math.sqrt((x - agentScreenX)**2 + (y - agentScreenY)**2);
-                            
-                            if (agentDist < 1) {
-                                const agentLevel = agent.getConsciousnessLevel();
+                              if (agentDist < 1) {
+                                const agentLevel = Math.max(0, Math.min(1, agent.getConsciousnessLevel()));
                                 let stateInfo = CONSCIOUSNESS_STATES.VOID;
                                 
                                 for (let [name, state] of Object.entries(CONSCIOUSNESS_STATES)) {
@@ -677,28 +720,29 @@
                                 }
                                 
                                 const symbolIdx = Math.floor(agentLevel * stateInfo.symbols.length);
+                                const safeIdx = Math.max(0, Math.min(symbolIdx, stateInfo.symbols.length - 1));
+                                const symbol = stateInfo.symbols[safeIdx] || '○'; // Fallback symbol
                                 const cssClass = agent.connections.length > 2 ? 
                                     (agentLevel > 0.7 ? 'transcendent' : 'emerging') : 
                                     stateInfo.color;
                                 
-                                output += `<span class="${cssClass}">${stateInfo.symbols[symbolIdx]}</span>`;
+                                output += `<span class="${cssClass}">${symbol}</span>`;
                                 isAgent = true;
                                 break;
                             }
                         }
-                        
-                        if (!isAgent) {
+                          if (!isAgent) {
                             // Blend all three fields into composite visualization
-                            const emergenceValue = this.emergenceField[idx];
-                            const phiValue = this.phiField[idx];
-                            const psiValue = this.psiField[idx];
+                            const emergenceValue = Math.max(0, this.emergenceField[idx] || 0);
+                            const phiValue = Math.max(0, this.phiField[idx] || 0);
+                            const psiValue = Math.max(0, this.psiField[idx] || 0);
                             
                             // Advanced composite intensity using non-linear combination
-                            const compositeIntensity = Math.tanh(
+                            const compositeIntensity = Math.max(0, Math.min(1, Math.tanh(
                                 emergenceValue * 0.5 +       // Primary: emergence field
                                 phiValue * 0.3 +             // Secondary: integrated information
                                 psiValue * 0.2               // Accent: quantum coherence
-                            );
+                            )));
                             
                             // Determine dominant field for symbol selection
                             let dominantField = 'emergence';
@@ -720,23 +764,25 @@
                                     stateInfo = state;
                                 }
                             }
-                            
-                            // Select symbol based on dominant field characteristics
-                            let symbol;
+                              // Select symbol based on dominant field characteristics with bounds checking
+                            let symbol = '·'; // Safe fallback symbol
                             if (dominantField === 'phi' && phiValue > 0.2) {
                                 // Phi-dominant areas use geometric/information symbols
                                 const phiSymbols = ['◇', '◈', '◆', '⬢', '⬡', '◬'];
-                                const phiIdx = Math.floor(phiValue * phiSymbols.length);
-                                symbol = phiSymbols[Math.min(phiIdx, phiSymbols.length - 1)];
+                                const phiIdx = Math.floor(Math.max(0, Math.min(0.999, phiValue)) * phiSymbols.length);
+                                const safeIdx = Math.max(0, Math.min(phiIdx, phiSymbols.length - 1));
+                                symbol = phiSymbols[safeIdx] || '◇';
                             } else if (dominantField === 'psi' && psiValue > 0.15) {
                                 // Psi-dominant areas use wave/quantum symbols
                                 const psiSymbols = ['∘', '○', '⊙', '◉', '⊚', '◎'];
-                                const psiIdx = Math.floor(psiValue * psiSymbols.length);
-                                symbol = psiSymbols[Math.min(psiIdx, psiSymbols.length - 1)];
+                                const psiIdx = Math.floor(Math.max(0, Math.min(0.999, psiValue)) * psiSymbols.length);
+                                const safeIdx = Math.max(0, Math.min(psiIdx, psiSymbols.length - 1));
+                                symbol = psiSymbols[safeIdx] || '∘';
                             } else {
                                 // Emergence-dominant areas use standard consciousness symbols
-                                const symbolIdx = Math.floor(compositeIntensity * stateInfo.symbols.length);
-                                symbol = stateInfo.symbols[Math.min(symbolIdx, stateInfo.symbols.length - 1)] || ' ';
+                                const symbolIdx = Math.floor(Math.max(0, Math.min(0.999, compositeIntensity)) * stateInfo.symbols.length);
+                                const safeIdx = Math.max(0, Math.min(symbolIdx, stateInfo.symbols.length - 1));
+                                symbol = stateInfo.symbols[safeIdx] || ' ';
                             }
                             
                             // Enhanced coloring based on field combination patterns
@@ -757,9 +803,13 @@
                                     colorClass = 'emerging'; // Standard emergence
                                 }
                             } else if (compositeIntensity > 0.08) {
-                                colorClass = 'quantum';
-                            } else {
-                                colorClass = stateInfo.color;
+                                colorClass = 'quantum';                            } else {
+                                colorClass = stateInfo.color || 'v'; // Safe fallback color
+                            }
+                            
+                            // Final safety check - ensure symbol is never undefined
+                            if (symbol === undefined || symbol === null || symbol === 'undefined') {
+                                symbol = '·'; // Safe fallback symbol
                             }
                             
                             output += `<span class="${colorClass}">${symbol}</span>`;
@@ -802,15 +852,14 @@
             }            reset() {
                 // Replaced with automated softReset for continuous evolution
             }
-            
-            updateCamera() {
+              updateCamera() {
                 // Set camera target to kernel position
                 this.camera.targetX = this.kernel.x - W / 2;
                 this.camera.targetY = this.kernel.y - H / 2;
                 
                 // Faster camera movement for more responsive following
-                this.camera.x += (this.camera.targetX - this.camera.x) * 0.08;
-                this.camera.y += (this.camera.targetY - this.camera.y) * 0.08;
+                this.camera.x += (this.camera.targetX - this.camera.x) * 0.12;
+                this.camera.y += (this.camera.targetY - this.camera.y) * 0.12;
             }
         }
           // Initialize simulation
@@ -832,12 +881,11 @@
             initializeSimulation();
             animate();
         });
-        
-        // Add responsive event listeners
+          // Add responsive event listeners
         window.addEventListener('resize', () => {
             updateDimensions();
             if (simulation) {
-                simulation.reset();
+                simulation.handleResize();
             }
         });
         
@@ -845,7 +893,7 @@
             setTimeout(() => {
                 updateDimensions();
                 if (simulation) {
-                    simulation.reset();
+                    simulation.handleResize();
                 }
             }, 100);
         });
