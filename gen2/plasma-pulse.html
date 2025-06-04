@@ -79,11 +79,10 @@
         window.addEventListener('resize', updateDimensions);
         updateDimensions();
         render();
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && window.parent !== window) {
-                window.parent.postMessage('close', '*');
-            }
-        });
+        document.addEventListener('keydown', e =>
+            e.key === 'Escape' && window.parent !== window &&
+            window.parent.postMessage('close', '*')
+        );
     </script>
 </body>
 </html>

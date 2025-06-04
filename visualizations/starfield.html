@@ -233,11 +233,10 @@
             initializeFields();
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && window.parent !== window) {
-                window.parent.postMessage('close', '*');
-            }
-        });
+        document.addEventListener('keydown', e =>
+            e.key === 'Escape' && window.parent !== window &&
+            window.parent.postMessage('close', '*')
+        );
 
         updateDimensions();
         initializeFields();

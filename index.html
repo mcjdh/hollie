@@ -332,11 +332,11 @@
             if (e.data === 'close') close_viz();
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') close_viz();
-            else if (e.key === 'r' || e.key === 'R') random_viz();
-            else if (e.key === 'f' || e.key === 'F') toggle_fs();
-        });
+        document.addEventListener('keydown', e => ({
+            Escape: close_viz,
+            r: random_viz, R: random_viz,
+            f: toggle_fs, F: toggle_fs
+        }[e.key]?.());
 
         // Prevent zoom on double tap
         let lastTouchEnd = 0;
