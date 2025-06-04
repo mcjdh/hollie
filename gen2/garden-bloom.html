@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Garden Bloom</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #001100;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #001100; }
+        .c1 { color: #226600; }
+        .c2 { color: #44aa33; }
+        .c3 { color: #aa3377; }
+        .c4 { color: #ffeeaa; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        const plants = [];
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+
+            plants.length = 0;
+            const count = Math.floor(W / 8);
+            for (let i = 0; i < count; i++) {
+                plants.push({
+                    x: Math.floor(Math.random() * W),
+                    height: 0,
+                    target: 3 + Math.random() * (H / 3),
+                    color: Math.floor(Math.random() * 2) + 3
+                });
+            }
+        }
+
+        function render() {
+            let grid = [];
+            for (let i = 0; i < H; i++) {
+                grid.push(new Array(W).fill(' '));
+            }
+            for (let plant of plants) {
+                plant.height = Math.min(plant.target, plant.height + 0.05 + Math.random()*0.05);
+                const h = Math.floor(plant.height);
+                for (let j = 0; j < h && j < H; j++) {
+                    const y = H - 1 - j;
+                    if (j === h - 1 && plant.height >= plant.target - 0.1) {
+                        grid[y][plant.x] = `<span class="c${plant.color}">*</span>`;
+                    } else {
+                        grid[y][plant.x] = `<span class="c1">|</span>`;
+                        if (j > 0 && j < h - 1) {
+                            if (plant.x > 0) grid[y][plant.x - 1] = `<span class="c2">/</span>`;
+                            if (plant.x < W - 1) grid[y][plant.x + 1] = `<span class="c2">\\</span>`;
+                        }
+                    }
+                }
+            }
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    out += grid[y][x];
+                }
+                out += '\n';
+            }
+            document.getElementById('canvas').innerHTML = out;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', updateDimensions);
+        updateDimensions();
+        render();
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                window.parent.postMessage('close', '*');
+            }
+        });
+    </script>
+</body>
+</html>
