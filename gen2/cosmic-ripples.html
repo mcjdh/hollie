@@ -31,26 +31,37 @@
         let charWidth, charHeight;
         let t = 0;
 
-        function updateDimensions() {
-            const test = document.createElement('div');
-            test.style.position = 'absolute';
-            test.style.visibility = 'hidden';
-            test.style.whiteSpace = 'pre';
-            test.style.fontFamily = 'Courier New, monospace';
-            test.style.fontSize = '10px';
-            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(test);
-            const rect = test.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(test);
+        function measureCharSize() {
+            const defW = 6;
+            const defH = 12;
+            try {
+                const test = document.createElement('div');
+                test.style.position = 'absolute';
+                test.style.visibility = 'hidden';
+                test.style.whiteSpace = 'pre';
+                test.style.fontFamily = 'Courier New, monospace';
+                test.style.fontSize = '12px';
+                test.style.lineHeight = '1';
+                test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+                document.body.appendChild(test);
+                const rect = test.getBoundingClientRect();
+                charWidth = rect.width > 0 ? rect.width / 10 : defW;
+                charHeight = rect.height > 0 ? rect.height / 10 : defH;
+                document.body.removeChild(test);
+            } catch (e) {
+                charWidth = defW;
+                charHeight = defH;
+            }
+        }
 
+        function updateDimensions() {
+            measureCharSize();
             W = Math.ceil(window.innerWidth / charWidth) + 1;
             H = Math.ceil(window.innerHeight / charHeight) + 1;
 
             const canvas = document.getElementById('canvas');
-            canvas.style.fontSize = '10px';
-            canvas.style.lineHeight = '10px';
+            canvas.style.fontSize = '12px';
+            canvas.style.lineHeight = '12px';
         }
 
         const symbols = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
@@ -63,7 +74,8 @@
                     const r = Math.sqrt(dx*dx + dy*dy);
                     const ripple = Math.sin(r * 0.3 - t * 0.05);
                     const wave = Math.sin(dx * 0.1 + t * 0.02) + Math.cos(dy * 0.1 + t * 0.02);
-                    let val = (ripple + wave) * 0.25 + 0.5;
+                    const swirl = Math.sin(t * 0.04 + (dx + dy) * 0.03);
+                    let val = (ripple + wave + swirl) * 0.25 + 0.5;
                     val = Math.max(0, Math.min(1, val));
                     const idx = Math.floor(val * (symbols.length - 1));
                     const colorIdx = Math.floor(val * 4.999);

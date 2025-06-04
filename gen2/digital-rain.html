@@ -30,29 +30,43 @@
         let W, H;
         let charWidth, charHeight;
         let columns = [];
+        let velocity = [];
+        let t = 0;
+
+        function measureCharSize() {
+            const defW = 6;
+            const defH = 12;
+            try {
+                const test = document.createElement('div');
+                test.style.position = 'absolute';
+                test.style.visibility = 'hidden';
+                test.style.whiteSpace = 'pre';
+                test.style.fontFamily = 'Courier New, monospace';
+                test.style.fontSize = '12px';
+                test.style.lineHeight = '1';
+                test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+                document.body.appendChild(test);
+                const rect = test.getBoundingClientRect();
+                charWidth = rect.width > 0 ? rect.width / 10 : defW;
+                charHeight = rect.height > 0 ? rect.height / 10 : defH;
+                document.body.removeChild(test);
+            } catch (e) {
+                charWidth = defW;
+                charHeight = defH;
+            }
+        }
 
         function updateDimensions() {
-            const test = document.createElement('div');
-            test.style.position = 'absolute';
-            test.style.visibility = 'hidden';
-            test.style.whiteSpace = 'pre';
-            test.style.fontFamily = 'Courier New, monospace';
-            test.style.fontSize = '10px';
-            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(test);
-            const rect = test.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(test);
-
+            measureCharSize();
             W = Math.ceil(window.innerWidth / charWidth) + 1;
             H = Math.ceil(window.innerHeight / charHeight) + 1;
 
             const canvas = document.getElementById('canvas');
-            canvas.style.fontSize = '10px';
-            canvas.style.lineHeight = '10px';
+            canvas.style.fontSize = '12px';
+            canvas.style.lineHeight = '12px';
 
             columns = Array.from({ length: W }, () => Math.random() * (H + 10));
+            velocity = Array.from({ length: W }, () => 0.5 + Math.random());
         }
 
         const symbols = 'abcdefghijklmnopqrstuvwxyz0123456789@#$%&'.split('');
@@ -73,8 +87,9 @@
             }
             document.getElementById('canvas').innerHTML = out;
             for (let i = 0; i < columns.length; i++) {
-                columns[i] = (columns[i] + Math.random() + 0.5) % (H + 10);
+                columns[i] = (columns[i] + velocity[i] + 0.5 * Math.sin((i + t) * 0.02)) % (H + 10);
             }
+            t += 0.5;
             requestAnimationFrame(render);
         }
 
