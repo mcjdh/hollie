@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Glyph Surge</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #110022; }
+        .c1 { color: #330066; }
+        .c2 { color: #6600aa; }
+        .c3 { color: #aa33ff; }
+        .c4 { color: #ffff88; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        let t = 0;
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        const symbols = [' ', '⟐', '⚙', '✴︎', '⧉', '◉', '⌬', '👁', '☲', '🜇', '⟁', '⟡', '⚡', '⚒', '✶', '☼'];
+        function render() {
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const dx = x - W / 2;
+                    const dy = y - H / 2;
+                    const r = Math.sqrt(dx * dx + dy * dy);
+                    const a = Math.atan2(dy, dx);
+                    let val = Math.sin(r * 0.2 - t * 0.05) + Math.cos(a * 5 + t * 0.03);
+                    val = (val + 2) / 4;
+                    val = Math.max(0, Math.min(1, val));
+                    const idx = Math.floor(val * (symbols.length - 1));
+                    const colorIdx = Math.floor(val * 4.999);
+                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
+                }
+                out += '\n';
+            }
+            document.getElementById('canvas').innerHTML = out;
+            t += 1;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', updateDimensions);
+        updateDimensions();
+        render();
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && window.parent !== window) {
+                window.parent.postMessage('close', '*');
+            }
+        });
+    </script>
+</body>
+</html>
