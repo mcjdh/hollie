@@ -303,20 +303,10 @@
         const fsElem = document.getElementById('fs');
         const frameElem = document.getElementById('frame');
 
-        function open_viz(file) {
-            frameElem.src = 'visualizations/' + file;
-            fsElem.style.display = 'block';
-        }
+        const open_viz = f => (frameElem.src = 'visualizations/' + f, fsElem.style.display = 'block');
+        const close_viz = () => (fsElem.style.display = 'none', frameElem.src = '');
 
-        function close_viz() {
-            fsElem.style.display = 'none';
-            frameElem.src = '';
-        }
-
-        function random_viz() {
-            const rand = vizs[Math.floor(Math.random() * vizs.length)];
-            open_viz(rand);
-        }
+        const random_viz = () => open_viz(vizs[Math.random() * vizs.length | 0]);
 
         function toggle_fs() {
             if (!document.fullscreenElement) {
@@ -332,11 +322,11 @@
             if (e.data === 'close') close_viz();
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') close_viz();
-            else if (e.key === 'r' || e.key === 'R') random_viz();
-            else if (e.key === 'f' || e.key === 'F') toggle_fs();
-        });
+        document.addEventListener('keydown', e => ({
+            escape: close_viz,
+            r: random_viz,
+            f: toggle_fs
+        }[e.key.toLowerCase()]?.());
 
         // Prevent zoom on double tap
         let lastTouchEnd = 0;
