@@ -14,8 +14,8 @@
         }
         #canvas {
             white-space: pre;
-            line-height: 1.1;
-            font-size: 10px;
+            line-height: 1.0;
+            font-size: 8px;
         }
         .c0 { color: #003300; }
         .c1 { color: #00aa00; }
@@ -29,15 +29,18 @@
     <script>
         let W, H;
         let charWidth, charHeight;
-        let columns = [];
+        let columns;
 
         function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
             const test = document.createElement('div');
             test.style.position = 'absolute';
             test.style.visibility = 'hidden';
             test.style.whiteSpace = 'pre';
             test.style.fontFamily = 'Courier New, monospace';
-            test.style.fontSize = '10px';
+            test.style.fontSize = '8px';
             test.textContent = '0'.repeat(10) + '\n'.repeat(10);
             document.body.appendChild(test);
             const rect = test.getBoundingClientRect();
@@ -45,14 +48,20 @@
             charHeight = rect.height / 10;
             document.body.removeChild(test);
 
-            W = Math.ceil(window.innerWidth / charWidth) + 1;
-            H = Math.ceil(window.innerHeight / charHeight) + 1;
+            W = Math.ceil(viewportWidth / charWidth) + 2;
+            H = Math.ceil(viewportHeight / charHeight) + 2;
+            W = Math.max(60, W);
+            H = Math.max(30, H);
 
             const canvas = document.getElementById('canvas');
-            canvas.style.fontSize = '10px';
-            canvas.style.lineHeight = '10px';
+            const size = Math.min(viewportWidth / W, viewportHeight / H);
+            canvas.style.fontSize = size + 'px';
+            canvas.style.lineHeight = size + 'px';
 
-            columns = Array.from({ length: W }, () => Math.random() * (H + 10));
+            columns = new Float32Array(W);
+            for (let i = 0; i < W; i++) {
+                columns[i] = Math.random() * (H + 10);
+            }
         }
 
         const symbols = 'abcdefghijklmnopqrstuvwxyz0123456789@#$%&'.split('');
