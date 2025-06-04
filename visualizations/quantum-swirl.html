@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>∿ Quantum Swirl</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            width: 100vw;
+            height: 100vh;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .c0 { color: #0044ff; text-shadow: 0 0 2px currentColor; }
+        .c1 { color: #0088ff; text-shadow: 0 0 2px currentColor; }
+        .c2 { color: #00ccff; text-shadow: 0 0 2px currentColor; }
+        .c3 { color: #88ffff; text-shadow: 0 0 3px currentColor; }
+        .c4 { color: #ffffff; text-shadow: 0 0 4px currentColor; }
+        
+        .info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #64ffda;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        ∿ Quantum Swirl<br>
+        ψ(r,θ,t) = sin(r·α-t)·cos(3θ+t)<br>
+        t: <span id="timeDisplay">0</span><br>
+        ESC ◦ ↩
+    </div>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        let t = 0;
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        const symbols = [' ', '·', ':', '∘', '○', '◦', '◉', '●', '⬢', '⊙'];
+        
+        function render() {
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const dx = x - W / 2;
+                    const dy = y - H / 2;
+                    const r = Math.sqrt(dx*dx + dy*dy);
+                    const a = Math.atan2(dy, dx);
+                    
+                    // Enhanced quantum swirl pattern
+                    const v = Math.sin(r * 0.2 - t * 0.05) + Math.cos(a * 3 + t * 0.03);
+                    const n = (Math.sin(r * 0.05 + t * 0.02) + 1) * 0.5;
+                    const quantum = Math.sin(r * 0.1 + a * 2 - t * 0.04) * 0.3;
+                    
+                    let val = v * n + quantum;
+                    val = (val + 2) / 4;
+                    val = Math.max(0, Math.min(1, val));
+                    
+                    const idx = Math.floor(val * (symbols.length - 1));
+                    const colorIdx = Math.floor(val * 4.999);
+                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
+                }
+                out += '\n';
+            }
+            document.getElementById('canvas').innerHTML = out;
+            document.getElementById('timeDisplay').textContent = t;
+            t += 1;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', updateDimensions);
+        
+        // Add ESC key listener to close visualization
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                if (window.parent !== window) {
+                    window.parent.postMessage('close', '*');
+                }
+            }
+        });
+        
+        updateDimensions();
+        render();
+    </script>
+</body>
+</html>
