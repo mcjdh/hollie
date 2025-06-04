@@ -13,11 +13,13 @@ body{background:#000;color:#fff;overflow:hidden;font-family:'Courier New',monosp
         .ζ{color:#ffaa22;text-shadow:0 0 3px currentColor}.η{color:#6666ff;text-shadow:0 0 3px currentColor}
         .θ{color:#22ff88;text-shadow:0 0 3px currentColor}.ι{color:#ff4444;text-shadow:0 0 3px currentColor}
         .κ{color:#ff88dd;text-shadow:0 0 3px currentColor}.λ{color:#f33;text-shadow:0 0 10px currentColor;animation:λ 0.618s ease-in-out infinite alternate}
-        .μ{color:#ffd700;animation:μ 2.618s ease-in-out infinite}.ν{color:#444;opacity:0.6}.ξ{color:#222;opacity:0.4}.ο{color:#888}
-        @keyframes ε{0%{text-shadow:0 0 4px,0 0 8px}100%{text-shadow:0 0 8px,0 0 16px}}
+        .μ{color:#ffd700;animation:μ 2.618s ease-in-out infinite}.ν{color:#444;opacity:0.6}.ξ{color:#222;opacity:0.4}.ο{color:#888}        @keyframes ε{0%{text-shadow:0 0 4px,0 0 8px}100%{text-shadow:0 0 8px,0 0 16px}}
         @keyframes λ{0%{text-shadow:0 0 6px,0 0 12px}100%{text-shadow:0 0 12px,0 0 24px}}
-        @keyframes μ{0%{color:#ffd700;text-shadow:0 0 3px}33%{color:#ff8800;text-shadow:0 0 8px}66%{color:#ff4400;text-shadow:0 0 12px}100%{color:#ffd700;text-shadow:0 0 3px}}        @media (max-width:600px){#∞{font-size:clamp(2px,1.5vmin,7px)}}
-        @media (orientation:landscape) and (max-height:400px){#∞{font-size:clamp(2px,1.2vmin,6px)}}
+        @keyframes μ{0%{color:#ffd700;text-shadow:0 0 3px}33%{color:#ff8800;text-shadow:0 0 8px}66%{color:#ff4400;text-shadow:0 0 12px}100%{color:#ffd700;text-shadow:0 0 3px}}
+        @media (max-width:600px){#∞{font-size:clamp(2px,1.5vmin,7px)}}
+        @media (max-width:400px){#∞{font-size:clamp(2px,1.2vmin,6px)}}
+        @media (orientation:landscape) and (max-height:400px){#∞{font-size:clamp(2px,1.1vmin,5px)}}
+        @media (min-width:1200px){#∞{font-size:clamp(4px,2.0vmin,12px)}}
         </style></head><body><div id="∞"><div id="Ω"></div></div><script>
         // ∞ Φ CONSTANTS
         const φ=(1+Math.sqrt(5))/2,φ2=φ*φ,π=Math.PI;
@@ -42,20 +44,22 @@ body{background:#000;color:#fff;overflow:hidden;font-family:'Courier New',monosp
             g.gain.exponentialRampToValueAtTime(a,t+d*φ/1000);
             g.gain.exponentialRampToValueAtTime(0.001,t+d/1000);
             o.connect(g);g.connect(Α.destination);o.start(t);o.stop(t+d/1000);
-        }
-
-        // ⚡ RESIZE
+        }        // ⚡ RESIZE
         function rsz(){
             const r=document.getElementById('∞').getBoundingClientRect();
             const s=parseFloat(getComputedStyle(document.getElementById('∞')).fontSize)*0.6;
             W=Math.floor(r.width/s)||40;H=Math.floor(r.height/(s*1.4))||25;
-            W=Math.min(W,100);H=Math.min(H,50);
+            // Dynamic bounds based on device capabilities
+            const maxW = window.innerWidth > 800 ? 120 : 80;
+            const maxH = window.innerHeight > 600 ? 60 : 40;
+            W=Math.max(30, Math.min(W, maxW));H=Math.max(15, Math.min(H, maxH));
             const l=W*H;
             Ω=new Float32Array(l);Κ=new Float32Array(l);Β=new Float32Array(l);
             Υ=new Float32Array(l);Τ=new Float32Array(l);Ψ=new Float32Array(l);Ε=new Float32Array(l);
             χ=W/2;ψ=H/2;
             for(let i=0;i<l;i++)if(Math.random()<φ/15)Ψ[i]=Math.random()*0.3;
-        }        // ∴ CELLULAR
+            console.log(`∞ Nano: ${W}x${H}, Font: ${s.toFixed(1)}px`);
+        }// ∴ CELLULAR
         function cel(){
             const n=new Float32Array(Ψ.length);
             for(let y=1;y<H-1;y++){
