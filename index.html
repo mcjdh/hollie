@@ -135,9 +135,7 @@
         .ctrl-btn:active {
             background: rgba(0,255,255,0.1);
             transform: scale(0.95);
-        }
-
-        .fullscreen {
+        }        .fullscreen {
             position: fixed;
             top: 0;
             left: 0;
@@ -146,6 +144,7 @@
             background: #000;
             z-index: 1000;
             display: none;
+            cursor: pointer;
         }
 
         .close-x {
@@ -168,12 +167,11 @@
 
         .close-x:active {
             background: rgba(0,255,255,0.2);
-        }
-
-        .frame {
+        }        .frame {
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: none;
         }
 
         @keyframes pulse {
@@ -278,10 +276,8 @@
         <button class="ctrl-btn" onclick="toggle_fs()">⛶</button>
         <button class="ctrl-btn" onclick="random_viz()">◉</button>
         <button class="ctrl-btn" onclick="about()">?</button>
-    </div>
-
-    <div class="fullscreen" id="fs">
-        <div class="close-x" onclick="close_viz()">×</div>
+    </div>    <div class="fullscreen" id="fs" onclick="close_viz()">
+        <div class="close-x" onclick="event.stopPropagation(); close_viz();">×</div>
         <iframe class="frame" id="frame"></iframe>
     </div>
 
