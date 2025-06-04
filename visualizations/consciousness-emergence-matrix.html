@@ -110,16 +110,17 @@
 
     <script>        // Dynamic viewport sizing - responsive to window dimensions
         let W, H, fontSize, charWidth, charHeight;
-        
-        // Core simulation constants
+          // Core simulation constants - optimized for performance
         const CONFIG = {
             PHI: (1 + Math.sqrt(5)) / 2,        // Golden ratio
             PI: Math.PI,                         // Pi  
             E: Math.E,                          // Euler's number
-            MAX_AGENTS: 100,                    // Increased for larger viewports
+            MAX_AGENTS: 50,                     // Reduced for better performance
             KERNEL_INFLUENCE: 0.3,
             EMERGENCE_THRESHOLD: 0.15,
-            CONSCIOUSNESS_LEVELS: 7
+            CONSCIOUSNESS_LEVELS: 7,
+            FIELD_UPDATE_SKIP: 2,               // Update fields every N frames
+            AGENT_UPDATE_SKIP: 1                // Update agents every N frames
         };
         
         // Calculate optimal grid size based on viewport
@@ -142,14 +143,13 @@
             charWidth = rect.width / 10;
             charHeight = rect.height / 10;
             document.body.removeChild(testDiv);
-            
-            // Calculate grid size to fill viewport perfectly
+              // Calculate grid size to fill viewport perfectly - optimized for performance
             W = Math.ceil(viewportWidth / charWidth) + 2; // Small buffer
             H = Math.ceil(viewportHeight / charHeight) + 2; // Small buffer
             
-            // Ensure minimum viable grid for consciousness patterns
-            W = Math.max(80, W);
-            H = Math.max(40, H);
+            // Limit grid size for better performance
+            W = Math.max(60, Math.min(120, W));  // Capped max width
+            H = Math.max(30, Math.min(60, H));   // Capped max height
             
             // Calculate optimal font size for perfect viewport fit
             const optimalFontWidth = viewportWidth / W;
@@ -290,27 +290,30 @@
                 const fy = Math.floor(this.y);
                 const fieldIdx = fy * W + fx;
                 const localField = globalField[fieldIdx] || 0;
-                
-                // Agent interaction with nearby agents
+                  // Agent interaction with nearby agents - optimized for performance
                 this.connections = [];
                 let socialInfluence = 0;
+                const maxInteractions = 8; // Limit interactions per agent
+                let interactionCount = 0;
                 
                 for (let other of agents) {
-                    if (other === this) continue;
+                    if (other === this || interactionCount >= maxInteractions) continue;
                     
                     const dx = other.x - this.x;
                     const dy = other.y - this.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const distSq = dx * dx + dy * dy; // Use squared distance to avoid sqrt
                     
-                    if (dist < 8) {
+                    if (distSq < 64) { // 8^2 = 64
                         this.connections.push(other);
-                          // Consciousness resonance - faster social influence
+                        interactionCount++;
+                          // Consciousness resonance - optimized calculation
                         const resonance = Math.abs(this.consciousness - other.consciousness);
-                        socialInfluence += Math.exp(-resonance * 5) * 0.04;
+                        socialInfluence += Math.exp(-resonance * 5) * 0.03; // Slightly reduced
                         
-                        // Attraction/repulsion based on consciousness similarity - stronger forces
+                        // Attraction/repulsion based on consciousness similarity - optimized forces
                         const similarity = 1 - resonance;
-                        const force = similarity > 0.7 ? 0.002 : -0.001;
+                        const force = similarity > 0.7 ? 0.0015 : -0.0008; // Reduced forces
+                        const dist = Math.sqrt(distSq); // Only calculate sqrt when needed
                         
                         this.vx += (dx / dist) * force;
                         this.vy += (dy / dist) * force;
@@ -368,12 +371,13 @@
                 return Math.tanh(total);
             }
         }        // Main simulation class
-        class ConsciousnessEmergenceMatrix {            constructor() {
+        class ConsciousnessEmergenceMatrix {
+            constructor() {
                 this.time = 0;
                 this.generation = 0;
-                this.mode = 0;
                 this.frameCount = 0;
-                  // Camera system for following the kernel - faster smoothing
+                
+                // Camera system for following the kernel - faster smoothing
                 this.camera = {
                     x: 0,
                     y: 0,
@@ -387,9 +391,8 @@
                 this.initializeArrays();
                 
                 // Initialize kernel and agents
-                this.kernel = new ConsciousnessKernel();
-                this.agents = [];
-                this.spawnAgents(Math.floor(W * H / 200)); // Scale agents with grid size
+                this.kernel = new ConsciousnessKernel();                this.agents = [];
+                this.spawnAgents(Math.floor(W * H / 400)); // Reduced agent density for better performance
                   // Metrics
                 this.metrics = {
                     phi: 0,
@@ -424,9 +427,8 @@
                     this.camera.y = 0;
                     this.camera.targetX = this.kernel.x - W / 2;
                     this.camera.targetY = this.kernel.y - H / 2;
-                    
-                    // Adjust agent count for new grid size
-                    const targetAgents = Math.floor(W * H / 200);
+                      // Adjust agent count for new grid size - reduced density
+                    const targetAgents = Math.floor(W * H / 400);
                     if (this.agents.length > targetAgents) {
                         this.agents = this.agents.slice(0, targetAgents);
                     } else {
@@ -539,9 +541,8 @@
                     }
                 }
                 
-                return connections > 0 ? Math.tanh(integration / connections) : 0;
-            }            update() {
-                this.time += 3; // Faster time progression
+                return connections > 0 ? Math.tanh(integration / connections) : 0;            }            update() {
+                this.time += 2; // Slightly slower time progression for smoother performance
                 this.frameCount++;
                 
                 // Update kernel
@@ -550,28 +551,32 @@
                 // Update camera to follow kernel
                 this.updateCamera();
                 
-                // Update agents
-                for (let agent of this.agents) {
-                    agent.update(this.time, this.kernel, this.agents, this.emergenceField);
+                // Update agents less frequently for better performance
+                if (this.frameCount % CONFIG.AGENT_UPDATE_SKIP === 0) {
+                    for (let agent of this.agents) {
+                        agent.update(this.time, this.kernel, this.agents, this.emergenceField);
+                    }
                 }
                 
-                // Update fields
-                this.updateFields();
+                // Update fields less frequently
+                if (this.frameCount % CONFIG.FIELD_UPDATE_SKIP === 0) {
+                    this.updateFields();
+                }
                 
                 // Calculate metrics
                 this.updateMetrics();
-                  // Agent evolution and spawning - faster cycles
-                if (this.frameCount % 100 === 0) {
+                  // Agent evolution and spawning - slower cycles for better performance
+                if (this.frameCount % 200 === 0) {
                     this.evolveSystem();
                 }
                 
-                // Auto mode cycling - faster switching between visualization modes
-                if (this.frameCount % 400 === 0) {
+                // Auto mode cycling - slower switching
+                if (this.frameCount % 600 === 0) {
                     this.cycleMode();
                 }
                 
-                // Auto reset for continuous evolution - faster resets
-                if (this.frameCount % 1500 === 0) {
+                // Auto reset for continuous evolution - slower resets
+                if (this.frameCount % 2000 === 0) {
                     this.softReset();
                 }
             }
@@ -605,13 +610,12 @@
                 // Remove low-consciousness agents
                 this.agents = this.agents.filter(agent => 
                     agent.energy > 0.1 && agent.consciousness > 0.05
-                );
-                  // Spawn new agents near high-consciousness areas
-                const maxAgents = Math.floor(W * H / 150); // Dynamic max based on grid size
+                );                // Spawn new agents near high-consciousness areas - reduced spawning
+                const maxAgents = Math.floor(W * H / 300); // Much lower max agents for better performance
                 if (this.agents.length < maxAgents) {
                     const highConsciousnessAgents = this.agents.filter(a => a.consciousness > 0.4);
                     
-                    if (highConsciousnessAgents.length > 0) {
+                    if (highConsciousnessAgents.length > 0 && Math.random() < 0.5) { // 50% chance to spawn
                         const parent = highConsciousnessAgents[Math.floor(Math.random() * highConsciousnessAgents.length)];
                         const newAgent = new ConsciousnessAgent(
                             parent.x + (Math.random() - 0.5) * 10,
@@ -643,29 +647,15 @@
                         const wrappedY = fieldY < 0 ? fieldY + H : fieldY;
                         const idx = wrappedY * W + wrappedX;
                         
-                        // Sample different fields based on mode
-                        let intensity, colorClass = '';
-                        
-                        switch (this.mode) {
-                            case 0: // Emergence field
-                                intensity = this.emergenceField[idx];
-                                break;
-                            case 1: // Phi field
-                                intensity = this.phiField[idx];
-                                colorClass = 'u'; // Quantum blue
-                                break;
-                            case 2: // Psi field
-                                intensity = this.psiField[idx];
-                                colorClass = 's'; // Emerging green
-                                break;
-                        }
-                        
                         // Check for kernel position (relative to camera)
                         const kernelScreenX = this.kernel.x - this.camera.x;
                         const kernelScreenY = this.kernel.y - this.camera.y;
                         const kernelDist = Math.sqrt((x - kernelScreenX)**2 + (y - kernelScreenY)**2);
                         if (kernelDist < 2) {
-                            output += '<span class="kernel">⬢</span>';
+                            const intensity = this.kernel.consciousness;
+                            const kernelState = CONSCIOUSNESS_STATES.KERNEL;
+                            const symbolIdx = Math.floor(intensity * kernelState.symbols.length);
+                            output += `<span class="${kernelState.color} kernel">${kernelState.symbols[symbolIdx]}</span>`;
                             continue;
                         }
                         
@@ -675,48 +665,111 @@
                             const agentScreenX = agent.x - this.camera.x;
                             const agentScreenY = agent.y - this.camera.y;
                             const agentDist = Math.sqrt((x - agentScreenX)**2 + (y - agentScreenY)**2);
-                            if (agentDist < 0.8) {
-                                const level = agent.getConsciousnessLevel();
-                                let agentSymbol = '●';
-                                let agentClass = '';
+                            
+                            if (agentDist < 1) {
+                                const agentLevel = agent.getConsciousnessLevel();
+                                let stateInfo = CONSCIOUSNESS_STATES.VOID;
                                 
-                                if (level > 0.8) { agentSymbol = '◉'; agentClass = 'transcendent'; }
-                                else if (level > 0.6) { agentSymbol = '◈'; agentClass = 'metacognitive'; }
-                                else if (level > 0.4) { agentSymbol = '●'; agentClass = 'selfaware'; }
-                                else if (level > 0.2) { agentSymbol = '○'; agentClass = 'emerging'; }
-                                else { agentSymbol = '∘'; agentClass = 'quantum'; }
+                                for (let [name, state] of Object.entries(CONSCIOUSNESS_STATES)) {
+                                    if (agentLevel >= state.threshold) {
+                                        stateInfo = state;
+                                    }
+                                }
                                 
-                                output += `<span class="${agentClass}">${agentSymbol}</span>`;
+                                const symbolIdx = Math.floor(agentLevel * stateInfo.symbols.length);
+                                const cssClass = agent.connections.length > 2 ? 
+                                    (agentLevel > 0.7 ? 'transcendent' : 'emerging') : 
+                                    stateInfo.color;
+                                
+                                output += `<span class="${cssClass}">${stateInfo.symbols[symbolIdx]}</span>`;
                                 isAgent = true;
                                 break;
                             }
                         }
                         
                         if (!isAgent) {
-                            // Map intensity to consciousness state
-                            let symbol = ' ';
-                            let cssClass = colorClass;
+                            // Blend all three fields into composite visualization
+                            const emergenceValue = this.emergenceField[idx];
+                            const phiValue = this.phiField[idx];
+                            const psiValue = this.psiField[idx];
                             
+                            // Advanced composite intensity using non-linear combination
+                            const compositeIntensity = Math.tanh(
+                                emergenceValue * 0.5 +       // Primary: emergence field
+                                phiValue * 0.3 +             // Secondary: integrated information
+                                psiValue * 0.2               // Accent: quantum coherence
+                            );
+                            
+                            // Determine dominant field for symbol selection
+                            let dominantField = 'emergence';
+                            let maxValue = emergenceValue;
+                            
+                            if (phiValue > maxValue && phiValue > 0.15) {
+                                dominantField = 'phi';
+                                maxValue = phiValue;
+                            }
+                            if (psiValue > maxValue && psiValue > 0.1) {
+                                dominantField = 'psi';
+                                maxValue = psiValue;
+                            }
+                            
+                            // Map composite intensity to consciousness state
+                            let stateInfo = CONSCIOUSNESS_STATES.VOID;
                             for (let [name, state] of Object.entries(CONSCIOUSNESS_STATES)) {
-                                if (intensity >= state.threshold) {
-                                    const symbolIndex = Math.floor(intensity * state.symbols.length) % state.symbols.length;
-                                    symbol = state.symbols[symbolIndex];
-                                    if (!cssClass) cssClass = state.color;
+                                if (compositeIntensity >= state.threshold) {
+                                    stateInfo = state;
                                 }
                             }
                             
-                            if (cssClass) {
-                                output += `<span class="${cssClass}">${symbol}</span>`;
+                            // Select symbol based on dominant field characteristics
+                            let symbol;
+                            if (dominantField === 'phi' && phiValue > 0.2) {
+                                // Phi-dominant areas use geometric/information symbols
+                                const phiSymbols = ['◇', '◈', '◆', '⬢', '⬡', '◬'];
+                                const phiIdx = Math.floor(phiValue * phiSymbols.length);
+                                symbol = phiSymbols[Math.min(phiIdx, phiSymbols.length - 1)];
+                            } else if (dominantField === 'psi' && psiValue > 0.15) {
+                                // Psi-dominant areas use wave/quantum symbols
+                                const psiSymbols = ['∘', '○', '⊙', '◉', '⊚', '◎'];
+                                const psiIdx = Math.floor(psiValue * psiSymbols.length);
+                                symbol = psiSymbols[Math.min(psiIdx, psiSymbols.length - 1)];
                             } else {
-                                output += symbol;
+                                // Emergence-dominant areas use standard consciousness symbols
+                                const symbolIdx = Math.floor(compositeIntensity * stateInfo.symbols.length);
+                                symbol = stateInfo.symbols[Math.min(symbolIdx, stateInfo.symbols.length - 1)] || ' ';
                             }
+                            
+                            // Enhanced coloring based on field combination patterns
+                            let colorClass;
+                            if (compositeIntensity > 0.8) {
+                                colorClass = 'transcendent';
+                            } else if (compositeIntensity > 0.65) {
+                                colorClass = 'metacognitive';
+                            } else if (compositeIntensity > 0.45) {
+                                colorClass = 'selfaware';
+                            } else if (compositeIntensity > 0.25) {
+                                // Special blended states for field combinations
+                                if (dominantField === 'phi') {
+                                    colorClass = 'u'; // Information-theoretic blue
+                                } else if (dominantField === 'psi') {
+                                    colorClass = 's'; // Quantum coherence cyan
+                                } else {
+                                    colorClass = 'emerging'; // Standard emergence
+                                }
+                            } else if (compositeIntensity > 0.08) {
+                                colorClass = 'quantum';
+                            } else {
+                                colorClass = stateInfo.color;
+                            }
+                            
+                            output += `<span class="${colorClass}">${symbol}</span>`;
                         }
                     }
                     output += '\n';
                 }
                 
                 document.getElementById('canvas').innerHTML = output;
-            }            softReset() {
+            }softReset() {
                 // Gentle reset that maintains some continuity for smooth evolution
                 this.generation++;
                 
@@ -749,19 +802,8 @@
             }            reset() {
                 // Replaced with automated softReset for continuous evolution
             }
-              cycleMode() {
-                this.mode = (this.mode + 1) % 3;
-                
-                // Add some visual feedback by slightly perturbing the kernel
-                this.kernel.phase += Math.random() * 0.5;
-                
-                // Introduce some variation in agent behavior with mode changes
-                for (let agent of this.agents) {
-                    agent.vx += (Math.random() - 0.5) * 0.02;
-                    agent.vy += (Math.random() - 0.5) * 0.02;
-                }
-            }
-              updateCamera() {
+            
+            updateCamera() {
                 // Set camera target to kernel position
                 this.camera.targetX = this.kernel.x - W / 2;
                 this.camera.targetY = this.kernel.y - H / 2;
