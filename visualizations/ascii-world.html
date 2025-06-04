@@ -292,16 +292,9 @@
             
             requestAnimationFrame(evolve);
         }
-        
-        // ◊ initialize
+          // ◊ initialize
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100);
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                window.parent.postMessage('close', '*');
-            }
         });
         
         setTimeout(() => {

@@ -251,15 +251,7 @@
         
         function handleResize() {
             calculateDimensions();
-            initializeArrays();
-        }
-        
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                window.parent.postMessage('close', '*');
-            }
-        });
+            initializeArrays();        }
         
         // Responsive handling
         window.addEventListener('resize', handleResize);

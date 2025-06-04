@@ -193,9 +193,7 @@ body{background:#000;color:#fff;overflow:hidden;font-family:'Courier New',monosp
             }
 
             const sts=["○","●","◇","◆","△","∆","∞","◯","⬢","▣","⬟","⟐","⟡","⬠","⬡"];
-            console.log(sts[Math.min(ν-1,sts.length-1)]);
-        }        // ⚜ INIT
-        document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+            console.log(sts[Math.min(ν-1,sts.length-1)]);        }        // ⚜ INIT
         window.addEventListener('resize',rsz);
         window.addEventListener('orientationchange',()=>setTimeout(rsz,100));
 

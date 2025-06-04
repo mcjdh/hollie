@@ -243,15 +243,7 @@
         function handleResize() {
             calculateDimensions();
             initializeArrays();
-            initializeParticles();
-        }
-        
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                window.parent.postMessage('close', '*');
-            }
-        });
+            initializeParticles();        }
         
         // Responsive handling
         window.addEventListener('resize', handleResize);

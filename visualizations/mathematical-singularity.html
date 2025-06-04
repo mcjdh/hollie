@@ -320,14 +320,7 @@
         // Initialize with dynamic sizing and ensure proper startup
         setTimeout(() => {
             updateDimensions();
-            evolve();
-        }, 50);
-          // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                window.parent.postMessage('close', '*');
-            }
-        });
+            evolve();        }, 50);
     </script>
 </body>
 </html>

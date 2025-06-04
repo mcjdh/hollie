@@ -226,16 +226,9 @@
             updateDimensions();
             initializeFields();
         });
-        
-        updateDimensions();
+          updateDimensions();
         initializeFields();
         loop();
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                window.parent.postMessage('close', '*');
-            }
-        });
     </script>
 </body>
 </html>

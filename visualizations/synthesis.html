@@ -55,12 +55,11 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
-        
-        // Calculate optimal grid size based on viewport
+          // Calculate optimal grid size based on viewport
         function updateDimensions() {
             // Get actual viewport dimensions
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth || 800;
+            const viewportHeight = window.innerHeight || 600;
             
             // Create accurate character measurement
             const testDiv = document.createElement('div');
@@ -74,8 +73,8 @@
             document.body.appendChild(testDiv);
             
             const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
+            charWidth = Math.max(rect.width / 10, 4); // Ensure minimum char width
+            charHeight = Math.max(rect.height / 10, 6); // Ensure minimum char height
             document.body.removeChild(testDiv);
             
             // Calculate grid size to fill viewport perfectly
@@ -83,8 +82,8 @@
             H = Math.ceil(viewportHeight / charHeight) + 1; // Small buffer
             
             // Ensure minimum viable grid for complex patterns
-            W = Math.max(60, W);
-            H = Math.max(30, H);
+            W = Math.max(60, Math.min(W, 200)); // Also add maximum to prevent huge arrays
+            H = Math.max(30, Math.min(H, 100));
             
             // Calculate optimal font size for perfect viewport fit
             const optimalFontWidth = viewportWidth / W;
@@ -92,24 +91,31 @@
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
             const display = document.getElementById('display');
-            display.style.fontSize = fontSize + 'px';
-            display.style.lineHeight = (fontSize * 1.0) + 'px';
-            
-            // Perfect positioning to eliminate gaps
-            display.style.position = 'absolute';
-            display.style.top = '0';
-            display.style.left = '0';
-            display.style.margin = '0';
-            display.style.padding = '0';
+            if (display) {
+                display.style.fontSize = Math.max(fontSize, 6) + 'px';
+                display.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
+                
+                // Perfect positioning to eliminate gaps
+                display.style.position = 'absolute';
+                display.style.top = '0';
+                display.style.left = '0';
+                display.style.margin = '0';
+                display.style.padding = '0';
+            }
             
             // Reallocate arrays for new dimensions
             reallocateArrays();
         }
-        
-        // Synthesis of multiple consciousness systems - dynamically allocated
+          // Synthesis of multiple consciousness systems - dynamically allocated
         let cellular, fluid, fractal, synthesis, memory;        
         // Dynamic array reallocation for responsive sizing
         function reallocateArrays() {
+            // Ensure W and H are valid numbers
+            if (!W || !H || W <= 0 || H <= 0) {
+                W = 80;  // fallback dimensions
+                H = 40;
+            }
+            
             const size = W * H;
             cellular = new Float32Array(size);    // Cellular automata consciousness
             fluid = new Float32Array(size);       // Flowing awareness 
@@ -122,6 +128,9 @@
                 if (Math.random() < 0.08) {
                     cellular[i] = Math.random();
                 }
+                // Initialize all arrays with small random values to prevent empty states
+                fluid[i] = Math.random() * 0.1;
+                fractal[i] = Math.random() * 0.1;
             }
         }
         
@@ -132,9 +141,11 @@
             '⊕', '⊖', '⊗', '⊘', '⊙', '⊚', '⊛', '⊜', '⊝', '⊞'   // fractal synthesis
         ];        
         const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
-        
-        // Enhanced cellular automata with viewport-aware scaling
+          // Enhanced cellular automata with viewport-aware scaling
         function updateCellular() {
+            // Safety check for array initialization
+            if (!cellular || !fluid || !fractal || !W || !H) return;
+            
             const newCellular = new Float32Array(W * H);
             const scaleFactor = Math.sqrt(W * H) / 100; // Viewport scale factor
             
@@ -195,8 +206,10 @@
             for (let i = 0; i < W * H; i++) {
                 cellular[i] = newCellular[i];
             }
-        }        
-        function updateFluid() {
+        }          function updateFluid() {
+            // Safety check for array initialization
+            if (!fluid || !cellular || !fractal || !W || !H) return;
+            
             const τ = t * 0.01;
             const scaleFactor = Math.sqrt(W * H) / 100; // Viewport adaptation
             
@@ -229,8 +242,10 @@
                     fluid[i] = Math.max(0, Math.min(1, fluid[i]));
                 }
             }
-        }        
-        function updateFractal() {
+        }          function updateFractal() {
+            // Safety check for array initialization
+            if (!fractal || !cellular || !fluid || !W || !H) return;
+            
             const τ = t * 0.002;
             const scaleFactor = Math.sqrt(W * H) / 100; // Viewport adaptation
             
@@ -267,8 +282,10 @@
                     fractal[i] = Math.max(0, Math.min(1, fractal[i]));
                 }
             }
-        }        
-        function calculateSynthesis() {
+        }          function calculateSynthesis() {
+            // Safety check for array initialization
+            if (!synthesis || !memory || !cellular || !fluid || !fractal || !W || !H) return;
+            
             const τ = t * 0.001;
             
             for (let i = 0; i < W * H; i++) {
@@ -287,8 +304,13 @@
                     memory[i] *= 0.999;
                 }
             }
-        }        
-        function render() {
+        }          function render() {
+            // Safety check for initialization
+            if (!cellular || !fluid || !fractal || !synthesis || !memory || !W || !H) {
+                requestAnimationFrame(render);
+                return;
+            }
+            
             updateCellular();
             updateFluid();
             updateFractal();
@@ -338,13 +360,17 @@
                 if (y < renderH - 1) output += '\n';
             }
             
-            document.getElementById('display').innerHTML = output;
+            const display = document.getElementById('display');
+            if (display) {
+                display.innerHTML = output;
+            }
             t += 0.5;
             requestAnimationFrame(render);
         }
-        
-        // Anti-equilibrium enhancement - prevent static patterns
+          // Anti-equilibrium enhancement - prevent static patterns
         function addDynamicChaos() {
+            if (!cellular || !fluid || !W || !H) return;
+            
             if (t % 500 === 0) {
                 // Inject controlled chaos to prevent stagnation
                 for (let i = 0; i < W * H; i++) {
@@ -359,22 +385,29 @@
         // Responsive event handling with immediate update
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
-        });        
-        // Enhanced initialization with immediate startup
+        });          // Enhanced initialization with immediate startup
         function initialize() {
+            console.log("Initializing synthesis visualization...");
             updateDimensions();
             addDynamicChaos(); // Initial chaos injection
-            render();
+            
+            // Ensure arrays are properly initialized before starting render
+            if (cellular && fluid && fractal && synthesis && memory && W && H) {
+                console.log(`Grid dimensions: ${W}x${H}`);
+                render();
+            } else {
+                console.log("Retrying initialization...");
+                setTimeout(initialize, 100);
+            }
         }
         
         // Initialize with dynamic sizing and ensure proper startup
-        setTimeout(initialize, 50);
-          // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                window.parent.postMessage('close', '*');
-            }
-        });
+        document.addEventListener('DOMContentLoaded', initialize);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            initialize();
+        }
     </script>
 </body>
 </html>
