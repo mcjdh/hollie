@@ -9,7 +9,7 @@
         body {
             margin: 0;
             padding: 0;
-            background: #000;
+            background: linear-gradient(180deg, #080012 0%, #000 60%, #120018 100%);
             color: #0ff;
             font-family: 'Courier New', monospace;
             overflow-x: hidden;
@@ -27,8 +27,8 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 480px;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid #333;
             z-index: 100;
             padding: 8px;
@@ -51,11 +51,13 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
-            width: 100%;        }
+            width: 100%;
+        }
 
         .viz-card {
             background: rgba(0,255,255,0.05);
             border: 1px solid rgba(0,255,255,0.2);
+            box-shadow: 0 0 6px rgba(255,255,255,0.1);
             border-radius: 6px;
             padding: 12px 8px;
             cursor: pointer;
@@ -66,6 +68,11 @@
             flex-direction: column;
             justify-content: center;
             position: relative;
+        }
+
+        .viz-card:hover {
+            background: rgba(0,255,255,0.08);
+            box-shadow: 0 0 10px rgba(255,255,255,0.15);
         }
 
         .viz-card:active {
@@ -103,8 +110,8 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 480px;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
             border-top: 1px solid #333;
             padding: 8px;
             display: flex;
@@ -113,8 +120,8 @@
         }
 
         .ctrl-btn {
-            background: none;
-            border: 1px solid #333;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(0,255,255,0.3);
             color: #0ff;
             padding: 6px 12px;
             border-radius: 4px;
