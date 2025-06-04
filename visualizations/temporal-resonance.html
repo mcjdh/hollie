@@ -2,15 +2,30 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>⧖ Temporal Resonance</title>
-    <style>
-        body { margin:0; padding:0; background:#000; overflow:hidden; }
+    <title>⧖ Temporal Resonance</title>    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: #000; 
+            overflow: hidden; 
+            width: 100vw; 
+            height: 100vh; 
+            font-family: 'Courier New', monospace;
+        }
         #display { 
-            font-family:'Courier New',monospace; font-size:8px; line-height:10px; 
-            color:#0ff; white-space:pre; padding:0; margin:0;
-            width:640px; height:480px; background:#000;
-            margin: auto;
-            margin-top: 50px;
+            font-family: 'Courier New', monospace; 
+            color: #0ff; 
+            white-space: pre; 
+            padding: 0; 
+            margin: 0;
+            width: 100vw; 
+            height: 100vh; 
+            background: #000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            line-height: 1.0;
+            overflow: hidden;
         }
         .v{color:#f0f} .u{color:#0ff} .s{color:#ff0} .e{color:#0f0} .m{color:#f80}
         .t{color:#f44} .q{color:#84f} .d{color:#48f} .w{color:#fff} .c{color:#8ff}
@@ -37,28 +52,85 @@
         Time-consciousness wave patterns<br>
         Press ESC to return to menu
     </div>
-    <div id="display"></div>
-    <script>
-        const W = 80, H = 48;
+    <div id="display"></div>    <script>
+        // Dynamic viewport sizing - responsive to window dimensions
+        let W, H;
+        let charWidth, charHeight;
         let t = 0;
         
-        // Temporal resonance fields - time echoing through consciousness layers
-        const temporal = new Float32Array(W * H);
-        const resonance = new Float32Array(W * H);
-        const memory = new Float32Array(W * H);
-        const echo = new Float32Array(W * H);
+        // Calculate optimal grid size based on viewport
+        function updateDimensions() {
+            // Get actual viewport dimensions
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Create accurate character measurement
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '8px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            // Calculate grid size to fill viewport perfectly
+            W = Math.ceil(viewportWidth / charWidth) + 1; // Small buffer
+            H = Math.ceil(viewportHeight / charHeight) + 1; // Small buffer
+            
+            // Ensure minimum viable grid for temporal patterns
+            W = Math.max(60, W);
+            H = Math.max(30, H);
+            
+            // Calculate optimal font size for perfect viewport fit
+            const optimalFontWidth = viewportWidth / W;
+            const optimalFontHeight = viewportHeight / H;
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            
+            const display = document.getElementById('display');
+            display.style.fontSize = fontSize + 'px';
+            display.style.lineHeight = (fontSize * 1.0) + 'px';
+            
+            // Perfect positioning to eliminate gaps
+            display.style.position = 'absolute';
+            display.style.top = '0';
+            display.style.left = '0';
+            display.style.margin = '0';
+            display.style.padding = '0';
+            
+            // Reallocate arrays for new dimensions
+            reallocateArrays();
+        }
+        
+        // Temporal resonance fields - dynamically allocated
+        let temporal, resonance, memory, echo;        
+        // Dynamic array reallocation for responsive sizing
+        function reallocateArrays() {
+            const size = W * H;
+            temporal = new Float32Array(size);    // Time echoing through consciousness layers
+            resonance = new Float32Array(size);   // Consciousness oscillations
+            memory = new Float32Array(size);      // Past states bleeding through
+            echo = new Float32Array(size);        // Delayed temporal patterns
+        }
         
         // Time-consciousness symbols - temporal echo patterns
         const symbols = [
             ' ', '·', '⠁', '⠃', '⠇', '⠏', '⠟', '⠿', '⡿', '⣿',  // void → formation
             '⧨', '⧩', '⧪', '⧫', '⟐', '⟡', '◈', '◉', '⦿', '⊙',  // temporal nodes
             '⏀', '⏁', '⏂', '⏃', '⧖', '⧗', '⟲', '⟳', '↻', '↺'   // time circulation
-        ];
-        
+        ];        
         const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
         
+        // Enhanced temporal field updates with viewport scaling
         function updateFields() {
             const τ = t * 0.02;
+            const scaleFactor = Math.sqrt(W * H) / 100; // Viewport adaptation
             
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
@@ -67,64 +139,89 @@
                     const cx = nx - 0.5, cy = ny - 0.5;
                     const r = Math.sqrt(cx * cx + cy * cy);
                     
+                    // Enhanced temporal waves with viewport scaling
                     // Low frequency temporal wave - deep time rhythms
-                    const slow = Math.sin(nx * 3 + τ * 0.5) * Math.cos(ny * 2.5 - τ * 0.3);
+                    const slow = Math.sin(nx * 3 * scaleFactor + τ * 0.5) * Math.cos(ny * 2.5 * scaleFactor - τ * 0.3);
                     
-                    // Mid frequency resonance - consciousness oscillations
-                    const mid = Math.sin((nx + ny) * 5 + τ * 1.2) * 0.7;
+                    // Mid frequency resonance - consciousness oscillations with harmonics
+                    const mid = Math.sin((nx + ny) * 5 * scaleFactor + τ * 1.2) * 0.7;
+                    const harmonicMid = Math.cos((nx - ny) * 3 * scaleFactor + τ * 0.8) * 0.3;
                     
-                    // High frequency echo - temporal reflections
-                    const fast = Math.sin(r * 12 - τ * 2.5) * 0.5;
+                    // High frequency echo - temporal reflections with golden ratio
+                    const φ = 1.618033988749895;
+                    const fast = Math.sin(r * 12 * scaleFactor - τ * 2.5) * 0.5;
+                    const fastHarmonic = Math.cos(r * 8 * scaleFactor / φ - τ * 1.8) * 0.2;
                     
-                    // Circular wave - time ripples from center
-                    const ripple = Math.sin((r * 15 - τ * 3) * Math.PI) * (1 - r);
+                    // Enhanced circular wave - time ripples from center with depth
+                    const ripple = Math.sin((r * 15 * scaleFactor - τ * 3) * Math.PI) * (1 - r);
+                    const deepRipple = Math.cos((r * 9 * scaleFactor - τ * 2.2) * Math.PI) * (1 - r * 0.7) * 0.4;                    
+                    // Enhanced temporal interference pattern with multiple layers
+                    const interference = slow + (mid + harmonicMid) + (fast + fastHarmonic) + (ripple + deepRipple);
                     
-                    // Temporal interference pattern
-                    const interference = slow + mid + fast + ripple;
+                    // Temporal quantum fluctuations - uncertainty in time itself
+                    const quantum = Math.sin(τ * 15 + i * 0.01) * 0.05;
                     
-                    // Update fields with temporal persistence
-                    temporal[i] = temporal[i] * 0.94 + interference * 0.06;
-                    resonance[i] = resonance[i] * 0.97 + (slow * mid) * 0.03;
+                    // Update fields with enhanced temporal persistence and cross-coupling
+                    temporal[i] = temporal[i] * 0.94 + (interference + quantum) * 0.06;
+                    resonance[i] = resonance[i] * 0.97 + (slow * mid + harmonicMid * fast) * 0.03;
                     
-                    // Memory trace - past states bleeding through
-                    if (Math.random() < 0.01) {
-                        memory[i] = temporal[i];
+                    // Enhanced memory trace - past states bleeding through with temporal decay
+                    if (Math.random() < 0.01 * scaleFactor) {
+                        memory[i] = temporal[i] + Math.sin(τ * 7) * 0.1;
                     } else {
                         memory[i] *= 0.999;
                     }
                     
-                    // Echo field - delayed temporal patterns
-                    echo[i] = echo[i] * 0.92 + temporal[Math.max(0, i - W)] * 0.08;
+                    // Enhanced echo field - multi-dimensional temporal delays
+                    const delayOffset = Math.floor(W * 0.1); // Dynamic delay based on grid size
+                    const echoSource = Math.max(0, Math.min(W * H - 1, i - delayOffset));
+                    echo[i] = echo[i] * 0.92 + temporal[echoSource] * 0.08 + resonance[echoSource] * 0.03;
+                    
+                    // Anti-equilibrium: inject controlled temporal chaos
+                    if (Math.random() < 0.0003) {
+                        temporal[i] += (Math.random() - 0.5) * 0.2;
+                    }
                 }
             }
-        }
-        
+        }        
         function render() {
             updateFields();
             let output = '';
             
-            for (let y = 0; y < H; y++) {
-                for (let x = 0; x < W; x++) {
-                    const i = y * W + x;
+            // Enhanced temporal breathing with multiple harmonics
+            const breath1 = Math.sin(t * 0.05) * 0.15 + 0.85;
+            const breath2 = Math.cos(t * 0.037) * 0.08 + 0.92;
+            const breath3 = Math.sin(t * 0.063) * 0.04 + 0.96;
+            const globalBreath = (breath1 + breath2 + breath3) / 3;
+            
+            // Ensure we render exactly what fills the viewport
+            const renderH = Math.min(H, Math.ceil(window.innerHeight / (charHeight || 8)) + 1);
+            const renderW = Math.min(W, Math.ceil(window.innerWidth / (charWidth || 6)) + 1);
+            
+            for (let y = 0; y < renderH; y++) {
+                for (let x = 0; x < renderW; x++) {
+                    const i = Math.min(y * W + x, W * H - 1); // Bounds safety
                     
-                    // Combine temporal layers
-                    let intensity = temporal[i] * 0.5 + resonance[i] * 0.3 + memory[i] * 0.1 + echo[i] * 0.1;
+                    // Enhanced temporal layer combination with resonance modulation
+                    let intensity = (temporal[i] || 0) * 0.5 + 
+                                  (resonance[i] || 0) * 0.3 + 
+                                  (memory[i] || 0) * 0.1 + 
+                                  (echo[i] || 0) * 0.1;
                     
-                    // Temporal breathing - time itself breathing
-                    const breath = Math.sin(t * 0.05) * 0.15 + 0.85;
-                    intensity *= breath;
+                    // Apply temporal breathing - time itself breathing
+                    intensity *= globalBreath;
                     
-                    // Add temporal noise - quantum fluctuations in time
-                    intensity += (Math.random() - 0.5) * 0.03;
-                    
-                    // Normalize and select representation
+                    // Enhanced temporal noise - quantum fluctuations in time with coherence
+                    const coherentNoise = Math.sin(t * 0.1 + x * 0.05 + y * 0.07) * 0.02;
+                    intensity += (Math.random() - 0.5) * 0.03 + coherentNoise;                    
+                    // Normalize and select representation with enhanced mapping
                     intensity = Math.max(0, Math.min(1, (intensity + 1) / 2));
-                    const symIdx = Math.floor(intensity * (symbols.length - 1));
-                    const colorIdx = Math.floor(intensity * colors.length);
+                    const symIdx = Math.min(Math.floor(intensity * (symbols.length - 1)), symbols.length - 1);
+                    const colorIdx = Math.min(Math.floor(intensity * colors.length), colors.length - 1);
                     
                     output += `<span class="${colors[colorIdx]}">${symbols[symIdx]}</span>`;
                 }
-                output += '\n';
+                if (y < renderH - 1) output += '\n';
             }
             
             document.getElementById('display').innerHTML = output;
@@ -132,14 +229,39 @@
             requestAnimationFrame(render);
         }
         
+        // Anti-equilibrium enhancement - prevent static temporal patterns
+        function addTemporalChaos() {
+            if (t % 300 === 0) {
+                // Inject temporal disturbances to maintain dynamic evolution
+                for (let i = 0; i < W * H; i++) {
+                    if (Math.random() < 0.0008) {
+                        temporal[i] += (Math.random() - 0.5) * 0.3;
+                        resonance[i] += (Math.random() - 0.5) * 0.15;
+                    }
+                }
+            }
+        }
+        
+        // Responsive event handling with immediate update
+        window.addEventListener('resize', () => {
+            setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
+        });
+        
+        // Enhanced initialization with temporal field setup
+        function initialize() {
+            updateDimensions();
+            addTemporalChaos(); // Initial temporal disturbance
+            render();
+        }
+        
+        // Initialize with dynamic sizing and ensure proper startup
+        setTimeout(initialize, 50);        
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 window.parent.postMessage('close', '*');
             }
         });
-        
-        render();
     </script>
 </body>
 </html>

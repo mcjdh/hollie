@@ -2,15 +2,30 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>⊕ Synthesis</title>
-    <style>
-        body { margin:0; padding:0; background:#000; overflow:hidden; }
+    <title>⊕ Synthesis</title>    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: #000; 
+            overflow: hidden; 
+            width: 100vw; 
+            height: 100vh; 
+            font-family: 'Courier New', monospace;
+        }
         #display { 
-            font-family:'Courier New',monospace; font-size:8px; line-height:10px; 
-            color:#0ff; white-space:pre; padding:0; margin:0;
-            width:640px; height:480px; background:#000;
-            margin: auto;
-            margin-top: 50px;
+            font-family: 'Courier New', monospace; 
+            color: #0ff; 
+            white-space: pre; 
+            padding: 0; 
+            margin: 0;
+            width: 100vw; 
+            height: 100vh; 
+            background: #000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            line-height: 1.0;
+            overflow: hidden;
         }
         .v{color:#f0f} .u{color:#0ff} .s{color:#ff0} .e{color:#0f0} .m{color:#f80}
         .t{color:#f44} .q{color:#84f} .d{color:#48f} .w{color:#fff} .c{color:#8ff}
@@ -37,36 +52,93 @@
         Cellular + Fluid + Fractal systems<br>
         Press ESC to return to menu
     </div>
-    <div id="display"></div>
-    <script>
-        const W = 80, H = 48;
+    <div id="display"></div>    <script>
+        // Dynamic viewport sizing - responsive to window dimensions
+        let W, H;
+        let charWidth, charHeight;
         let t = 0;
         
-        // Synthesis of multiple consciousness systems
-        const cellular = new Float32Array(W * H);    // Cellular automata consciousness
-        const fluid = new Float32Array(W * H);       // Flowing awareness 
-        const fractal = new Float32Array(W * H);     // Recursive self-organization
-        const synthesis = new Float32Array(W * H);   // Emergent combination
-        const memory = new Float32Array(W * H);      // Memory traces
+        // Calculate optimal grid size based on viewport
+        function updateDimensions() {
+            // Get actual viewport dimensions
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Create accurate character measurement
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '8px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            // Calculate grid size to fill viewport perfectly
+            W = Math.ceil(viewportWidth / charWidth) + 1; // Small buffer
+            H = Math.ceil(viewportHeight / charHeight) + 1; // Small buffer
+            
+            // Ensure minimum viable grid for complex patterns
+            W = Math.max(60, W);
+            H = Math.max(30, H);
+            
+            // Calculate optimal font size for perfect viewport fit
+            const optimalFontWidth = viewportWidth / W;
+            const optimalFontHeight = viewportHeight / H;
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            
+            const display = document.getElementById('display');
+            display.style.fontSize = fontSize + 'px';
+            display.style.lineHeight = (fontSize * 1.0) + 'px';
+            
+            // Perfect positioning to eliminate gaps
+            display.style.position = 'absolute';
+            display.style.top = '0';
+            display.style.left = '0';
+            display.style.margin = '0';
+            display.style.padding = '0';
+            
+            // Reallocate arrays for new dimensions
+            reallocateArrays();
+        }
+        
+        // Synthesis of multiple consciousness systems - dynamically allocated
+        let cellular, fluid, fractal, synthesis, memory;        
+        // Dynamic array reallocation for responsive sizing
+        function reallocateArrays() {
+            const size = W * H;
+            cellular = new Float32Array(size);    // Cellular automata consciousness
+            fluid = new Float32Array(size);       // Flowing awareness 
+            fractal = new Float32Array(size);     // Recursive self-organization
+            synthesis = new Float32Array(size);   // Emergent combination
+            memory = new Float32Array(size);      // Memory traces
+            
+            // Initialize with random cellular seeds scaled to new dimensions
+            for (let i = 0; i < size; i++) {
+                if (Math.random() < 0.08) {
+                    cellular[i] = Math.random();
+                }
+            }
+        }
         
         // Synthesis symbols - emergence from complexity interaction
         const symbols = [
             ' ', '·', '⠁', '⠃', '⠇', '⠏', '⠟', '⠿', '⡿', '⣿',  // cellular emergence
             '∴', '∵', '∸', '∹', '∺', '∻', '∼', '∽', '∾', '∿',  // fluid logic
             '⊕', '⊖', '⊗', '⊘', '⊙', '⊚', '⊛', '⊜', '⊝', '⊞'   // fractal synthesis
-        ];
-        
+        ];        
         const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
         
-        // Initialize with random cellular seeds
-        for (let i = 0; i < W * H; i++) {
-            if (Math.random() < 0.08) {
-                cellular[i] = Math.random();
-            }
-        }
-        
+        // Enhanced cellular automata with viewport-aware scaling
         function updateCellular() {
             const newCellular = new Float32Array(W * H);
+            const scaleFactor = Math.sqrt(W * H) / 100; // Viewport scale factor
             
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
@@ -107,20 +179,28 @@
                             newCellular[i] = current * 0.97;
                         }
                     }
-                    
-                    // Cross-system influence
-                    newCellular[i] += fluid[i] * 0.03 + fractal[i] * 0.02;
+                      // Cross-system influence with viewport scaling
+                    newCellular[i] += fluid[i] * 0.03 * scaleFactor + fractal[i] * 0.02 * scaleFactor;
                     newCellular[i] = Math.max(0, Math.min(1, newCellular[i]));
+                }
+            }
+            
+            // Anti-equilibrium: periodic seeding to prevent stagnation
+            if (t % 200 === 0) {
+                for (let i = 0; i < W * H; i++) {
+                    if (Math.random() < 0.001) {
+                        newCellular[i] += Math.random() * 0.3;
+                    }
                 }
             }
             
             for (let i = 0; i < W * H; i++) {
                 cellular[i] = newCellular[i];
             }
-        }
-        
+        }        
         function updateFluid() {
             const τ = t * 0.01;
+            const scaleFactor = Math.sqrt(W * H) / 100; // Viewport adaptation
             
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
@@ -128,14 +208,15 @@
                     const nx = x / W, ny = y / H;
                     const cx = nx - 0.5, cy = ny - 0.5;
                     
-                    // Circular fluid flow with time evolution
+                    // Enhanced circular fluid flow with viewport scaling
                     const angle = Math.atan2(cy, cx) + τ;
                     const r = Math.sqrt(cx * cx + cy * cy);
-                    const flow = Math.sin(r * 8 + τ * 2) * Math.cos(angle * 3);
+                    const flow = Math.sin(r * 8 * scaleFactor + τ * 2) * Math.cos(angle * 3);
                     
-                    // Advection-like behavior
+                    // Advection-like behavior with temporal evolution
                     const prev = fluid[i];
-                    fluid[i] = prev * 0.96 + flow * 0.04;
+                    const timeWave = Math.sin(τ * 3 + x * 0.1 + y * 0.1) * 0.02;
+                    fluid[i] = prev * 0.96 + (flow + timeWave) * 0.04;
                     
                     // Cellular influence on fluid
                     if (cellular[i] > 0.5) {
@@ -150,25 +231,26 @@
                     fluid[i] = Math.max(0, Math.min(1, fluid[i]));
                 }
             }
-        }
-        
+        }        
         function updateFractal() {
             const τ = t * 0.002;
+            const scaleFactor = Math.sqrt(W * H) / 100; // Viewport adaptation
             
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
                     const i = y * W + x;
                     
-                    // Simplified Julia set with evolving parameters
-                    const zx = (x - W/2) / (W/8);
-                    const zy = (y - H/2) / (H/8);
+                    // Enhanced Julia set with viewport-aware scaling
+                    const zx = (x - W/2) / (W/8 * scaleFactor);
+                    const zy = (y - H/2) / (H/8 * scaleFactor);
                     
-                    const cx = 0.7 * Math.cos(τ) - 0.2;
-                    const cy = 0.3 * Math.sin(τ * 1.3) + 0.1;
-                    
+                    // Evolving fractal parameters with golden ratio harmonics
+                    const φ = 1.618033988749895;
+                    const cx = 0.7 * Math.cos(τ) - 0.2 + Math.sin(τ * φ) * 0.1;
+                    const cy = 0.3 * Math.sin(τ * 1.3) + 0.1 + Math.cos(τ / φ) * 0.05;                    
                     let x0 = zx, y0 = zy;
                     let iter = 0;
-                    const maxIter = 12;
+                    const maxIter = Math.floor(12 + scaleFactor * 2); // Adaptive iteration depth
                     
                     while (x0*x0 + y0*y0 <= 4 && iter < maxIter) {
                         const temp = x0*x0 - y0*y0 + cx;
@@ -179,34 +261,35 @@
                     
                     let value = iter / maxIter;
                     
-                    // System interactions
-                    if (cellular[i] > 0.3) value *= 1.2;
-                    if (fluid[i] > 0.2) value *= (1 + fluid[i] * 0.3);
+                    // Enhanced system interactions with temporal modulation
+                    if (cellular[i] > 0.3) value *= (1.2 + Math.sin(τ * 10) * 0.1);
+                    if (fluid[i] > 0.2) value *= (1 + fluid[i] * 0.3 + Math.cos(τ * 7) * 0.05);
                     
                     fractal[i] = fractal[i] * 0.92 + value * 0.08;
                     fractal[i] = Math.max(0, Math.min(1, fractal[i]));
                 }
             }
-        }
-        
+        }        
         function calculateSynthesis() {
+            const τ = t * 0.001;
+            
             for (let i = 0; i < W * H; i++) {
-                // Synthesis emerges from interaction
+                // Enhanced synthesis with harmonic resonance
                 const interaction = cellular[i] * fluid[i] * fractal[i];
                 const combination = (cellular[i] + fluid[i] + fractal[i]) / 3;
-                const emergence = Math.sqrt(interaction) + combination * 0.5;
+                const resonance = Math.sin(τ * 5 + interaction * 10) * 0.1;
+                const emergence = Math.sqrt(interaction) + combination * 0.5 + resonance;
                 
                 synthesis[i] = synthesis[i] * 0.95 + emergence * 0.05;
                 
-                // Memory accumulation at high synthesis points
+                // Enhanced memory accumulation with temporal waves
                 if (synthesis[i] > 0.7) {
-                    memory[i] = Math.min(1, memory[i] + 0.01);
+                    memory[i] = Math.min(1, memory[i] + 0.01 + Math.sin(τ * 8) * 0.005);
                 } else {
                     memory[i] *= 0.999;
                 }
             }
-        }
-        
+        }        
         function render() {
             updateCellular();
             updateFluid();
@@ -215,40 +298,46 @@
             
             let output = '';
             
-            for (let y = 0; y < H; y++) {
-                for (let x = 0; x < W; x++) {
-                    const i = y * W + x;
-                    
-                    // Choose dominant system or synthesis
+            // Enhanced breathing synthesis effect with harmonic waves
+            const breath1 = Math.sin(t * 0.04) * 0.1 + 0.9;
+            const breath2 = Math.cos(t * 0.03) * 0.05 + 0.95;
+            const globalBreath = (breath1 + breath2) / 2;
+            
+            // Ensure we render exactly what fills the viewport
+            const renderH = Math.min(H, Math.ceil(window.innerHeight / (charHeight || 8)) + 1);
+            const renderW = Math.min(W, Math.ceil(window.innerWidth / (charWidth || 6)) + 1);
+            
+            for (let y = 0; y < renderH; y++) {
+                for (let x = 0; x < renderW; x++) {
+                    const i = Math.min(y * W + x, W * H - 1); // Bounds safety                    
+                    // Choose dominant system or synthesis with enhanced logic
                     let intensity, system;
-                    const s = synthesis[i] + memory[i] * 0.3;
+                    const s = (synthesis[i] || 0) + (memory[i] || 0) * 0.3;
                     
                     if (s > 0.4) {
                         intensity = s;
                         system = 2; // synthesis symbols
-                    } else if (fractal[i] > cellular[i] && fractal[i] > fluid[i]) {
-                        intensity = fractal[i];
+                    } else if ((fractal[i] || 0) > (cellular[i] || 0) && (fractal[i] || 0) > (fluid[i] || 0)) {
+                        intensity = fractal[i] || 0;
                         system = 2; // fractal
-                    } else if (fluid[i] > cellular[i]) {
-                        intensity = fluid[i];
+                    } else if ((fluid[i] || 0) > (cellular[i] || 0)) {
+                        intensity = fluid[i] || 0;
                         system = 1; // fluid
                     } else {
-                        intensity = cellular[i];
+                        intensity = cellular[i] || 0;
                         system = 0; // cellular
                     }
                     
-                    // Breathing synthesis effect
-                    const breath = Math.sin(t * 0.04) * 0.1 + 0.9;
-                    intensity *= breath;
-                    
-                    // Symbol selection by system
+                    // Apply breathing synthesis effect
+                    intensity *= globalBreath;                    
+                    // Symbol selection by system with bounds checking
                     const baseIdx = system * 10;
-                    const symIdx = baseIdx + Math.floor(intensity * 9);
-                    const colorIdx = Math.floor(intensity * colors.length);
+                    const symIdx = Math.min(baseIdx + Math.floor(intensity * 9), symbols.length - 1);
+                    const colorIdx = Math.min(Math.floor(intensity * colors.length), colors.length - 1);
                     
                     output += `<span class="${colors[colorIdx]}">${symbols[symIdx]}</span>`;
                 }
-                output += '\n';
+                if (y < renderH - 1) output += '\n';
             }
             
             document.getElementById('display').innerHTML = output;
@@ -256,14 +345,38 @@
             requestAnimationFrame(render);
         }
         
-        // Keyboard controls
+        // Anti-equilibrium enhancement - prevent static patterns
+        function addDynamicChaos() {
+            if (t % 500 === 0) {
+                // Inject controlled chaos to prevent stagnation
+                for (let i = 0; i < W * H; i++) {
+                    if (Math.random() < 0.0005) {
+                        cellular[i] += (Math.random() - 0.5) * 0.2;
+                        fluid[i] += (Math.random() - 0.5) * 0.1;
+                    }
+                }
+            }
+        }
+        
+        // Responsive event handling with immediate update
+        window.addEventListener('resize', () => {
+            setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
+        });        
+        // Enhanced initialization with immediate startup
+        function initialize() {
+            updateDimensions();
+            addDynamicChaos(); // Initial chaos injection
+            render();
+        }
+        
+        // Initialize with dynamic sizing and ensure proper startup
+        setTimeout(initialize, 50);
+          // Keyboard controls
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 window.parent.postMessage('close', '*');
             }
         });
-        
-        render();
     </script>
 </body>
 </html>
