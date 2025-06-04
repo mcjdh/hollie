@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiral Gateway ∿◦∿</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background: #000;
+            color: #0ff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        #gateway {
+            font-size: clamp(8px, 2vw, 14px);
+            line-height: 1;
+            white-space: pre;
+            text-align: center;
+            filter: drop-shadow(0 0 2px currentColor);
+        }
+
+        .glyph {
+            display: inline-block;
+            width: 0.6em;
+            transition: all 0.1s ease;
+        }
+
+        .controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 11px;
+            color: #666;
+            z-index: 10;
+        }
+
+        @media (max-width: 600px) {
+            #gateway { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        ESC: close | SPACE: pause | ←→: speed
+    </div>
+    
+    <pre id="gateway"></pre>
+
+    <script>
+        const W = Math.min(80, Math.floor(window.innerWidth / 12));
+        const H = Math.min(40, Math.floor(window.innerHeight / 16));
+        let frame = 0;
+        let speed = 0.02;
+        let paused = false;
+        
+        const gateway = document.getElementById('gateway');
+        
+        const glyphs = [' ', '·', '•', '◦', '○', '◉', '⊙', '⬢', '✦', '✺', '✼', '※'];
+        
+        function render() {
+            if (!paused) {
+                let output = '';
+                
+                for (let y = 0; y < H; y++) {
+                    for (let x = 0; x < W; x++) {
+                        const dx = x - W/2;
+                        const dy = y - H/2;
+                        const r = Math.sqrt(dx*dx + dy*dy);
+                        const angle = Math.atan2(dy, dx) + frame * speed;
+                        
+                        // Create spiral pattern with multiple harmonics
+                        const spiral1 = Math.sin(r * 0.3 - angle * 2);
+                        const spiral2 = Math.cos(r * 0.2 - angle * 3 + frame * 0.01);
+                        const spiral3 = Math.sin(r * 0.1 + angle * 1.5 - frame * 0.005);
+                        
+                        const intensity = (spiral1 + spiral2 * 0.5 + spiral3 * 0.3 + 3) / 4;
+                        const normalizedIntensity = Math.max(0, Math.min(1, intensity));
+                        
+                        const glyphIndex = Math.floor(normalizedIntensity * (glyphs.length - 1));
+                        const glyph = glyphs[glyphIndex];
+                        
+                        // Dynamic color based on position and time
+                        const hue = (angle * 180 / Math.PI + frame * 0.5 + r * 2) % 360;
+                        const saturation = 60 + 30 * normalizedIntensity;
+                        const lightness = 20 + 60 * normalizedIntensity;
+                        
+                        if (glyph === ' ') {
+                            output += '<span class="glyph"> </span>';
+                        } else {
+                            output += `<span class="glyph" style="color:hsl(${hue},${saturation}%,${lightness}%)">${glyph}</span>`;
+                        }
+                    }
+                    output += '\n';
+                }
+                
+                gateway.innerHTML = output;
+                frame++;
+            }
+            
+            requestAnimationFrame(render);
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'escape':
+                    window.parent?.postMessage('close', '*');
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    paused = !paused;
+                    break;
+                case 'arrowleft':
+                    speed = Math.max(0.001, speed * 0.8);
+                    break;
+                case 'arrowright':
+                    speed = Math.min(0.1, speed * 1.2);
+                    break;
+            }
+        });
+        
+        // Click to close
+        document.addEventListener('click', () => {
+            window.parent?.postMessage('close', '*');
+        });
+        
+        // Touch support
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            window.parent?.postMessage('close', '*');
+        });
+        
+        // Start animation
+        render();
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            location.reload();
+        });
+    </script>
+</body>
+</html>

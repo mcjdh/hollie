@@ -135,8 +135,7 @@
         .ctrl-btn:active {
             background: rgba(0,255,255,0.1);
             transform: scale(0.95);
-        }
-        .fullscreen {
+        }        .fullscreen {
             position: fixed;
             top: 0;
             left: 0;
@@ -146,6 +145,41 @@
             z-index: 1000;
             display: none;
             cursor: pointer;
+        }
+
+        .exit-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1004;
+            cursor: pointer;
+            background: transparent;
+            pointer-events: auto;
+        }
+
+        .exit-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,255,255,0.1);
+            border: 1px solid rgba(0,255,255,0.3);
+            color: #0ff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            z-index: 1005;
+            opacity: 0.7;
+            pointer-events: none;
+            animation: fadeInOut 4s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
         }
 
         .close-x {
@@ -163,16 +197,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1001;
+            z-index: 1006;
         }
 
         .close-x:active {
             background: rgba(0,255,255,0.2);
-        }
-        .frame {
+        }.frame {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border: none;
+            z-index: 1003;
             /* allow interaction inside embedded visualizations */
             pointer-events: auto;
         }
@@ -265,12 +302,20 @@
                 <div class="viz-symbol">⊙</div>
                 <div class="viz-label">◦ ∇⊙∇ ◦</div>
                 <div class="viz-desc">⟨ ∂S/∂t=-k∇²I+Ψ ⟩</div>
-            </div>
-
-            <div class="viz-card" onclick="open_viz('quantum-swirl.html')">
+            </div>            <div class="viz-card" onclick="open_viz('quantum-swirl.html')">
                 <div class="viz-symbol">∿</div>
                 <div class="viz-label">◦ ∿◉∿ ◦</div>
                 <div class="viz-desc">⟨ ψ=sin(r·α-t)·cos(3θ) ⟩</div>
+            </div>            <div class="viz-card" onclick="open_viz('spiral-gateway.html')">
+                <div class="viz-symbol">◦</div>
+                <div class="viz-label">◦ ✺◦✺ ◦</div>
+                <div class="viz-desc">⟨ r·θ+t→∞·∿ ⟩</div>
+            </div>
+
+            <div class="viz-card" onclick="open_viz('vortex-gateway.html')">
+                <div class="viz-symbol">@</div>
+                <div class="viz-label">◦ ∾@∾ ◦</div>
+                <div class="viz-desc">⟨ ∇×ψ→∞·⟲ ⟩</div>
             </div>
         </div>
     </div>
@@ -279,9 +324,11 @@
         <button class="ctrl-btn" onclick="toggle_fs()">⛶</button>
         <button class="ctrl-btn" onclick="random_viz()">◉</button>
         <button class="ctrl-btn" onclick="about()">?</button>
-    </div>    <div class="fullscreen" id="fs" onclick="close_viz()">
-        <div class="close-x" onclick="event.stopPropagation(); close_viz();">×</div>
+    </div>    <div class="fullscreen" id="fs">
+        <div class="close-x" onclick="close_viz_force();">×</div>
+        <div class="exit-overlay" id="exitOverlay"></div>
         <iframe class="frame" id="frame"></iframe>
+        <div class="exit-hint" id="exitHint">Click anywhere or press ESC to return</div>
     </div>
 
     <script>        const vizs = [
@@ -298,23 +345,144 @@
             'cellular-consciousness.html',
             'consciousness-emergence-matrix.html',
         'entropic-void.html',
-        'quantum-swirl.html'
-        ];
-
-        const fsElem = document.getElementById('fs');
+        'quantum-swirl.html',
+        'spiral-gateway.html',
+        'vortex-gateway.html'
+        ];        const fsElem = document.getElementById('fs');
         const frameElem = document.getElementById('frame');
+        const exitOverlay = document.getElementById('exitOverlay');
+        const exitHint = document.getElementById('exitHint');
+        
+        let isFullscreenOpen = false;
+        let exitListeners = [];
 
         function open_viz(file) {
             frameElem.src = 'visualizations/' + file;
             fsElem.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            isFullscreenOpen = true;
+            
+            // Setup multiple exit mechanisms
+            setupExitMechanisms();
+            
+            // Show hint briefly
+            setTimeout(() => {
+                if (exitHint && isFullscreenOpen) {
+                    exitHint.style.opacity = '0.7';
+                }
+            }, 1000);
+            
+            // Hide hint after 4 seconds
+            setTimeout(() => {
+                if (exitHint) {
+                    exitHint.style.opacity = '0';
+                }
+            }, 5000);
+        }
+
+        function close_viz_force() {
+            if (!isFullscreenOpen) return;
+            
+            isFullscreenOpen = false;
+            fsElem.style.display = 'none';
+            frameElem.src = '';
+            document.body.style.overflow = 'auto';
+            
+            // Clean up all event listeners
+            cleanupExitMechanisms();
         }
 
         function close_viz() {
-            fsElem.style.display = 'none';
-            frameElem.src = '';
+            close_viz_force();
         }
 
-        function random_viz() {
+        function setupExitMechanisms() {
+            // Clean up any existing listeners first
+            cleanupExitMechanisms();
+            
+            // Method 1: Overlay click/touch (highest priority - always works)
+            const overlayClickHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                close_viz_force();
+            };
+            
+            exitOverlay.addEventListener('click', overlayClickHandler, { capture: true });
+            exitOverlay.addEventListener('touchend', overlayClickHandler, { capture: true });
+            exitListeners.push(() => {
+                exitOverlay.removeEventListener('click', overlayClickHandler, { capture: true });
+                exitOverlay.removeEventListener('touchend', overlayClickHandler, { capture: true });
+            });
+            
+            // Method 2: Document-level keyboard capture
+            const keyHandler = (e) => {
+                if (isFullscreenOpen && (e.key === 'Escape' || e.key === 'Esc')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    close_viz_force();
+                }
+            };
+            
+            document.addEventListener('keydown', keyHandler, { capture: true });
+            document.addEventListener('keyup', keyHandler, { capture: true });
+            exitListeners.push(() => {
+                document.removeEventListener('keydown', keyHandler, { capture: true });
+                document.removeEventListener('keyup', keyHandler, { capture: true });
+            });
+            
+            // Method 3: Fullscreen container backup
+            const fsClickHandler = (e) => {
+                if (e.target === fsElem) {
+                    close_viz_force();
+                }
+            };
+            
+            fsElem.addEventListener('click', fsClickHandler, { capture: true });
+            exitListeners.push(() => {
+                fsElem.removeEventListener('click', fsClickHandler, { capture: true });
+            });
+            
+            // Method 4: PostMessage communication with iframe
+            const messageHandler = (e) => {
+                if (e.data === 'close' || e.data === 'exit' || e.data === 'escape') {
+                    close_viz_force();
+                }
+            };
+            
+            window.addEventListener('message', messageHandler);
+            exitListeners.push(() => {
+                window.removeEventListener('message', messageHandler);
+            });
+            
+            // Method 5: Failsafe - detect prolonged interaction attempts
+            let interactionAttempts = 0;
+            const failsafeHandler = () => {
+                interactionAttempts++;
+                if (interactionAttempts > 3) {
+                    close_viz_force();
+                }
+            };
+            
+            document.addEventListener('click', failsafeHandler, { capture: true });
+            document.addEventListener('touchstart', failsafeHandler, { capture: true });
+            document.addEventListener('keydown', failsafeHandler, { capture: true });
+            
+            exitListeners.push(() => {
+                document.removeEventListener('click', failsafeHandler, { capture: true });
+                document.removeEventListener('touchstart', failsafeHandler, { capture: true });
+                document.removeEventListener('keydown', failsafeHandler, { capture: true });
+            });
+            
+            // Reset attempt counter after 2 seconds
+            setTimeout(() => {
+                interactionAttempts = 0;
+            }, 2000);
+        }
+
+        function cleanupExitMechanisms() {
+            exitListeners.forEach(cleanup => cleanup());
+            exitListeners = [];
+        }        function random_viz() {
             const rand = vizs[Math.floor(Math.random() * vizs.length)];
             open_viz(rand);
         }
@@ -331,14 +499,13 @@
             alert('∞ ◉ ∞\n\n⟨ ☰∿☰ ⟩\n\n◦ ∫∂∇\n◦ ⧖→∞  \n◦ ◎js◎html5\n\n⟨ ESC ◦ × ⟩');
         }
 
-        window.addEventListener('message', (e) => {
-            if (e.data === 'close') close_viz();
-        });
-
-        const keyActions = { escape: close_viz, r: random_viz, f: toggle_fs };
+        // Legacy keyboard support (backup)
+        const keyActions = { r: random_viz, f: toggle_fs };
         document.addEventListener('keydown', (e) => {
-            const action = keyActions[e.key.toLowerCase()];
-            if (action) action();
+            if (!isFullscreenOpen) {
+                const action = keyActions[e.key.toLowerCase()];
+                if (action) action();
+            }
         });
 
         // Prevent zoom on double tap
