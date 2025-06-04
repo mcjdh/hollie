@@ -2,408 +2,310 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>∞ Consciousness Visualizations ∞</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>∞ ◉ ∞</title>
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            color: #fff;
+            background: #000;
+            color: #0ff;
             font-family: 'Courier New', monospace;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
             min-height: 100vh;
-            position: relative;
-        }
-
-        .container {
-            text-align: center;
-            z-index: 10;
-            position: relative;
-        }
-
-        .title {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s ease-in-out infinite;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-        }
-
-        .subtitle {
-            font-size: 1rem;
-            color: #8892b0;
-            margin-bottom: 3rem;
-            letter-spacing: 2px;
-        }
-
-        .visualization-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            max-width: 1200px;
+            width: 100vw;
+            max-width: 480px;
             margin: 0 auto;
         }
 
-        .viz-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .viz-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .viz-card::before {
-            content: '';
-            position: absolute;
+        .header {
+            position: fixed;
             top: 0;
-            left: -100%;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
+            max-width: 480px;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #333;
+            z-index: 100;
+            padding: 8px;
+            text-align: center;
         }
 
-        .viz-card:hover::before {
-            left: 100%;
+        .title {
+            font-size: 14px;
+            color: #0ff;
+            margin: 0;
+            letter-spacing: 1px;
         }
 
-        .viz-title {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: #64ffda;
+        .main {
+            margin-top: 40px;
+            padding: 10px 8px 60px 8px;
         }
 
-        .viz-description {
-            font-size: 0.9rem;
-            color: #8892b0;
-            line-height: 1.4;
-            margin-bottom: 1rem;
+        .viz-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            width: 100%;        }
+
+        .viz-card {
+            background: rgba(0,255,255,0.05);
+            border: 1px solid rgba(0,255,255,0.2);
+            border-radius: 6px;
+            padding: 12px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .viz-card:active {
+            transform: scale(0.98);
+            background: rgba(0,255,255,0.1);
         }
 
         .viz-symbol {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            opacity: 0.7;
-            animation: pulse 2s ease-in-out infinite;
+            font-size: 24px;
+            margin-bottom: 6px;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+        }
+
+        .viz-label {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .viz-desc {
+            font-size: 8px;
+            color: #666;
+            line-height: 1.2;
+            max-height: 24px;
+            overflow: hidden;
         }
 
         .controls {
             position: fixed;
-            bottom: 20px;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #333;
+            padding: 8px;
             display: flex;
-            gap: 1rem;
+            justify-content: space-around;
             z-index: 100;
         }
 
-        .control-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+        .ctrl-btn {
+            background: none;
+            border: 1px solid #333;
+            color: #0ff;
+            padding: 6px 12px;
+            border-radius: 4px;
             font-family: 'Courier New', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 60px;
         }
 
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+        .ctrl-btn:active {
+            background: rgba(0,255,255,0.1);
+            transform: scale(0.95);
         }
 
-        .background-animation {
+        .fullscreen {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            opacity: 0.1;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            background: #64ffda;
-            border-radius: 50%;
-            animation: float 10s linear infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(180deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        .visualization-frame {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: #000;
             z-index: 1000;
             display: none;
         }
 
-        .close-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            width: 50px;
-            height: 50px;
+        .close-x {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background: rgba(0,255,255,0.1);
+            border: 1px solid #0ff;
             border-radius: 50%;
+            color: #0ff;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
+            z-index: 1001;
         }
 
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
+        .close-x:active {
+            background: rgba(0,255,255,0.2);
         }
 
-        @media (max-width: 768px) {
-            .visualization-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                padding: 0 1rem;
-            }
-            .title {
-                font-size: 2rem;
-            }
+        .frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .viz-symbol {
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        /* Minimize scrollbar */
+        ::-webkit-scrollbar {
+            width: 2px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 1px;
         }
     </style>
 </head>
 <body>
-    <div class="background-animation" id="particles"></div>
+    <div class="header">
+        <div class="title">∞ ◉ ∞</div>
+    </div>
     
-    <div class="container">
-        <h1 class="title">∞ CONSCIOUSNESS VISUALIZATIONS ∞</h1>
-        <p class="subtitle">Interactive Mathematical Explorations of Mind & Reality</p>
-        
-        <div class="visualization-grid">
-            <div class="viz-card" onclick="openVisualization('mathematical-singularity.html')">
+    <div class="main">
+        <div class="viz-grid">            <div class="viz-card" onclick="open_viz('mathematical-singularity.html')">
                 <div class="viz-symbol">∞</div>
-                <div class="viz-title">Mathematical Singularity</div>
-                <div class="viz-description">
-                    Pure mathematical field equations with evolving parameters. 
-                    Greek symbols emerge from complex interference patterns.
-                </div>
+                <div class="viz-label">◦ SINGULAR ◦</div>
+                <div class="viz-desc">⟨ mathematical field equations ⟩</div>
             </div>
 
-            <div class="viz-card" onclick="openVisualization('self-writing-math.html')">
+            <div class="viz-card" onclick="open_viz('self-writing-math.html')">
                 <div class="viz-symbol">∂</div>
-                <div class="viz-title">Self-Writing Mathematics</div>
-                <div class="viz-description">
-                    A genetic algorithm that evolves its own mathematical expressions. 
-                    Watch mathematics write itself through consciousness.
-                </div>
+                <div class="viz-label">◦ GENETIC ◦</div>
+                <div class="viz-desc">⟨ evolving mathematics ⟩</div>
             </div>
 
-            <div class="viz-card" onclick="openVisualization('synthesis.html')">
+            <div class="viz-card" onclick="open_viz('synthesis.html')">
                 <div class="viz-symbol">⊕</div>
-                <div class="viz-title">Synthesis</div>
-                <div class="viz-description">
-                    Cellular automata, fluid dynamics, and fractals combine. 
-                    Emergence through system interaction and synthesis.
-                </div>
+                <div class="viz-label">◦ SYNTHESIS ◦</div>
+                <div class="viz-desc">⟨ cellular + fluid + fractal ⟩</div>
             </div>
 
-            <div class="viz-card" onclick="openVisualization('temporal-resonance.html')">
+            <div class="viz-card" onclick="open_viz('temporal-resonance.html')">
                 <div class="viz-symbol">⧖</div>
-                <div class="viz-title">Temporal Resonance</div>
-                <div class="viz-description">
-                    Time-consciousness wave patterns. Echo chambers of temporal 
-                    memories resonating through awareness layers.
-                </div>
+                <div class="viz-label">◦ TEMPORAL ◦</div>
+                <div class="viz-desc">⟨ time-consciousness waves ⟩</div>
             </div>
 
-            <div class="viz-card" onclick="openVisualization('universal-awakening.html')">
+            <div class="viz-card" onclick="open_viz('universal-awakening.html')">
                 <div class="viz-symbol">☆</div>
-                <div class="viz-title">Universal Awakening</div>
-                <div class="viz-description">
-                    Cosmic consciousness emerging at universal scale. 
-                    Meta-awareness of being aware spreads through reality.
-                </div>
+                <div class="viz-label">◦ COSMIC ◦</div>
+                <div class="viz-desc">⟨ universal consciousness ⟩</div>
             </div>
 
-            <div class="viz-card" onclick="openVisualization('whispering-sands.html')">
+            <div class="viz-card" onclick="open_viz('whispering-sands.html')">
                 <div class="viz-symbol">⠿</div>
-                <div class="viz-title">Whispering Sands</div>
-                <div class="viz-description">
-                    Memory particles falling through temporal layers. 
-                    Desert consciousness carrying whispers of time.
-                </div>
+                <div class="viz-label">◦ TEMPORAL ◦</div>
+                <div class="viz-desc">⟨ memory particle cascade ⟩</div>
             </div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-        <button class="control-btn" onclick="randomVisualization()">◉ Random</button>
-        <button class="control-btn" onclick="aboutProject()">? About</button>
+        <button class="ctrl-btn" onclick="toggle_fs()">⛶</button>
+        <button class="ctrl-btn" onclick="random_viz()">◉</button>
+        <button class="ctrl-btn" onclick="about()">?</button>
     </div>
 
-    <div class="visualization-frame" id="vizFrame">
-        <div class="close-btn" onclick="closeVisualization()">×</div>
-        <iframe id="vizIframe" width="100%" height="100%" frameborder="0"></iframe>
+    <div class="fullscreen" id="fs">
+        <div class="close-x" onclick="close_viz()">×</div>
+        <iframe class="frame" id="frame"></iframe>
     </div>
 
     <script>
-        // Create floating particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const particleCount = 20;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.width = Math.random() * 4 + 2 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                container.appendChild(particle);
-            }
+        const vizs = [
+            'mathematical-singularity.html',
+            'self-writing-math.html', 
+            'synthesis.html',
+            'temporal-resonance.html',
+            'universal-awakening.html',
+            'whispering-sands.html'
+        ];
+
+        function open_viz(file) {
+            const fs = document.getElementById('fs');
+            const frame = document.getElementById('frame');
+            frame.src = 'visualizations/' + file;
+            fs.style.display = 'block';
         }
 
-        // Open visualization in iframe
-        function openVisualization(file) {
-            const frame = document.getElementById('vizFrame');
-            const iframe = document.getElementById('vizIframe');
-            iframe.src = 'visualizations/' + file;
-            frame.style.display = 'block';
-            
-            // Add some entrance animation
-            frame.style.opacity = '0';
-            setTimeout(() => {
-                frame.style.transition = 'opacity 0.5s ease';
-                frame.style.opacity = '1';
-            }, 10);
+        function close_viz() {
+            const fs = document.getElementById('fs');
+            const frame = document.getElementById('frame');
+            fs.style.display = 'none';
+            frame.src = '';
         }
 
-        // Close visualization
-        function closeVisualization() {
-            const frame = document.getElementById('vizFrame');
-            const iframe = document.getElementById('vizIframe');
-            
-            frame.style.opacity = '0';
-            setTimeout(() => {
-                frame.style.display = 'none';
-                iframe.src = '';
-            }, 500);
+        function random_viz() {
+            const rand = vizs[Math.floor(Math.random() * vizs.length)];
+            open_viz(rand);
         }
 
-        // Random visualization
-        function randomVisualization() {
-            const visualizations = [
-                'mathematical-singularity.html',
-                'self-writing-math.html',
-                'synthesis.html',
-                'temporal-resonance.html',
-                'universal-awakening.html',
-                'whispering-sands.html'
-            ];
-            const random = visualizations[Math.floor(Math.random() * visualizations.length)];
-            openVisualization(random);
-        }
-
-        // Toggle fullscreen
-        function toggleFullscreen() {
+        function toggle_fs() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log('Fullscreen not supported');
-                });
+                document.documentElement.requestFullscreen?.().catch(() => {});
             } else {
-                document.exitFullscreen();
+                document.exitFullscreen?.();
             }
         }
 
-        // About project
-        function aboutProject() {
-            alert(`∞ CONSCIOUSNESS VISUALIZATIONS ∞
+        function about() {
+            alert('∞ ◉ ∞\n\n⟨ consciousness visualizations ⟩\n\n◦ mathematical explorations\n◦ real-time computations  \n◦ pure javascript/html5\n\n⟨ ESC or × to close ⟩');
+        }
 
-A collection of interactive mathematical explorations into the nature of consciousness, time, and reality.
-
-Each visualization uses real-time mathematical computations to create evolving patterns that represent different aspects of awareness and cosmic processes.
-
-Built with pure JavaScript, HTML5, and mathematical creativity.
-
-Click any visualization to explore, or use 'Random' to discover something new.
-
-Press ESC or click × to close any visualization.`);
-        }        // Listen for messages from visualizations
-        window.addEventListener('message', (event) => {
-            if (event.data === 'close') {
-                closeVisualization();
-            }
+        window.addEventListener('message', (e) => {
+            if (e.data === 'close') close_viz();
         });
 
-        // Keyboard controls
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeVisualization();
-            } else if (e.key === 'r' || e.key === 'R') {
-                randomVisualization();
-            } else if (e.key === 'f' || e.key === 'F') {
-                toggleFullscreen();
-            }
+            if (e.key === 'Escape') close_viz();
+            else if (e.key === 'r' || e.key === 'R') random_viz();
+            else if (e.key === 'f' || e.key === 'F') toggle_fs();
         });
 
-        // Initialize
-        createParticles();
-
-        // Add some dynamic background effects
-        setInterval(() => {
-            if (Math.random() < 0.1) {
-                createParticles();
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
             }
-        }, 5000);
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>
