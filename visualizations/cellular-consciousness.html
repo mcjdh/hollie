@@ -167,21 +167,48 @@
           // Enhanced multi-layered consciousness fields with quantum effects
         let cells = new Float32Array(W * H);           
         let nextCells = new Float32Array(W * H);       
-        const memory = new Float32Array(W * H);        
-        const complexity = new Float32Array(W * H);    
-        const consciousness = new Float32Array(W * H);  
-        const connections = new Float32Array(W * H);
-        const quantum = new Float32Array(W * H);        // Quantum uncertainty field
-        const patterns = new Float32Array(W * H);       // Pattern recognition memory
-        const energy = new Float32Array(W * H);         // Energy/resource field
-        const collective = new Float32Array(W * H);     // Collective consciousness
+        let memory = new Float32Array(W * H);
+        let complexity = new Float32Array(W * H);
+        let consciousness = new Float32Array(W * H);
+        let connections = new Float32Array(W * H);
+        let quantum = new Float32Array(W * H);        // Quantum uncertainty field
+        let patterns = new Float32Array(W * H);       // Pattern recognition memory
+        let energy = new Float32Array(W * H);         // Energy/resource field
+        let collective = new Float32Array(W * H);     // Collective consciousness
         
         // New temporal and information flow fields
-        const temporalMemory = new Array(W * H).fill(null).map(() => new Float32Array(10)); // 10-step history
-        const informationFlow = new Float32Array(W * H);    // Information propagation strength
-        const emergence = new Float32Array(W * H);          // Emergence detection
-        const entropy = new Float32Array(W * H);            // Local entropy measurement
-        const stability = new Float32Array(W * H);          // Temporal stability tracking
+        let temporalMemory = new Array(W * H).fill(null).map(() => new Float32Array(10)); // 10-step history
+        let informationFlow = new Float32Array(W * H);    // Information propagation strength
+        let emergence = new Float32Array(W * H);          // Emergence detection
+        let entropy = new Float32Array(W * H);            // Local entropy measurement
+        let stability = new Float32Array(W * H);          // Temporal stability tracking
+
+        // Recreate field arrays and seed the simulation
+        function initializeSimulation() {
+            cells = new Float32Array(W * H);
+            nextCells = new Float32Array(W * H);
+            memory = new Float32Array(W * H);
+            complexity = new Float32Array(W * H);
+            consciousness = new Float32Array(W * H);
+            connections = new Float32Array(W * H);
+            quantum = new Float32Array(W * H);
+            patterns = new Float32Array(W * H);
+            energy = new Float32Array(W * H);
+            collective = new Float32Array(W * H);
+            temporalMemory = new Array(W * H).fill(null).map(() => new Float32Array(10));
+            informationFlow = new Float32Array(W * H);
+            emergence = new Float32Array(W * H);
+            entropy = new Float32Array(W * H);
+            stability = new Float32Array(W * H);
+
+            t = 0;
+            generation = 0;
+
+            seedRandom();
+            addConsciousness();
+            seedQuantumField();
+            createCollectiveNodes();
+        }
         
         // Adaptive system parameters
         let mutationRate = 0.02;
@@ -790,10 +817,7 @@
         }
         
         // Initialize with enhanced seeding
-        seedRandom();
-        addConsciousness();
-        seedQuantumField();
-        createCollectiveNodes();
+        initializeSimulation();
         
         // Add some classic Game of Life patterns
         setTimeout(() => {
@@ -863,10 +887,10 @@
             resizeTimeout = setTimeout(() => {
                 const oldW = W, oldH = H;
                 updateDimensions();
-                
-                // Only reload if dimensions changed significantly
+
+                // Reinitialize if dimensions changed significantly
                 if (Math.abs(W - oldW) > 5 || Math.abs(H - oldH) > 5) {
-                    location.reload(); // Simple reload for dimension changes
+                    initializeSimulation();
                 }
             }, 250);
         });
