@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lava Lamp</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #330000; }
+        .c1 { color: #661100; }
+        .c2 { color: #993300; }
+        .c3 { color: #cc6600; }
+        .c4 { color: #ff9933; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        let t = 0;
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        const blobs = [
+            {x: 0.3, y: 0.3, dx: 0.02, dy: 0.015},
+            {x: 0.7, y: 0.6, dx: -0.018, dy: 0.02},
+            {x: 0.5, y: 0.8, dx: 0.015, dy: -0.017}
+        ];
+        const symbols = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
+
+        function render() {
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    let val = 0;
+                    for (let b of blobs) {
+                        const bx = W * (b.x + Math.sin(t * b.dx) * 0.2);
+                        const by = H * (b.y + Math.cos(t * b.dy) * 0.2);
+                        const dx = x - bx;
+                        const dy = y - by;
+                        val += Math.exp(-(dx * dx + dy * dy) / 150);
+                    }
+                    val = Math.max(0, Math.min(1, val));
+                    const idx = Math.floor(val * (symbols.length - 1));
+                    const colorIdx = Math.floor(val * 4.999);
+                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
+                }
+                out += '\n';
+            }
+            document.getElementById('canvas').innerHTML = out;
+            t += 1;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', updateDimensions);
+        updateDimensions();
+        render();
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                window.parent.postMessage('close', '*');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fireworks</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: 10px;
+        }
+        .c0 { color: #220000; }
+        .c1 { color: #552200; }
+        .c2 { color: #aa4400; }
+        .c3 { color: #ffaa00; }
+        .c4 { color: #ffff55; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        let W, H;
+        let charWidth, charHeight;
+        const fireworks = [];
+        const sparks = [];
+        let t = 0;
+
+        function updateDimensions() {
+            const test = document.createElement('div');
+            test.style.position = 'absolute';
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
+            test.style.fontFamily = 'Courier New, monospace';
+            test.style.fontSize = '10px';
+            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(test);
+            const rect = test.getBoundingClientRect();
+            charWidth = rect.width / 10;
+            charHeight = rect.height / 10;
+            document.body.removeChild(test);
+
+            W = Math.ceil(window.innerWidth / charWidth) + 1;
+            H = Math.ceil(window.innerHeight / charHeight) + 1;
+
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = '10px';
+            canvas.style.lineHeight = '10px';
+        }
+
+        function addFirework() {
+            fireworks.push({
+                x: Math.random() * W,
+                y: H - 1,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: -1.5 - Math.random() * 0.5,
+                age: 0,
+                explode: 30 + Math.random() * 20,
+                color: Math.floor(Math.random() * 5)
+            });
+        }
+
+        function render() {
+            if (Math.random() < 0.05) addFirework();
+            let grid = [];
+            for (let i = 0; i < H; i++) {
+                grid.push(new Array(W).fill(' '));
+            }
+            // Update fireworks
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const f = fireworks[i];
+                f.x += f.vx;
+                f.y += f.vy;
+                f.vy += 0.05;
+                f.age++;
+                if (f.age > f.explode || f.y < 2) {
+                    // explode
+                    for (let j = 0; j < 30; j++) {
+                        const ang = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 1.2;
+                        sparks.push({
+                            x: f.x,
+                            y: f.y,
+                            vx: Math.cos(ang) * speed,
+                            vy: Math.sin(ang) * speed,
+                            life: 30 + Math.random() * 20,
+                            color: f.color
+                        });
+                    }
+                    fireworks.splice(i, 1);
+                } else {
+                    const x = Math.floor(f.x);
+                    const y = Math.floor(f.y);
+                    if (x >= 0 && x < W && y >= 0 && y < H) {
+                        grid[y][x] = `<span class="c${f.color}">|</span>`;
+                    }
+                }
+            }
+            // Update sparks
+            for (let i = sparks.length - 1; i >= 0; i--) {
+                const s = sparks[i];
+                s.x += s.vx;
+                s.y += s.vy;
+                s.vy += 0.05;
+                s.life--;
+                const x = Math.floor(s.x);
+                const y = Math.floor(s.y);
+                if (x >= 0 && x < W && y >= 0 && y < H) {
+                    grid[y][x] = `<span class="c${s.color}">*</span>`;
+                }
+                if (s.life <= 0 || y >= H) {
+                    sparks.splice(i, 1);
+                }
+            }
+
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    out += grid[y][x];
+                }
+                out += '\n';
+            }
+            document.getElementById('canvas').innerHTML = out;
+            t += 1;
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', updateDimensions);
+        updateDimensions();
+        render();
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                window.parent.postMessage('close', '*');
+            }
+        });
+    </script>
+</body>
+</html>
