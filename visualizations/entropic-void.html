@@ -366,6 +366,15 @@
         window.addEventListener('error', (e) => {
             console.error('Script error:', e.error);
         });
+
+        // Add ESC key listener to close visualization
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (window.parent !== window) {
+                    window.parent.postMessage('close', '*');
+                }
+            }
+        });
         
         updateDimensions();
         if (initialized) {
