@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Replicator GridLife</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            image-rendering: pixelated;
+            width: 512px;
+            height: 512px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="c" width="64" height="64"></canvas>
+<script>
+const SIZE = 64;
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let grid = new Array(SIZE);
+let buffer = new Array(SIZE);
+
+function init() {
+    for (let y = 0; y < SIZE; y++) {
+        grid[y] = new Array(SIZE);
+        buffer[y] = new Array(SIZE);
+        for (let x = 0; x < SIZE; x++) {
+            grid[y][x] = Math.random() > 0.8 ? 1 : 0;
+        }
+    }
+}
+
+function step() {
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
+            const n = countNeighbors(x, y);
+            buffer[y][x] = n & 1;
+        }
+    }
+    const t = grid; grid = buffer; buffer = t;
+}
+
+function countNeighbors(x, y) {
+    let c = 0;
+    for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            const nx = (x + dx + SIZE) % SIZE;
+            const ny = (y + dy + SIZE) % SIZE;
+            c += grid[ny][nx];
+        }
+    }
+    return c;
+}
+
+function render() {
+    const img = ctx.getImageData(0, 0, SIZE, SIZE);
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
+            const i = (y * SIZE + x) * 4;
+            const v = grid[y][x] * 255;
+            img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+            img.data[i + 3] = 255;
+        }
+    }
+    ctx.putImageData(img, 0, 0);
+}
+
+function loop() {
+    step();
+    render();
+    requestAnimationFrame(loop);
+}
+
+init();
+render();
+loop();
+</script>
+</body>
+</html>
