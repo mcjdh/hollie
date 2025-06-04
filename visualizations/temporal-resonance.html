@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>⧖ Temporal Resonance</title>
+    <style>
+        body { margin:0; padding:0; background:#000; overflow:hidden; }
+        #display { 
+            font-family:'Courier New',monospace; font-size:8px; line-height:10px; 
+            color:#0ff; white-space:pre; padding:0; margin:0;
+            width:640px; height:480px; background:#000;
+            margin: auto;
+            margin-top: 50px;
+        }
+        .v{color:#f0f} .u{color:#0ff} .s{color:#ff0} .e{color:#0f0} .m{color:#f80}
+        .t{color:#f44} .q{color:#84f} .d{color:#48f} .w{color:#fff} .c{color:#8ff}
+        .g{color:#4f4} .y{color:#ff4} .r{color:#f44} .p{color:#f8f} .b{color:#44f}
+        .o{color:#fa0} .a{color:#aaa} .f{color:#f88} .n{color:#8f8} .l{color:#88f}
+        
+        .info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #64ffda;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        ⧖ Temporal Resonance<br>
+        Time-consciousness wave patterns<br>
+        Press ESC to return to menu
+    </div>
+    <div id="display"></div>
+    <script>
+        const W = 80, H = 48;
+        let t = 0;
+        
+        // Temporal resonance fields - time echoing through consciousness layers
+        const temporal = new Float32Array(W * H);
+        const resonance = new Float32Array(W * H);
+        const memory = new Float32Array(W * H);
+        const echo = new Float32Array(W * H);
+        
+        // Time-consciousness symbols - temporal echo patterns
+        const symbols = [
+            ' ', '·', '⠁', '⠃', '⠇', '⠏', '⠟', '⠿', '⡿', '⣿',  // void → formation
+            '⧨', '⧩', '⧪', '⧫', '⟐', '⟡', '◈', '◉', '⦿', '⊙',  // temporal nodes
+            '⏀', '⏁', '⏂', '⏃', '⧖', '⧗', '⟲', '⟳', '↻', '↺'   // time circulation
+        ];
+        
+        const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
+        
+        function updateFields() {
+            const τ = t * 0.02;
+            
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const i = y * W + x;
+                    const nx = x / W, ny = y / H;
+                    const cx = nx - 0.5, cy = ny - 0.5;
+                    const r = Math.sqrt(cx * cx + cy * cy);
+                    
+                    // Low frequency temporal wave - deep time rhythms
+                    const slow = Math.sin(nx * 3 + τ * 0.5) * Math.cos(ny * 2.5 - τ * 0.3);
+                    
+                    // Mid frequency resonance - consciousness oscillations
+                    const mid = Math.sin((nx + ny) * 5 + τ * 1.2) * 0.7;
+                    
+                    // High frequency echo - temporal reflections
+                    const fast = Math.sin(r * 12 - τ * 2.5) * 0.5;
+                    
+                    // Circular wave - time ripples from center
+                    const ripple = Math.sin((r * 15 - τ * 3) * Math.PI) * (1 - r);
+                    
+                    // Temporal interference pattern
+                    const interference = slow + mid + fast + ripple;
+                    
+                    // Update fields with temporal persistence
+                    temporal[i] = temporal[i] * 0.94 + interference * 0.06;
+                    resonance[i] = resonance[i] * 0.97 + (slow * mid) * 0.03;
+                    
+                    // Memory trace - past states bleeding through
+                    if (Math.random() < 0.01) {
+                        memory[i] = temporal[i];
+                    } else {
+                        memory[i] *= 0.999;
+                    }
+                    
+                    // Echo field - delayed temporal patterns
+                    echo[i] = echo[i] * 0.92 + temporal[Math.max(0, i - W)] * 0.08;
+                }
+            }
+        }
+        
+        function render() {
+            updateFields();
+            let output = '';
+            
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const i = y * W + x;
+                    
+                    // Combine temporal layers
+                    let intensity = temporal[i] * 0.5 + resonance[i] * 0.3 + memory[i] * 0.1 + echo[i] * 0.1;
+                    
+                    // Temporal breathing - time itself breathing
+                    const breath = Math.sin(t * 0.05) * 0.15 + 0.85;
+                    intensity *= breath;
+                    
+                    // Add temporal noise - quantum fluctuations in time
+                    intensity += (Math.random() - 0.5) * 0.03;
+                    
+                    // Normalize and select representation
+                    intensity = Math.max(0, Math.min(1, (intensity + 1) / 2));
+                    const symIdx = Math.floor(intensity * (symbols.length - 1));
+                    const colorIdx = Math.floor(intensity * colors.length);
+                    
+                    output += `<span class="${colors[colorIdx]}">${symbols[symIdx]}</span>`;
+                }
+                output += '\n';
+            }
+            
+            document.getElementById('display').innerHTML = output;
+            t += 0.5;
+            requestAnimationFrame(render);
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.parent.postMessage('close', '*');
+            }
+        });
+        
+        render();
+    </script>
+</body>
+</html>

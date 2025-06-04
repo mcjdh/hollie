@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Self-Writing Mathematics</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 8px;
+            line-height: 1.0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #canvas {
+            white-space: pre;
+            font-feature-settings: 'kern' 0;
+        }
+        .v { color: #ffffff; } .u { color: #ffccff; } .s { color: #ccffff; }
+        .e { color: #ffffcc; } .m { color: #ccffcc; } .t { color: #ffcccc; }
+        .q { color: #ccccff; } .d { color: #ff99ff; } .w { color: #99ffff; }
+        .c { color: #ffff99; } .g { color: #99ff99; } .y { color: #ff9999; }
+        .r { color: #9999ff; } .p { color: #ff66ff; } .b { color: #66ffff; }
+        .o { color: #ffff66; } .a { color: #66ff66; } .f { color: #ff6666; }
+        .n { color: #6666ff; } .l { color: #888888; }
+        
+        .info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #64ffda;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        ∂ Self-Writing Mathematics<br>
+        Genetic algorithm evolving math<br>
+        Press ESC to return to menu
+    </div>
+    <div id="canvas"></div>
+    <script>
+        const W = 80, H = 48;
+        let t = 0;
+        
+        // Mathematical constants
+        const phi = 1.618033988749895;
+        const e = 2.718281828459045;
+        const pi = 3.141592653589793;
+        const sqrt2 = 1.4142135623730951;
+        const sqrt3 = 1.7320508075688772;
+        
+        // Self-evolving mathematical genome
+        const genome = {
+            // Core generators that evolve
+            generators: [
+                { type: 0, freq: 0.01, amp: 1.0, phase: 0 },
+                { type: 1, freq: 0.007, amp: 0.8, phase: pi/3 },
+                { type: 2, freq: 0.013, amp: 1.2, phase: 2*pi/3 },
+                { type: 3, freq: 0.019, amp: 0.9, phase: pi },
+                { type: 4, freq: 0.023, amp: 1.1, phase: 4*pi/3 }
+            ],
+            
+            // Symbol evolution thresholds
+            thresholds: [0.1, 0.3, 0.7, 0.9],
+            
+            // Dynamic functions cache
+            functions: new Map(),
+            
+            // Mutation
+            mutate() {
+                for (let gen of this.generators) {
+                    // Frequency drift
+                    const harmony = this.calculateHarmony();
+                    gen.freq += Math.sin(t * 0.0001 + harmony) * 0.000001;
+                    gen.freq = Math.max(0.001, Math.min(0.1, gen.freq));
+                    
+                    // Amplitude response to complexity
+                    const complexity = this.calculateComplexity();
+                    gen.amp += (complexity - 1.0) * 0.0001;
+                    gen.amp = Math.max(0.1, Math.min(2.0, gen.amp));
+                    
+                    // Phase drift in golden ratio
+                    gen.phase += gen.freq * phi * 0.01;
+                }
+                
+                // Evolve thresholds
+                for (let i = 0; i < this.thresholds.length; i++) {
+                    const drift = Math.sin(t * 0.0002 + i) * 0.001;
+                    this.thresholds[i] += drift;
+                    this.thresholds[i] = Math.max(0.01, Math.min(0.99, this.thresholds[i]));
+                }
+            },
+            
+            calculateHarmony() {
+                let harmony = 0;
+                for (let i = 0; i < this.generators.length; i++) {
+                    for (let j = i + 1; j < this.generators.length; j++) {
+                        const ratio = this.generators[i].freq / this.generators[j].freq;
+                        harmony += Math.abs(Math.sin(ratio * pi));
+                    }
+                }
+                return harmony / 10;
+            },
+            
+            calculateComplexity() {
+                let complexity = 0;
+                for (let gen of this.generators) {
+                    complexity += Math.abs(gen.amp) * Math.log(1 + gen.freq * 1000);
+                }
+                return complexity / this.generators.length;
+            }
+        };
+        
+        // Field arrays
+        const field = new Float32Array(W * H);
+        const memory = new Float32Array(W * H);
+        const evolution = new Float32Array(W * H);
+        const gradient = new Float32Array(W * H * 2);
+        
+        // Symbol sets for different complexity levels
+        const symbols = [
+            [' ', '.', '·', '°'],                           // Void
+            ['∘', '○', '◯', '●', '◉', '⊙'],                // Matter
+            ['⊛', '⊜', '⊝', '◈', '◊', '◆', '▲', '△'],      // Consciousness
+            ['✧', '✦', '✶', '✷', '✸', '✹', '✺', '❋']       // Transcendence
+        ];
+        
+        // Generator functions
+        function generateField(x, y, gen) {
+            const cx = W / 2;
+            const cy = H / 2;
+            const dx = x - cx;
+            const dy = y - cy;
+            const r = Math.sqrt(dx*dx + dy*dy);
+            const theta = Math.atan2(dy, dx);
+            
+            switch(gen.type) {
+                case 0: // wave
+                    return Math.sin(r * gen.freq + t * gen.freq * 10 + gen.phase) * gen.amp;
+                    
+                case 1: // spiral
+                    return Math.sin(theta * 3 + r * gen.freq + t * gen.freq * 5 + gen.phase) * gen.amp;
+                    
+                case 2: // fractal
+                    const xi = dx / 20;
+                    const yi = dy / 20;
+                    let zr = xi, zi = yi;
+                    for (let i = 0; i < 4; i++) {
+                        const temp = zr*zr - zi*zi + gen.freq;
+                        zi = 2*zr*zi + gen.freq * 0.7;
+                        zr = temp;
+                        if (zr*zr + zi*zi > 4) break;
+                    }
+                    return Math.atan2(zi, zr) * gen.amp;
+                    
+                case 3: // quantum
+                    const prob = Math.exp(-r * gen.freq) * Math.sin(t * gen.freq * 8 + gen.phase);
+                    return prob * gen.amp;
+                    
+                case 4: // neural
+                    const activation = Math.tanh((r - 25) * gen.freq + Math.sin(t * gen.freq * 6) + gen.phase);
+                    return activation * gen.amp;
+            }
+        }
+        
+        // Calculate total field at position
+        function calculateField(x, y) {
+            let totalField = 0;
+            let complexity = 0;
+            
+            for (let gen of genome.generators) {
+                const contribution = generateField(x, y, gen);
+                totalField += contribution;
+                complexity += Math.abs(contribution);
+            }
+            
+            // Self-modulation
+            totalField += Math.sin(totalField * pi + t * 0.003) * 0.2;
+            
+            return { field: totalField, complexity };
+        }
+        
+        // Generate symbol from field properties
+        function generateSymbol(intensity, gradMag, temporal, complexity) {
+            const magnitude = Math.abs(intensity);
+            const flow = gradMag;
+            const change = Math.abs(temporal);
+            const chaos = complexity % 1;
+            
+            // Mathematical mapping to symbol space
+            const symbolSpace = magnitude + flow * 2 + change * 3 + chaos * 5;
+            
+            // Determine complexity level
+            let level = 0;
+            for (let i = 0; i < genome.thresholds.length; i++) {
+                if (symbolSpace >= genome.thresholds[i]) level = i + 1;
+            }
+            level = Math.min(level, symbols.length - 1);
+            
+            // Select symbol from appropriate level
+            const symbolSet = symbols[level];
+            const index = Math.floor((symbolSpace * 20) % symbolSet.length);
+            return symbolSet[index];
+        }
+        
+        // Color class from field state
+        function getColorClass(intensity, complexity, evolution_val) {
+            const classes = ['l','n','f','o','a','b','p','r','y','g','c','w','d','q','t','m','e','s','u','v'];
+            
+            const combined = Math.abs(intensity) + complexity * 0.5 + evolution_val * 0.3;
+            const index = Math.floor(combined * 4) % classes.length;
+            
+            return classes[index];
+        }
+        
+        // Update all fields
+        function updateFields() {
+            // Evolve genome periodically
+            if (t % 100 === 0) {
+                genome.mutate();
+            }
+            
+            // Clear function cache periodically
+            if (t % 2000 === 0) {
+                genome.functions.clear();
+            }
+            
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const idx = y * W + x;
+                    const { field: newField, complexity } = calculateField(x, y);
+                    
+                    // Field evolution with memory
+                    field[idx] = field[idx] * 0.85 + newField * 0.15;
+                    
+                    // Memory traces
+                    memory[idx] = memory[idx] * 0.95 + Math.abs(newField) * 0.05;
+                    
+                    // Evolution pressure
+                    evolution[idx] = evolution[idx] * 0.9 + complexity * 0.1;
+                    
+                    // Calculate gradients
+                    if (x > 0 && x < W-1) {
+                        gradient[idx*2] = (field[y*W + x+1] - field[y*W + x-1]) / 2;
+                    }
+                    if (y > 0 && y < H-1) {
+                        gradient[idx*2+1] = (field[(y+1)*W + x] - field[(y-1)*W + x]) / 2;
+                    }
+                }
+            }
+        }
+        
+        // Main render loop
+        function render() {
+            updateFields();
+            
+            let output = '';
+            
+            // Global breathing from genetic harmony
+            const breath = (
+                Math.sin(t * genome.generators[0].freq * 100) +
+                Math.sin(t * genome.generators[1].freq * 100 * phi) +
+                Math.sin(t * genome.generators[2].freq * 100 / phi)
+            ) / 3 * 0.15 + 0.85;
+            
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const idx = y * W + x;
+                    
+                    const intensity = field[idx] * breath;
+                    const gradMag = Math.sqrt(gradient[idx*2]**2 + gradient[idx*2+1]**2);
+                    const temporal = field[idx] - memory[idx];
+                    const complexity = evolution[idx];
+                    
+                    // Generate symbol from pure mathematics
+                    const symbol = generateSymbol(intensity, gradMag, temporal, complexity);
+                    const colorClass = getColorClass(intensity, complexity, evolution[idx]);
+                    
+                    output += `<span class="${colorClass}">${symbol}</span>`;
+                }
+                output += '\n';
+            }
+            
+            document.getElementById('canvas').innerHTML = output;
+            t++;
+        }
+        
+        function evolve() {
+            render();
+            requestAnimationFrame(evolve);
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.parent.postMessage('close', '*');
+            }
+        });
+        
+        evolve();
+    </script>
+</body>
+</html>
