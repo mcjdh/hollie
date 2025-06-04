@@ -173,7 +173,8 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none;
+            /* allow interaction inside embedded visualizations */
+            pointer-events: auto;
         }
 
         @keyframes pulse {
