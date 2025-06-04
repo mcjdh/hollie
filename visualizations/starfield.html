@@ -232,7 +232,14 @@
             updateDimensions();
             initializeFields();
         });
-          updateDimensions();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && window.parent !== window) {
+                window.parent.postMessage('close', '*');
+            }
+        });
+
+        updateDimensions();
         initializeFields();
         loop();
     </script>

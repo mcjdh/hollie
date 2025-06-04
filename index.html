@@ -294,22 +294,21 @@
             'nano-emergence.html',
             'cellular-consciousness.html',
             'consciousness-emergence-matrix.html',
-            'entropic-void.html',
-            'quantum-swirl.html'
+        'entropic-void.html',
+        'quantum-swirl.html'
         ];
 
+        const fsElem = document.getElementById('fs');
+        const frameElem = document.getElementById('frame');
+
         function open_viz(file) {
-            const fs = document.getElementById('fs');
-            const frame = document.getElementById('frame');
-            frame.src = 'visualizations/' + file;
-            fs.style.display = 'block';
+            frameElem.src = 'visualizations/' + file;
+            fsElem.style.display = 'block';
         }
 
         function close_viz() {
-            const fs = document.getElementById('fs');
-            const frame = document.getElementById('frame');
-            fs.style.display = 'none';
-            frame.src = '';
+            fsElem.style.display = 'none';
+            frameElem.src = '';
         }
 
         function random_viz() {
