@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ASCII Gateway</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden}
+#matrix{line-height:1;font-size:12px;white-space:pre;text-align:center}
+span{display:inline-block;width:0.6em}
+</style>
+</head>
+<body>
+<pre id="matrix"></pre>
+<script>
+const W=32,H=32,m=document.getElementById('matrix');
+function render(t){
+  let o='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const dx=x-W/2;
+      const dy=y-H/2;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      let ch='.';
+      let col=`hsl(${(dist*10+t/20)%360},60%,40%)`;
+      if(Math.abs(dx)==Math.floor(W/4)&&Math.abs(dy)<=H/4){
+        ch='║';
+        col='hsl(60,80%,70%)';
+      }
+      if(y==Math.floor(H/4)&&Math.abs(dx)<=W/4){
+        ch='═';
+        col='hsl(60,80%,70%)';
+        if(x===Math.floor(W/2)) ch='Λ';
+      }
+      if(Math.abs(dx)<=W/4&&Math.abs(dy)<=H/4&&dist<8){
+        const z=Math.sin(dist/2+t/200);
+        const c=(Math.sin(t/100)+1)/2;
+        ch='@';
+        col=`hsl(${180+z*120},70%,${40+30*c}%)`;
+      }
+      o+=`<span style="color:${col}">${ch}</span>`;
+    }
+    o+='\n';
+  }
+  m.innerHTML=o;
+  requestAnimationFrame(render);
+}
+render(0);
+</script>
+</body>
+</html>

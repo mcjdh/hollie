@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>◆○●◇ Cellular Consciousness ◇●○◆</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: #000; 
+            overflow: hidden; 
+            font-family: 'Courier New', monospace; 
+            font-size: 8px; 
+            line-height: 9px;
+            height: 100vh;
+            width: 100vw;        }        #grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            white-space: pre;            color: #333;
+            padding: 0;
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            word-spacing: 0;
+            letter-spacing: 0;
+            font-size: 10px;
+            line-height: 12px;
+        }        /* Enhanced dynamic color spectrum for consciousness evolution */
+        .c0{color:#111} .c1{color:#222} .c2{color:#333} .c3{color:#444} .c4{color:#555}        .c5{color:#666} .c6{color:#777} .c7{color:#888} .c8{color:#999} .c9{color:#aaa}
+        .c10{color:#889} .c11{color:#99a} .c12{color:#aab} .c13{color:#bbc} .c14{color:#ccd}
+        .c15{color:#4a9eff} .c16{color:#5db3ff} .c17{color:#70c8ff} .c18{color:#83ddff} .c19{color:#96f2ff}
+        .c20{color:#fa0} .c21{color:#fc2} .c22{color:#fe4} .c23{color:#ff6} .c24{color:#ff8}
+        .c25{color:#88f} .c26{color:#aaf} .c27{color:#ccf} .c28{color:#eef} .c29{color:#fff}
+          /* High consciousness color variations */
+        .c30{color:#ffd700} .c31{color:#ff6347} .c32{color:#00bfff} .c33{color:#dda0dd} .c34{color:#87ceeb}
+        
+        /* Quantum consciousness states */
+        .quantum { 
+            animation: quantumFlicker 0.8s ease-in-out infinite alternate;
+            filter: brightness(1.2);
+        }
+        .emergent {
+            animation: emerge 3s ease-in-out infinite;
+            text-shadow: 0 0 3px currentColor;
+        }
+        .collective {
+            animation: pulse 1.5s ease-in-out infinite;
+            filter: contrast(1.3);
+        }
+        
+        @keyframes quantumFlicker {
+            0% { opacity: 0.7; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        @keyframes emerge {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+            33% { filter: hue-rotate(120deg) brightness(1.2); }
+            66% { filter: hue-rotate(240deg) brightness(1.1); }
+        }
+          /* Special transcendent effects */
+        .transcend { 
+            color: #fff; 
+            text-shadow: 0 0 2px #555, 0 0 4px #555; 
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .transcend-gold { 
+            color: #ffd700; 
+            text-shadow: 0 0 3px #ffb300, 0 0 6px #ff8c00; 
+            animation: pulse 1.8s ease-in-out infinite;
+        }
+        .transcend-crystal { 
+            color: #e0f7ff; 
+            text-shadow: 0 0 3px #87ceeb, 0 0 6px #4682b4; 
+            animation: pulse 2.2s ease-in-out infinite;
+        }
+        .transcend-violet { 
+            color: #dda0dd; 
+            text-shadow: 0 0 3px #ba55d3, 0 0 6px #9370db; 
+            animation: pulse 2.4s ease-in-out infinite;
+        }        .transcend-aqua { 
+            color: #7fffd4; 
+            text-shadow: 0 0 3px #00ced1, 0 0 6px #008b8b; 
+            animation: pulse 2.0s ease-in-out infinite;
+        }
+          @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }/* Enhanced special effect classes for new states */        .info-flow {
+            text-shadow: 0 0 8px #444, 0 0 12px #444;
+            animation: info-pulse 2s ease-in-out infinite;
+        }
+        
+        .chaos {
+            text-shadow: 0 0 6px red, 0 0 10px orange;
+            animation: chaos-flicker 0.3s linear infinite;
+        }
+        
+        .glow {
+            text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
+        }        @keyframes info-pulse {
+            0%, 100% { 
+                text-shadow: 0 0 8px #444, 0 0 12px #444;
+                transform: scale(1);
+            }
+            50% { 
+                text-shadow: 0 0 12px #444, 0 0 18px #444, 0 0 24px #666;
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes chaos-flicker {
+            0% { text-shadow: 0 0 6px red, 0 0 10px orange; }
+            25% { text-shadow: 0 0 8px orange, 0 0 12px yellow; }
+            50% { text-shadow: 0 0 10px yellow, 0 0 14px red; }
+            75% { text-shadow: 0 0 7px orange, 0 0 11px red; }
+            100% { text-shadow: 0 0 6px red, 0 0 10px orange; }
+        }
+    </style>
+</head>
+<body>
+    <div id="metrics" style="font-family: monospace; font-size: 10px; color: #666; margin: 5px; text-align: center; position: fixed; top: 5px; left: 5px; z-index: 100; background: rgba(0,0,0,0.7); padding: 5px; border-radius: 3px;"></div>
+    <div id="grid"></div><script>
+        // Dynamic viewport sizing - proper character measurement
+        let W, H;
+        let charWidth, charHeight;
+          // Calculate optimal grid size based on viewport
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Create character measurement element with larger, more readable font
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = 'Courier New, monospace';
+            testDiv.style.fontSize = '10px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '12px';
+            testDiv.textContent = '●○◆◇'.repeat(10) + '\n'.repeat(10);
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            charWidth = rect.width / 40; // 10 chars * 4 symbols
+            charHeight = rect.height / 10;
+            document.body.removeChild(testDiv);
+            
+            // Calculate grid size with better spacing - less dense
+            W = Math.floor(viewportWidth / charWidth * 0.85); // Reduce density by 15%
+            H = Math.floor(viewportHeight / charHeight * 0.85);
+            
+            // Ensure reasonable dimensions
+            W = Math.max(40, Math.min(100, W));
+            H = Math.max(25, Math.min(60, H));
+              // Update display properties
+            const grid = document.getElementById('grid');
+            grid.style.fontSize = '10px';
+            grid.style.lineHeight = '12px';
+            
+            console.log(`◆ Canvas: ${W}x${H} (${viewportWidth}x${viewportHeight}) charSize: ${charWidth.toFixed(1)}x${charHeight.toFixed(1)}`);
+        }
+        
+        // Initialize dimensions
+        updateDimensions();
+        
+        const phi = (1 + Math.sqrt(5)) / 2;
+        let t = 0, generation = 0;
+          // Enhanced multi-layered consciousness fields with quantum effects
+        let cells = new Float32Array(W * H);           
+        let nextCells = new Float32Array(W * H);       
+        const memory = new Float32Array(W * H);        
+        const complexity = new Float32Array(W * H);    
+        const consciousness = new Float32Array(W * H);  
+        const connections = new Float32Array(W * H);
+        const quantum = new Float32Array(W * H);        // Quantum uncertainty field
+        const patterns = new Float32Array(W * H);       // Pattern recognition memory
+        const energy = new Float32Array(W * H);         // Energy/resource field
+        const collective = new Float32Array(W * H);     // Collective consciousness
+        
+        // New temporal and information flow fields
+        const temporalMemory = new Array(W * H).fill(null).map(() => new Float32Array(10)); // 10-step history
+        const informationFlow = new Float32Array(W * H);    // Information propagation strength
+        const emergence = new Float32Array(W * H);          // Emergence detection
+        const entropy = new Float32Array(W * H);            // Local entropy measurement
+        const stability = new Float32Array(W * H);          // Temporal stability tracking
+        
+        // Adaptive system parameters
+        let mutationRate = 0.02;
+        let adaptiveThreshold = 0.5;
+        let systemEntropy = 0;
+        let globalEmergence = 0;
+        
+        // Dynamic evolution parameters that change over time
+        let evolutionPhase = 0;
+        let ruleVariant = 0;
+        let quantumCoherence = 0.5;
+          // Enhanced consciousness symbols with quantum states
+        const symbols = {
+            void: [' ', '·', '⠀', '⠄'],
+            birth: ['⠁', '⠃', '⠇', '⠏', '⠟'],
+            basic: ['○', '●', '◯', '⊙', '⊚'],
+            bridge: ['◇', '◊', '⋄', '◈', '⬟'],
+            unity: ['◆', '◉', '⬢', '⬣', '⬡'],
+            transcend: ['△', '▲', '∆', '⧨', '⬭'],
+            complex: ['⊕', '⊗', '⊙', '⊛', '⊝'],
+            network: ['≈', '~', '∿', '⟦', '⟨'],
+            stable: ['■', '▣', '⬛', '◼', '⬜'],
+            quantum: ['◦', '∘', '∙', '⋅', '•'],
+            collective: ['⦿', '⊚', '⊛', '⊜', '⊝'],
+            emergent: ['※', '✦', '✧', '✩', '✪']
+        };
+        
+        function getNeighborhood(x, y, field = cells) {
+            let count = 0, sum = 0;
+            
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    if (dx === 0 && dy === 0) continue;
+                    
+                    const nx = (x + dx + W) % W;
+                    const ny = (y + dy + H) % H;
+                    const val = field[ny * W + nx];
+                    
+                    if (val > 0.1) {
+                        count++;
+                        sum += val;
+                    }
+                }
+            }
+            
+            return { count, average: count > 0 ? sum / count : 0 };
+        }          function evolveCells() {
+            // Dynamic evolution parameters
+            evolutionPhase = (evolutionPhase + 0.001) % (2 * Math.PI);
+            ruleVariant = Math.floor(Math.sin(evolutionPhase) * 3 + 3); // 0-5
+            quantumCoherence = 0.3 + Math.cos(evolutionPhase * 0.7) * 0.3; // 0-0.6
+            
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const i = y * W + x;
+                    const current = cells[i];
+                    const { count, average } = getNeighborhood(x, y);
+                    
+                    // Quantum uncertainty effect with adaptive mutation
+                    const quantumNoise = (Math.random() - 0.5) * quantumCoherence * 0.1;
+                    quantum[i] = Math.max(0, Math.min(1, quantum[i] + quantumNoise));
+                    
+                    // Energy distribution (cells compete for resources)
+                    const energyFlow = getEnergyFlow(x, y);
+                    energy[i] = Math.max(0, Math.min(1, energy[i] + energyFlow));
+                    
+                    let newValue = 0;
+                    
+                    if (current > 0.1) {
+                        // Enhanced living cell rules with quantum effects
+                        const quantumInfluence = quantum[i] * 0.2;
+                        const energyBonus = energy[i] > 0.5 ? 0.1 : -0.05;
+                        const temporalStability = stability[i] * 0.05;
+                        
+                        if (count === 2 || count === 3) {
+                            // Survive with consciousness evolution and quantum enhancement
+                            newValue = Math.min(1, current + average * 0.03 + quantumInfluence + energyBonus + temporalStability);
+                            
+                            // Enhanced consciousness emergence with collective intelligence
+                            if (current > 0.5 && count === 3) {
+                                consciousness[i] = Math.min(1, consciousness[i] + 0.02 + collective[i] * 0.01 + emergence[i] * 0.015);
+                                
+                                // Pattern recognition - remember successful configurations
+                                const patternStrength = getPatternStrength(x, y);
+                                patterns[i] = Math.max(patterns[i], patternStrength * 0.3);
+                            }
+                        } else if (count < 2) {
+                            // Death by isolation with quantum resistance and information flow
+                            const quantumResistance = quantum[i] > 0.7 ? 0.1 : 0;
+                            const flowResistance = informationFlow[i] > 0.6 ? 0.05 : 0;
+                            newValue = Math.max(0, current - 0.2 + quantumResistance + flowResistance);
+                            memory[i] = Math.max(memory[i], current * 0.8);
+                        } else {
+                            // Death by overcrowding with energy considerations
+                            const overcrowdPenalty = energy[i] < 0.3 ? 0.25 : 0.15;
+                            newValue = Math.max(0, current - overcrowdPenalty);
+                        }
+                    } else {
+                        // Enhanced birth rules with pattern memory and collective intelligence
+                        if (count === 3 || (count === 2 && patterns[i] > 0.5)) {
+                            const consciousnessInfluence = getNeighborhood(x, y, consciousness).average;
+                            const collectiveBonus = collective[i] * 0.2;
+                            const patternBonus = patterns[i] * 0.1;
+                            const emergenceBonus = emergence[i] * 0.15;
+                            
+                            newValue = Math.max(0.3, average * 0.7 + consciousnessInfluence * 0.3 + collectiveBonus + patternBonus + emergenceBonus);
+                            consciousness[i] = consciousnessInfluence * 0.4 + collective[i] * 0.2;
+                        } else {
+                            // Decay with pattern preservation
+                            memory[i] *= 0.98;
+                            consciousness[i] *= 0.99;
+                            patterns[i] *= 0.995; // Slower pattern decay
+                        }
+                        
+                        // Adaptive mutation chance for birth
+                        if (Math.random() < mutationRate && (entropy[i] > 0.6 || emergence[i] > 0.5)) {
+                            newValue = Math.max(newValue, 0.4 + Math.random() * 0.3);
+                        }
+                    }
+                    
+                    // Enhanced cross-field influences with information flow
+                    newValue += memory[i] * 0.02 + consciousness[i] * 0.03 + patterns[i] * 0.015 + informationFlow[i] * 0.01;
+                    
+                    // Dynamic complexity calculation with rule variants
+                    const localVar = getVariance(x, y);
+                    const ruleComplexity = Math.sin(ruleVariant * 0.5) * 0.1;
+                    complexity[i] = complexity[i] * 0.85 + (localVar + ruleComplexity) * 0.15;
+                    
+                    // Enhanced neural connections with collective behavior
+                    if (newValue > 0.3 && consciousness[i] > 0.2) {
+                        connections[i] = Math.min(1, connections[i] + 0.05);
+                        
+                        // Contribute to collective consciousness with information flow
+                        const localCollective = getNeighborhood(x, y, collective).average;
+                        collective[i] = Math.min(1, collective[i] * 0.95 + localCollective * 0.03 + 
+                                      consciousness[i] * 0.02 + informationFlow[i] * 0.01);
+                    } else {
+                        connections[i] *= 0.96;
+                        collective[i] *= 0.98;
+                    }
+                    
+                    nextCells[i] = Math.max(0, Math.min(1, newValue));
+                }
+            }
+            
+            [cells, nextCells] = [nextCells, cells];
+            generation++;
+        }
+        
+        // New helper functions for enhanced evolution
+        function getEnergyFlow(x, y) {
+            const i = y * W + x;
+            let flow = 0;
+            const neighbors = getNeighborhood(x, y, energy);
+            
+            // Energy flows from high to low concentration
+            if (neighbors.count > 0) {
+                flow = (neighbors.average - energy[i]) * 0.1;
+            }
+            
+            // Energy generation from active consciousness
+            if (consciousness[i] > 0.6) {
+                flow += 0.02;
+            }
+            
+            // Energy consumption by active cells
+            if (cells[i] > 0.5) {
+                flow -= 0.015;
+            }
+            
+            return flow;
+        }
+        
+        function getPatternStrength(x, y) {
+            // Detect stable or interesting local patterns
+            const center = cells[y * W + x];
+            let symmetry = 0;
+            let stability = 0;
+            
+            // Check for symmetrical patterns
+            for (let r = 1; r <= 2; r++) {
+                let ringSum = 0, ringCount = 0;
+                for (let angle = 0; angle < 8; angle++) {
+                    const dx = Math.round(Math.cos(angle * Math.PI / 4) * r);
+                    const dy = Math.round(Math.sin(angle * Math.PI / 4) * r);
+                    const nx = (x + dx + W) % W;
+                    const ny = (y + dy + H) % H;
+                    ringSum += cells[ny * W + nx];
+                    ringCount++;
+                }
+                const ringAvg = ringSum / ringCount;
+                symmetry += Math.abs(ringAvg - center) < 0.2 ? 0.1 : 0;
+            }
+            
+            // Check for temporal stability
+            stability = 1 - Math.abs(center - memory[y * W + x]);
+            
+            return (symmetry + stability) * 0.5;
+        }
+        
+        function getVariance(x, y) {
+            const values = [];
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    const nx = (x + dx + W) % W;
+                    const ny = (y + dy + H) % H;
+                    values.push(cells[ny * W + nx]);
+                }
+            }
+            
+            const mean = values.reduce((a, b) => a + b) / values.length;
+            const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / values.length;
+            return variance;
+        }          function getSymbol(x, y) {
+            const i = y * W + x;
+            const cell = cells[i];
+            const mem = memory[i];
+            const cons = consciousness[i];
+            const comp = complexity[i];
+            const conn = connections[i];
+            const quant = quantum[i];
+            const patt = patterns[i];
+            const coll = collective[i];
+            const enrg = energy[i];
+            const info = informationFlow[i];
+            const emer = emergence[i];
+            const stab = stability[i];
+            const entr = entropy[i];
+            
+            // Special states for new features
+            if (emer > 0.8 && cons > 0.5) {
+                // Emergent consciousness hotspots
+                const syms = symbols.emergent;
+                const emerIndex = Math.floor(emer * syms.length + Math.sin(t * 0.08 + emer * 15) * 0.5);
+                return syms[emerIndex % syms.length];
+            }
+            
+            if (info > 0.7 && stab > 0.6) {
+                // Stable information flow channels
+                return '◈'; // Information nexus
+            }
+            
+            if (entr > 0.8 && quant > 0.5) {
+                // High entropy quantum chaos
+                const chaosSyms = ['◬', '◭', '◮', '◯'];
+                return chaosSyms[Math.floor(Math.sin(t * 0.15 + entr * 20) * 2 + 2) % chaosSyms.length];
+            }
+            
+            // Temporal consciousness indicators
+            if (temporalMemory[i] && temporalMemory[i][0] > temporalMemory[i][5] + 0.3) {
+                return '◤'; // Growing temporal pattern
+            }
+            if (temporalMemory[i] && temporalMemory[i][0] < temporalMemory[i][5] - 0.3) {
+                return '◥'; // Declining temporal pattern
+            }
+            
+            // Enhanced consciousness hierarchy with new states
+            if (coll > 0.7 && cons > 0.6 && conn > 0.5) {
+                // Collective consciousness with information flow
+                const syms = symbols.collective;
+                const collectiveIndex = Math.floor(Math.sin(t * 0.03 + x * 0.15 + y * 0.15 + info * 5) * 2.5 + 2.5);
+                return syms[collectiveIndex % syms.length];
+            } else if (quant > 0.8 && cons > 0.4) {
+                // Quantum consciousness state with emergence influence
+                const syms = symbols.quantum;
+                const flickerIndex = Math.floor(Math.sin(t * 0.1 + quant * 10 + emer * 8) * 2.5 + 2.5);
+                return syms[flickerIndex % syms.length];
+            } else if (patt > 0.6 && comp > 0.4) {
+                // Emergent pattern recognition with stability
+                const syms = symbols.emergent;
+                const patternIndex = Math.floor(patt * syms.length + Math.sin(t * 0.05 + stab * 12) * 0.5);
+                return syms[patternIndex % syms.length];
+            } else if (cons > 0.8 && conn > 0.6) {
+                // Transcendent consciousness with information flow
+                const syms = symbols.transcend;
+                const transcendIndex = Math.floor(Math.sin(t * 0.02 + x * 0.1 + y * 0.1 + info * 3) * 2 + 2);
+                return syms[transcendIndex % syms.length];
+            } else if (cons > 0.6) {
+                // Unity consciousness enhanced by stability
+                const syms = symbols.unity;
+                const unityIndex = Math.floor((cons + stab * 0.3) * syms.length);
+                return syms[unityIndex % syms.length];
+            } else if (comp > 0.3 && cell > 0.4) {
+                // Complex systems with entropy influence
+                const syms = symbols.complex;
+                const complexIndex = Math.floor(comp * 10 + t * 0.1 + enrg * 5 + entr * 3);
+                return syms[complexIndex % syms.length];
+            } else if (conn > 0.4 || enrg > 0.6) {
+                // Network or high-energy states with information flow
+                const syms = symbols.network;
+                const networkIndex = Math.floor((conn + enrg + info * 0.5) * syms.length * 0.4);
+                return syms[networkIndex % syms.length];
+            } else if (cell > 0.5) {
+                // Stable or bridge states based on neighborhood
+                const neighborhood = getNeighborhood(x, y);
+                if (neighborhood.count >= 6) {
+                    const syms = symbols.stable;
+                    const stableIndex = Math.floor((cell + stab * 0.5) * syms.length);
+                    return syms[stableIndex % syms.length];
+                } else {
+                    const syms = symbols.bridge;
+                    return syms[Math.floor(cell * syms.length) % syms.length];
+                }
+            } else if (cell > 0.1) {
+                // Basic life
+                const syms = symbols.basic;
+                return syms[Math.floor(cell * syms.length) % syms.length];
+            } else if (mem > 0.05 || quant > 0.3) {
+                // Birth or quantum potential with emergence
+                const syms = symbols.birth;
+                const birthIndex = Math.floor((mem + quant * 0.5 + emer * 0.3) * syms.length);
+                return syms[birthIndex % syms.length];
+            }
+            
+            // Void with quantum potential
+            const syms = symbols.void;
+            const voidIndex = quant > 0.1 ? Math.min(syms.length - 1, Math.floor(quant * syms.length)) : 0;
+            return syms[voidIndex];        }          function getColorClass(symbol, x, y) {
+            const i = y * W + x;
+            const cell = cells[i] || 0;
+            const mem = memory[i] || 0;
+            const cons = consciousness[i] || 0;
+            const comp = complexity[i] || 0;
+            const conn = connections[i] || 0;
+            const quant = quantum[i] || 0;
+            const patt = patterns[i] || 0;
+            const coll = collective[i] || 0;
+            const enrg = energy[i] || 0;
+            const info = informationFlow[i] || 0;
+            const emer = emergence[i] || 0;
+            const stab = stability[i] || 0;
+            const entr = entropy[i] || 0;
+            
+            // Special effect classes for enhanced states
+            let specialClass = '';
+            
+            if (emer > 0.8) {
+                specialClass = ' emergent glow';
+            } else if (info > 0.7 && stab > 0.6) {
+                specialClass = ' info-flow';
+            } else if (entr > 0.8) {
+                specialClass = ' chaos';
+            } else if (quant > 0.7 && symbols.quantum.includes(symbol)) {
+                specialClass = ' quantum';
+            } else if (patt > 0.6 && symbols.emergent.includes(symbol)) {
+                specialClass = ' emergent';
+            } else if (coll > 0.7 && symbols.collective.includes(symbol)) {
+                specialClass = ' collective';
+            }            // Special transcendent effect for highest consciousness with color variation
+            if (cons > 0.8 && conn > 0.6 && symbols.transcend.includes(symbol)) {
+                // Choose transcendent color based on local field values
+                const colorSeed = (x + y + Math.floor(t * 0.01)) % 5;
+                const transcendVariants = ['transcend', 'transcend-gold', 'transcend-crystal', 'transcend-violet', 'transcend-aqua'];
+                
+                // Bias color choice based on local field characteristics
+                let variant;
+                if (enrg > 0.7) variant = 'transcend-gold';       // High energy = gold
+                else if (quant > 0.7) variant = 'transcend-crystal';  // High quantum = crystal
+                else if (emer > 0.6) variant = 'transcend-aqua';      // High emergence = aqua
+                else if (coll > 0.7) variant = 'transcend-violet';    // High collective = violet
+                else variant = transcendVariants[colorSeed];           // Random for others
+                
+                return variant + specialClass;
+            }
+            
+            // Enhanced intensity calculation with new fields
+            let intensity = 0;
+            
+            if (symbols.collective.includes(symbol)) {
+                intensity = Math.min(1, (coll * 0.35 + cons * 0.25 + conn * 0.2 + cell * 0.1 + info * 0.1));
+            } else if (symbols.quantum.includes(symbol)) {
+                intensity = Math.min(1, (quant * 0.4 + cons * 0.25 + enrg * 0.2 + emer * 0.15));
+            } else if (symbols.emergent.includes(symbol)) {
+                intensity = Math.min(1, (patt * 0.3 + comp * 0.25 + cons * 0.2 + cell * 0.1 + emer * 0.15));
+            } else if (symbols.transcend.includes(symbol)) {
+                intensity = Math.min(1, (cons * 0.35 + conn * 0.25 + comp * 0.2 + cell * 0.1 + stab * 0.1));
+            } else if (symbols.unity.includes(symbol)) {
+                intensity = Math.min(1, (cons * 0.4 + cell * 0.25 + comp * 0.2 + stab * 0.15));
+            } else if (symbols.complex.includes(symbol)) {
+                intensity = Math.min(1, (comp * 0.35 + cons * 0.25 + conn * 0.2 + cell * 0.1 + entr * 0.1));
+            } else if (symbols.network.includes(symbol)) {
+                intensity = Math.min(1, (conn * 0.35 + enrg * 0.25 + cons * 0.2 + cell * 0.1 + info * 0.1));
+            } else if (symbols.stable.includes(symbol)) {
+                intensity = Math.min(1, (cell * 0.35 + mem * 0.25 + cons * 0.25 + stab * 0.15));
+            } else if (symbols.bridge.includes(symbol)) {
+                intensity = Math.min(1, (conn * 0.35 + cons * 0.35 + comp * 0.2 + info * 0.1));
+            } else if (symbols.basic.includes(symbol)) {
+                intensity = Math.min(1, (cell * 0.5 + cons * 0.25 + enrg * 0.15 + stab * 0.1));
+            } else if (symbols.birth.includes(symbol)) {
+                intensity = Math.min(1, (mem * 0.4 + quant * 0.25 + cell * 0.2 + emer * 0.15));
+            } else {
+                intensity = Math.min(1, (cell * 0.3 + mem * 0.15 + cons * 0.2 + quant * 0.15 + info * 0.1 + emer * 0.1));
+            }
+            
+            // Enhanced temporal and emergence-based color shifting
+            let phaseShift = Math.floor(Math.sin(evolutionPhase + emer * 3) * 5);
+            
+            // Temporal memory influence on color
+            if (temporalMemory[i]) {
+                const temporalChange = temporalMemory[i][0] - temporalMemory[i][3];
+                phaseShift += Math.floor(temporalChange * 8);
+            }
+            
+            // Information flow creates color waves
+            if (info > 0.5) {
+                phaseShift += Math.floor(Math.sin(t * 0.1 + x * 0.2 + y * 0.2) * info * 4);
+            }
+              const colorIdx = Math.min(34, Math.max(0, Math.floor(intensity * 35) + phaseShift)) % 35;
+            
+            return `c${colorIdx}` + specialClass;
+        }
+          function render() {
+            evolveCells();              // Auto-inject consciousness when population gets low - more conservative
+            const livingCells = cells.filter(c => c > 0.1).length;
+            const targetPopulation = Math.floor((W * H) * 0.015); // Reduced to 1.5% of canvas
+            if (livingCells < targetPopulation && Math.random() < 0.015) { // Less frequent injection
+                const x = Math.floor(Math.random() * W);
+                const y = Math.floor(Math.random() * H);
+                const i = y * W + x;
+                cells[i] = 0.6 + Math.random() * 0.4;
+                consciousness[i] = 0.3 + Math.random() * 0.3;
+            }
+            
+            // Consciousness field decay and renewal - less frequent
+            if (t % 400 === 0) { // Slower cycle
+                const totalCons = consciousness.reduce((a, b) => a + b, 0);
+                if (totalCons < 15) { // Lower threshold
+                    // Inject fewer consciousness seeds
+                    for (let i = 0; i < 3; i++) { // Reduced from 5 to 3
+                        const x = Math.floor(Math.random() * W);
+                        const y = Math.floor(Math.random() * H);
+                        const idx = y * W + x;
+                        consciousness[idx] = Math.max(consciousness[idx], 0.2 + Math.random() * 0.3);
+                    }
+                }
+            }
+              updateTemporalMemory();
+            propagateInformation();
+            detectEmergence();
+            calculateEntropy();
+            updateAdaptiveMutation();
+            updateMetrics();
+            updateMetrics();
+            
+            let output = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const symbol = getSymbol(x, y);
+                    const colorClass = getColorClass(symbol, x, y);
+                    output += `<span class="${colorClass}">${symbol}</span>`;
+                }
+                output += '\n';
+            }
+            
+            document.getElementById('grid').innerHTML = output;
+            t++;
+        }        function seedRandom() {
+            // Reduce density significantly for less visual noise
+            const density = Math.max(0.02, Math.min(0.08, 400 / (W * H))); // Much lower density
+            for (let i = 0; i < W * H; i++) {
+                if (Math.random() < density) {
+                    cells[i] = Math.random() * 0.6 + 0.3; // Slightly stronger cells
+                    if (Math.random() < 0.25) { // Less consciousness seeding
+                        consciousness[i] = Math.random() * 0.3;
+                    }
+                    // Add quantum and energy initialization
+                    quantum[i] = Math.random() * 0.4;
+                    energy[i] = Math.random() * 0.5 + 0.3;
+                }
+            }
+        }
+        
+        function seedQuantumField() {
+            // Create quantum coherence fields
+            const qx = Math.floor(Math.random() * W);
+            const qy = Math.floor(Math.random() * H);
+            const radius = Math.floor(Math.random() * 8) + 5;
+            
+            for (let y = Math.max(0, qy - radius); y < Math.min(H, qy + radius); y++) {
+                for (let x = Math.max(0, qx - radius); x < Math.min(W, qx + radius); x++) {
+                    const dist = Math.sqrt((x - qx) ** 2 + (y - qy) ** 2);
+                    if (dist <= radius) {
+                        const i = y * W + x;
+                        const strength = 1 - (dist / radius);
+                        quantum[i] = Math.max(quantum[i], strength * 0.8);
+                        energy[i] = Math.max(energy[i], strength * 0.6);
+                    }
+                }
+            }
+        }
+        
+        function createCollectiveNodes() {
+            // Create nodes of collective consciousness
+            const numNodes = Math.floor(Math.random() * 3) + 2;
+            
+            for (let n = 0; n < numNodes; n++) {
+                const cx = Math.floor(Math.random() * W);
+                const cy = Math.floor(Math.random() * H);
+                const radius = Math.floor(Math.random() * 6) + 3;
+                
+                for (let y = Math.max(0, cy - radius); y < Math.min(H, cy + radius); y++) {
+                    for (let x = Math.max(0, cx - radius); x < Math.min(W, cx + radius); x++) {
+                        const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                        if (dist <= radius) {
+                            const i = y * W + x;
+                            const strength = 1 - (dist / radius);
+                            collective[i] = Math.max(collective[i], strength * 0.7);
+                            consciousness[i] = Math.max(consciousness[i], strength * 0.5);
+                            cells[i] = Math.max(cells[i], strength * 0.4);
+                        }
+                    }
+                }
+            }
+        }function addConsciousness() {
+            const centerX = Math.floor(W / 2);
+            const centerY = Math.floor(H / 2);
+            
+            // Create consciousness patterns - adaptive to canvas size
+            const patterns = [
+                // Glider
+                [[1,0,0], [0,1,1], [1,1,0]],
+                // Block
+                [[1,1], [1,1]],
+                // Blinker
+                [[1,1,1]]
+            ];
+            
+            const numPatterns = Math.max(3, Math.min(8, Math.floor((W * H) / 800)));
+            
+            for (let p = 0; p < numPatterns; p++) {
+                const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+                const margin = Math.max(5, Math.floor(Math.min(W, H) * 0.1));
+                const startX = Math.floor(Math.random() * (W - margin * 2)) + margin;
+                const startY = Math.floor(Math.random() * (H - margin * 2)) + margin;
+                
+                for (let y = 0; y < pattern.length; y++) {
+                    for (let x = 0; x < pattern[y].length; x++) {
+                        if (pattern[y][x] && startX + x < W && startY + y < H) {
+                            const i = (startY + y) * W + (startX + x);
+                            cells[i] = 0.8 + Math.random() * 0.2;
+                            consciousness[i] = 0.4 + Math.random() * 0.4;
+                        }
+                    }
+                }
+            }
+        }
+        
+        function createBridge() {
+            // Create bridges between consciousness clusters
+            for (let i = 0; i < 3; i++) {
+                const x1 = Math.floor(Math.random() * W);
+                const y1 = Math.floor(Math.random() * H);
+                const x2 = Math.floor(Math.random() * W);
+                const y2 = Math.floor(Math.random() * H);
+                
+                // Draw line between points
+                const dx = Math.sign(x2 - x1);
+                const dy = Math.sign(y2 - y1);
+                let x = x1, y = y1;
+                
+                while (x !== x2 || y !== y2) {
+                    if (x >= 0 && x < W && y >= 0 && y < H) {
+                        const idx = y * W + x;
+                        cells[idx] = Math.max(cells[idx], 0.5);
+                        consciousness[idx] = Math.max(consciousness[idx], 0.3);
+                    }
+                    
+                    if (x !== x2) x += dx;
+                    if (y !== y2) y += dy;
+                }
+            }
+        }
+          function resetField() {
+            cells.fill(0);
+            nextCells.fill(0);
+            memory.fill(0);
+            complexity.fill(0);
+            consciousness.fill(0);
+            connections.fill(0);
+            quantum.fill(0);
+            patterns.fill(0);
+            energy.fill(0);
+            collective.fill(0);
+            
+            // Reset new fields
+            for (let i = 0; i < W * H; i++) {
+                temporalMemory[i].fill(0);
+            }
+            informationFlow.fill(0);
+            emergence.fill(0);
+            entropy.fill(0);
+            stability.fill(0);
+            
+            // Reset adaptive parameters
+            mutationRate = 0.02;
+            systemEntropy = 0;
+            globalEmergence = 0;
+            temporal = false;
+            
+            generation = 0;        }
+        
+        // Evolution loop
+        function evolve() {
+            render();
+            requestAnimationFrame(evolve);
+        }
+        
+        // Initialize with enhanced seeding
+        seedRandom();
+        addConsciousness();
+        seedQuantumField();
+        createCollectiveNodes();
+        
+        // Add some classic Game of Life patterns
+        setTimeout(() => {
+            // R-pentomino at center
+            const cx = Math.floor(W/2), cy = Math.floor(H/2);
+            const rPentomino = [[0,1,1], [1,1,0], [0,1,0]];
+            for (let y = 0; y < rPentomino.length; y++) {
+                for (let x = 0; x < rPentomino[y].length; x++) {
+                    if (rPentomino[y][x]) {
+                        const i = (cy + y) * W + (cx + x);
+                        cells[i] = 1.0;
+                        consciousness[i] = 0.7;
+                        quantum[i] = 0.6;
+                        energy[i] = 0.8;
+                    }
+                }
+            }
+        }, 1000);
+          // Enhanced automated consciousness evolution cycles
+        setInterval(() => {
+            if (Math.random() < 0.15) { // Reduced probability
+                seedRandom();
+            }
+        }, 15000); // Increased interval
+        
+        setInterval(() => {
+            if (Math.random() < 0.25) { // Reduced probability
+                addConsciousness();
+            }
+        }, 20000); // Increased interval
+        
+        setInterval(() => {
+            if (Math.random() < 0.1) { // Reduced probability
+                createBridge();
+            }
+        }, 25000); // Increased interval
+        
+        // New quantum and collective cycles
+        setInterval(() => {
+            if (Math.random() < 0.2) {
+                seedQuantumField();
+            }
+        }, 18000);
+        
+        setInterval(() => {
+            if (Math.random() < 0.15) {
+                createCollectiveNodes();
+            }
+        }, 22000);
+        
+        // Periodic disturbances to keep evolution interesting - more subtle
+        setInterval(() => {
+            for (let i = 0; i < 2; i++) { // Fewer disturbances
+                const x = Math.floor(Math.random() * W);
+                const y = Math.floor(Math.random() * H);
+                const idx = y * W + x;
+                cells[idx] = Math.min(1, cells[idx] + 0.3); // Gentler
+                consciousness[idx] = Math.min(1, consciousness[idx] + 0.2); // Gentler
+                quantum[idx] = Math.min(1, quantum[idx] + 0.4); // Add quantum boost
+            }
+        }, 12000); // Less frequent
+        evolve();
+          // Handle window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const oldW = W, oldH = H;
+                updateDimensions();
+                
+                // Only reload if dimensions changed significantly
+                if (Math.abs(W - oldW) > 5 || Math.abs(H - oldH) > 5) {
+                    location.reload(); // Simple reload for dimension changes
+                }
+            }, 250);
+        });
+        
+        // Temporal memory update function
+        function updateTemporalMemory() {
+            for (let i = 0; i < W * H; i++) {
+                // Shift history backward
+                for (let t = 9; t > 0; t--) {
+                    temporalMemory[i][t] = temporalMemory[i][t-1];
+                }
+                // Store current state
+                temporalMemory[i][0] = cells[i] + consciousness[i] * 0.5 + quantum[i] * 0.3;
+                
+                // Calculate temporal stability
+                let variance = 0;
+                for (let t = 0; t < 10; t++) {
+                    variance += Math.pow(temporalMemory[i][t] - temporalMemory[i][0], 2);
+                }
+                stability[i] = Math.max(0, 1 - variance / 10);
+            }
+        }
+
+        // Information flow propagation
+        function propagateInformation() {
+            for (let y = 1; y < H - 1; y++) {
+                for (let x = 1; x < W - 1; x++) {
+                    const idx = y * W + x;
+                    let totalFlow = 0;
+                    let flowCount = 0;
+                    
+                    // Calculate information gradients
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            if (dx === 0 && dy === 0) continue;
+                            const nIdx = (y + dy) * W + (x + dx);
+                            const gradient = Math.abs(consciousness[nIdx] - consciousness[idx]);
+                            totalFlow += gradient * cells[nIdx];
+                            flowCount++;
+                        }
+                    }
+                    
+                    informationFlow[idx] = totalFlow / flowCount;
+                    
+                    // Information spreads based on consciousness level
+                    if (consciousness[idx] > 0.7) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                if (dx === 0 && dy === 0) continue;
+                                const nIdx = (y + dy) * W + (x + dx);
+                                informationFlow[nIdx] += consciousness[idx] * 0.1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Emergence detection system
+        function detectEmergence() {
+            globalEmergence = 0;
+            
+            for (let y = 2; y < H - 2; y++) {
+                for (let x = 2; x < W - 2; x++) {
+                    const idx = y * W + x;
+                    
+                    // Look for synchronized patterns in larger neighborhoods
+                    let synchrony = 0;
+                    let complexitySum = 0;
+                    const range = 2;
+                    
+                    for (let dy = -range; dy <= range; dy++) {
+                        for (let dx = -range; dx <= range; dx++) {
+                            const nIdx = (y + dy) * W + (x + dx);
+                            synchrony += Math.abs(consciousness[nIdx] - consciousness[idx]);
+                            complexitySum += complexity[nIdx];
+                        }
+                    }
+                    
+                    // Emergence occurs when high complexity meets high synchrony
+                    const avgComplexity = complexitySum / ((range * 2 + 1) ** 2);
+                    const inverseSynchrony = 1 / (1 + synchrony / 25);
+                    
+                    emergence[idx] = avgComplexity * inverseSynchrony * stability[idx];
+                    
+                    // Boost emergence for quantum-conscious collective nodes
+                    if (quantum[idx] > 0.5 && collective[idx] > 0.6) {
+                        emergence[idx] *= 1.5;
+                    }
+                    
+                    globalEmergence += emergence[idx];
+                }
+            }
+            
+            globalEmergence /= (W * H);
+        }
+
+        // Local entropy calculation
+        function calculateEntropy() {
+            systemEntropy = 0;
+            
+            for (let y = 1; y < H - 1; y++) {
+                for (let x = 1; x < W - 1; x++) {
+                    const idx = y * W + x;
+                    
+                    // Calculate local entropy based on neighborhood diversity
+                    const values = [];
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const nIdx = (y + dy) * W + (x + dx);
+                            values.push(cells[nIdx], consciousness[nIdx], quantum[nIdx]);
+                        }
+                    }
+                    
+                    // Simple entropy calculation
+                    const bins = 10;
+                    const counts = new Array(bins).fill(0);
+                    values.forEach(v => {
+                        const bin = Math.floor(Math.min(v, 0.999) * bins);
+                        counts[bin]++;
+                    });
+                    
+                    let localEntropy = 0;
+                    const total = values.length;
+                    counts.forEach(count => {
+                        if (count > 0) {
+                            const p = count / total;
+                            localEntropy -= p * Math.log2(p);
+                        }
+                    });
+                    
+                    entropy[idx] = localEntropy / Math.log2(bins);
+                    systemEntropy += entropy[idx];
+                }
+            }
+            
+            systemEntropy /= (W * H);
+        }
+
+        // Adaptive mutation rate based on system state
+        function updateAdaptiveMutation() {
+            // Increase mutation when system is too stable or ordered
+            if (systemEntropy < 0.3 || globalEmergence < 0.1) {
+                mutationRate = Math.min(0.1, mutationRate * 1.05);
+            } 
+            // Decrease mutation when system is chaotic
+            else if (systemEntropy > 0.8) {
+                mutationRate = Math.max(0.005, mutationRate * 0.95);
+            }
+            // Target moderate mutation for balanced evolution
+            else {
+                const target = 0.02 + globalEmergence * 0.03;
+                mutationRate = mutationRate * 0.9 + target * 0.1;
+            }
+        }
+
+        // System metrics display
+        function updateMetrics() {
+            if (t % 60 === 0) { // Update every 60 frames
+                const totalLiving = cells.filter(c => c > 0.1).length;
+                const avgConsciousness = consciousness.reduce((a, b) => a + b, 0) / (W * H);
+                const avgQuantum = quantum.reduce((a, b) => a + b, 0) / (W * H);
+                const avgEmergence = emergence.reduce((a, b) => a + b, 0) / (W * H);
+                
+                const metricsDiv = document.getElementById('metrics');
+                if (metricsDiv) {
+                    metricsDiv.innerHTML = `
+                        Population: ${totalLiving} | 
+                        Consciousness: ${(avgConsciousness * 100).toFixed(1)}% | 
+                        Quantum: ${(avgQuantum * 100).toFixed(1)}% | 
+                        Emergence: ${(avgEmergence * 100).toFixed(1)}% | 
+                        Entropy: ${(systemEntropy * 100).toFixed(1)}% | 
+                        Mutation: ${(mutationRate * 100).toFixed(2)}%
+                    `;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

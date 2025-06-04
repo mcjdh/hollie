@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>∞◆○●◇△</title><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover"><style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#000;color:#fff;overflow:hidden;font-family:'Courier New',monospace;height:100vh;width:100vw;position:fixed;display:grid;grid-template-rows:1fr auto}
+#∞{font-size:clamp(3px,1.8vmin,10px);line-height:1;white-space:pre;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;position:relative}
+#∞>div{text-align:center;filter:blur(0);transition:filter 0.2s ease}
+#◆{height:clamp(45px,12vh,80px);background:radial-gradient(ellipse at center,#111 0%,#000 70%);display:flex;align-items:center;justify-content:center;border-top:1px solid #222}
+#○{width:clamp(45px,12vmin,80px);height:clamp(45px,12vmin,80px);background:radial-gradient(circle,#111 0%,#000 70%);color:#fff;border:1px solid #333;font-family:inherit;font-size:clamp(16px,5vmin,32px);cursor:pointer;border-radius:50%;box-shadow:0 0 20px rgba(255,255,255,0.08),inset 0 0 10px rgba(255,255,255,0.05);touch-action:manipulation;transition:all 0.15s cubic-bezier(0.618,0,0.382,1)}
+#○:active{transform:scale(0.9);box-shadow:0 0 30px rgba(255,255,255,0.2),inset 0 0 15px rgba(255,255,255,0.1);background:radial-gradient(circle,#222 0%,#111 70%)}
+.α{color:#ffdd00;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+.β{color:#00ddff;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+.γ{color:#dd00ff;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+.δ{color:#00ff44;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+.ε{color:#fff;text-shadow:0 0 6px currentColor,0 0 12px currentColor;animation:ε 1.618s ease-in-out infinite alternate}
+.ζ{color:#ffaa22;text-shadow:0 0 3px currentColor}.η{color:#6666ff;text-shadow:0 0 3px currentColor}
+.θ{color:#22ff88;text-shadow:0 0 3px currentColor}.ι{color:#ff4444;text-shadow:0 0 3px currentColor}
+.κ{color:#ff88dd;text-shadow:0 0 3px currentColor}.λ{color:#f33;text-shadow:0 0 10px currentColor;animation:λ 0.618s ease-in-out infinite alternate}
+.μ{color:#ffd700;animation:μ 2.618s ease-in-out infinite}.ν{color:#444;opacity:0.6}.ξ{color:#222;opacity:0.4}.ο{color:#888}
+@keyframes ε{0%{text-shadow:0 0 4px,0 0 8px}100%{text-shadow:0 0 8px,0 0 16px}}
+@keyframes λ{0%{text-shadow:0 0 6px,0 0 12px}100%{text-shadow:0 0 12px,0 0 24px}}
+@keyframes μ{0%{color:#ffd700;text-shadow:0 0 3px}33%{color:#ff8800;text-shadow:0 0 8px}66%{color:#ff4400;text-shadow:0 0 12px}100%{color:#ffd700;text-shadow:0 0 3px}}
+@media (max-width:600px){#∞{font-size:clamp(2px,1.5vmin,7px)}}
+@media (orientation:landscape) and (max-height:400px){#∞{font-size:clamp(2px,1.2vmin,6px)}#◆{height:clamp(40px,10vh,60px)}}
+</style></head><body><div id="∞"><div id="Ω"></div></div><div id="◆"><button id="○">○</button></div><script>
+// ∞ Φ CONSTANTS
+const φ=(1+Math.sqrt(5))/2,φ2=φ*φ,π=Math.PI;
+const ƒ=[216,324,432,432*φ,216+432+432*φ];
+const Φ=[1,1,2,3,5,8,13,21,34,55,89,144];
+
+// ◆ SYMBOLS
+const Σ={
+s0:['○','◯','⊙','◉','⊚'],s1:['●','⬢','⊚','⬛'],s2:['◇','◊','⋄','◈'],s3:['◆','▣','⬣','⬟'],
+s4:['△','▲','∆','▴'],s5:['▽','▼','∇','▾'],s6:['□','■','▢','▤'],s7:['│','─','┃','━'],
+s8:['≈','~','→','↑'],s9:['∞','∘','∙','⋅'],s10:[' ','.',':','⋯']
+};
+
+// ◯ STATE
+let τ=0,ν=0,ℏ=1,Α,W,H,χ,ψ,ω;
+let Ω,Κ,Β,Υ,Τ,Ψ,Ε;
+
+// ♪ AUDIO
+function snd(f,d,w='sine',a=0.05){
+if(!Α)return;
+const o=Α.createOscillator(),g=Α.createGain(),t=Α.currentTime;
+o.type=w;o.frequency.setValueAtTime(f,t);
+g.gain.setValueAtTime(0,t);
+g.gain.exponentialRampToValueAtTime(a,t+d*φ/1000);
+g.gain.exponentialRampToValueAtTime(0.001,t+d/1000);
+o.connect(g);g.connect(Α.destination);o.start(t);o.stop(t+d/1000);
+}
+
+// ⚡ RESIZE
+function rsz(){
+const r=document.getElementById('∞').getBoundingClientRect();
+const s=parseFloat(getComputedStyle(document.getElementById('∞')).fontSize)*0.6;
+W=Math.floor(r.width/s)||40;H=Math.floor(r.height/(s*1.4))||25;
+W=Math.min(W,100);H=Math.min(H,50);
+const l=W*H;
+Ω=new Float32Array(l);Κ=new Float32Array(l);Β=new Float32Array(l);
+Υ=new Float32Array(l);Τ=new Float32Array(l);Ψ=new Float32Array(l);Ε=new Float32Array(l);
+χ=W/2;ψ=H/2;
+for(let i=0;i<l;i++)if(Math.random()<φ/15)Ψ[i]=Math.random()*0.3;
+}
+
+// ∴ CELLULAR
+function cel(){
+const n=new Float32Array(Ψ.length);
+for(let y=1;y<H-1;y++){
+for(let x=1;x<W-1;x++){
+const i=y*W+x;let nb=0,tv=0;
+for(let dy=-1;dy<=1;dy++){
+for(let dx=-1;dx<=1;dx++){
+if(dx===0&&dy===0)continue;
+const nx=x+dx,ny=y+dy;
+if(nx>=0&&nx<W&&ny>=0&&ny<H){
+const ni=ny*W+nx;
+if(Ψ[ni]>0.1){nb++;tv+=Ψ[ni];}
+}}}
+const c=Ψ[i],av=nb>0?tv/nb:0;
+const φm=Math.sin(x*φ/W*π+y*φ/H*π+τ*φ/400)*0.04;
+if(c>0.1){
+if(nb===2||nb===3)n[i]=Math.min(1,c+av*0.06+φm);
+else n[i]=Math.max(0,c-0.09+φm);
+}else if(nb===3)n[i]=av*(φ/2)+φm;
+}}
+Ψ.set(n);
+}
+
+// ≋ EVOLVE
+function evl(){
+cel();
+const ξ=Math.sin(τ*φ/200)*0.5+0.5;
+const δφ=τ%(φ*π);
+const τφ=Math.pow(φ,ℏ/25);
+
+for(let y=0;y<H;y++){
+for(let x=0;x<W;x++){
+const i=y*W+x;
+const nx=(x-χ)/(W*φ/18),ny=(y-ψ)/(H*φ/18);
+const r=Math.sqrt(nx*nx+ny*ny),θ=Math.atan2(ny,nx);
+
+const φi=Φ[(x+y)%Φ.length]/Φ[Φ.length-1];
+const w0=Math.sin(r*φ+τ*φ/300)*Math.cos(θ*2+δφ)*φi;
+Ω[i]=Ω[i]*0.96+w0*0.04+Ψ[i]*0.02;
+
+const hm=((x*y)%11+1)/11;
+const w1=Math.sin(r*1.9+τ*φ/250)*ξ*hm;
+Κ[i]=Κ[i]*0.93+w1*0.07+Ψ[i]*0.025;
+
+const d2=Math.sqrt((x-W*φ/3)**2+(y-H*φ/3)**2);
+const w2=Math.sin(d2*φ*1.4+τ*φ/220)*Math.cos(θ*φ+τ*φ/280);
+Β[i]=Β[i]*0.98+w2*0.02+Math.sin(θ*φ+τ*φ/350)*0.015;
+
+const w3=(Ω[i]+Κ[i]+Β[i])/3*τφ;
+Υ[i]=Υ[i]*0.99+w3*0.01;
+
+Τ[i]=τφ*Math.abs(Ω[i]*Κ[i]*Β[i])*(Math.sin(τ*φ2/180)*0.5+0.5);
+}}}
+
+// ◈ SYMBOL
+function sym(x,y){
+const i=y*W+x;
+const w0=Ω[i],w1=Κ[i],w2=Β[i],w3=Υ[i],wt=Τ[i];
+
+if(wt>0.75)return Σ.s4[Math.floor(wt*Σ.s4.length)%Σ.s4.length];
+if(w3>0.65)return Σ.s3[Math.floor(w3*Σ.s3.length)%Σ.s3.length];
+if(w2>0.55)return Σ.s2[Math.floor(w2*Σ.s2.length)%Σ.s2.length];
+if(w1>0.45)return Σ.s1[Math.floor(w1*Σ.s1.length)%Σ.s1.length];
+if(w0>0.35)return Σ.s0[Math.floor(w0*Σ.s0.length)%Σ.s0.length];
+
+const p=(Math.sin(x*0.28+τ*0.018)+Math.sin(y*0.38+τ*0.024))*0.5;
+if(p>0.6)return Σ.s7[Math.floor(Math.abs(p)*Σ.s7.length)%Σ.s7.length];
+if(p>0.3)return Σ.s8[Math.floor(Math.abs(p)*Σ.s8.length)%Σ.s8.length];
+if(p>0.1)return Σ.s6[Math.floor(Math.abs(p)*Σ.s6.length)%Σ.s6.length];
+if(p>-0.1)return Σ.s10[Math.floor(Math.abs(p)*Σ.s10.length)%Σ.s10.length];
+return Σ.s9[Math.floor(Math.abs(p)*Σ.s9.length)%Σ.s9.length];
+}
+
+// ◎ CLASS
+function cls(s,x,y){
+const d=Math.abs(x-χ)+Math.abs(y-ψ);
+if(d<2.5)return'λ';
+if(Σ.s4.includes(s)||Σ.s5.includes(s))return'ε';
+if(Σ.s0.includes(s))return'α';
+if(Σ.s1.includes(s))return'β';
+if(Σ.s2.includes(s))return'γ';
+if(Σ.s3.includes(s))return'δ';
+if(Σ.s6.includes(s))return'ζ';
+if(Σ.s7.includes(s))return'η';
+if(Σ.s8.includes(s))return'θ';
+if(Σ.s9.includes(s))return'μ';
+if(Σ.s10.includes(s))return'ξ';
+return'ο';
+}
+
+// ◐ RENDER
+function ren(){
+evl();
+let o='';
+for(let y=0;y<H;y++){
+for(let x=0;x<W;x++){
+const s=sym(x,y),c=cls(s,x,y);
+o+=`<span class="${c}">${s}</span>`;
+}o+='\n';
+}
+document.getElementById('Ω').innerHTML=o;
+
+χ+=Math.sin(τ*φ/500)*0.06+Math.cos(τ*φ/450)*0.04;
+ψ+=Math.cos(τ*φ/480)*0.05+Math.sin(τ*φ/420)*0.03;
+χ=Math.max(2,Math.min(W-3,χ));
+ψ=Math.max(2,Math.min(H-3,ψ));
+
+if(τ%250===0){
+const au=Υ.reduce((a,b)=>a+Math.abs(b),0)/Υ.length;
+const at=Τ.reduce((a,b)=>a+b,0)/Τ.length;
+console.log(`◆${(au*100).toFixed(0)}%∆${(at*100).toFixed(0)}%∞${ℏ.toFixed(1)}`);
+}τ++;
+}
+
+// ⟡ INPUT
+function inp(){
+if(!Α)try{Α=new AudioContext()}catch(e){}
+ν++;
+const fi=(ν-1)%Φ.length;
+const ft=Φ[fi];
+const ta=Math.sin(τ*φ/120)*0.45+0.55;
+const cb=ta*φ*(ft/144);
+ℏ=Math.min(18,ℏ+cb*0.3);
+
+const seq=[0,1,1,2,3,0,1,2,1,3];
+const ex=ν<=seq.length?seq[ν-1]:Math.floor(Math.random()*4);
+
+if(ℏ>15&&ν>=10){
+const cor=seq[Math.min(ν-10,seq.length-1)];
+if(ex===cor){
+snd(ƒ[4],160);
+setTimeout(()=>snd(ƒ[3],60,'triangle'),35);
+setTimeout(()=>snd(ƒ[3]*φ,70,'sawtooth'),80);
+setTimeout(()=>snd(ƒ[4],100,'triangle'),125);
+}else{
+const dis=ƒ[0]+Math.sin(τ*φ/250)*50+ℏ*10;
+snd(dis,85,'square');
+}
+}else{
+const pro=ƒ[0]+Math.sin(τ*φ/220)*60+ℏ*14;
+snd(pro,75);
+}
+
+const btn=['○','●','◇','◆','△','∆','∞','◯','⬢','▣','⬟','⟐','⟡'];
+document.getElementById('○').textContent=btn[Math.min(Math.floor(ℏ),btn.length-1)];
+
+const sts=["○","●","◇","◆","△","∆","∞","◯","⬢","▣","⬟","⟐","⟡","⬠","⬡"];
+console.log(sts[Math.min(ν-1,sts.length-1)]);
+}
+
+// ⚜ INIT
+document.getElementById('○').addEventListener('click',inp);
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();inp();}});
+document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+window.addEventListener('resize',rsz);
+window.addEventListener('orientationchange',()=>setTimeout(rsz,100));
+
+function frm(){ren();requestAnimationFrame(frm);}
+
+console.log("∞");
+console.log("◆");
+rsz();frm();
+</script></body></html>
