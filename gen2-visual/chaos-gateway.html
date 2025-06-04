@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chaos Gateway</title>
+<style>
+  body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #gate{
+    font-size:12px;
+    line-height:1;
+    white-space:pre;
+  }
+  span{display:inline-block;width:0.6em;}
+</style>
+</head>
+<body>
+<pre id="gate"></pre>
+<script>
+const W=60, H=30;
+const gate=document.getElementById('gate');
+const φ=(1+Math.sqrt(5))/2;
+let frame=0;
+const field=new Float32Array(W*H).fill(0.5);
+function logistic(x,r){return r*x*(1-x);}
+const glyphs=[' ','·',':','*','✶','✷','✸','✹','✺','✵','✴'];
+function evolve(){
+  for(let i=0;i<field.length;i++){
+    const r=3.8+0.2*Math.sin(frame*0.02+i/W*0.3);
+    field[i]=logistic(field[i],r);
+  }
+}
+function render(){
+  evolve();
+  let out='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const i=y*W+x;
+      const v=field[i];
+      const hue=(x*y+frame*3)%360;
+      const light=40+40*v;
+      const idx=Math.floor(v*(glyphs.length-1));
+      out+=`<span style="color:hsl(${hue},70%,${light}%)">${glyphs[idx]}</span>`;
+    }
+    out+='\n';
+  }
+  gate.innerHTML=out;
+  frame++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>

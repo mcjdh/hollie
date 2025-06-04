@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Glyph Gateway</title>
+<style>
+  body {
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #glyphs {
+    font-size:13px;
+    line-height:1;
+    white-space:pre;
+  }
+  span { display:inline-block; width:0.6em; }
+</style>
+</head>
+<body>
+<pre id="glyphs"></pre>
+<script>
+const Φ = (1 + Math.sqrt(5)) / 2;
+const W = 50;
+const H = 30;
+const glyphs = document.getElementById('glyphs');
+const symbols = [' ','.','•','◦','◍','○','◉','◇','◆','⬣','⬢'];
+let frame = 0;
+function render(){
+  let out='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const dx = x - W/2;
+      const dy = y - H/2;
+      const r = Math.sqrt(dx*dx + dy*dy);
+      const a = Math.atan2(dy,dx);
+      let v = Math.sin(r*0.2 + frame*0.04) + Math.cos(a*3 + frame*0.02);
+      v += Math.sin((dx+dy)*0.1 + frame*0.03);
+      v = (v + 3)/6;
+      const idx = Math.floor(v * (symbols.length-1));
+      const hue = (r*4 + frame) % 360;
+      out += `<span style="color:hsl(${hue},70%,60%)">${symbols[idx]}</span>`;
+    }
+    out += '\n';
+  }
+  glyphs.innerHTML = out;
+  frame++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>

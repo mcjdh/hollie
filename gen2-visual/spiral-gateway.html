@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Spiral Glyph Gateway</title>
+<style>
+  body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #gate{
+    font-size:12px;
+    line-height:1;
+    white-space:pre;
+  }
+  span{display:inline-block;width:0.6em;}
+</style>
+</head>
+<body>
+<pre id="gate"></pre>
+<script>
+const W=60,H=30; 
+let frame=0;
+const gate=document.getElementById('gate');
+function render(){
+  let out='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const dx=x-W/2;
+      const dy=y-H/2;
+      const r=Math.sqrt(dx*dx+dy*dy);
+      const a=Math.atan2(dy,dx)+frame*0.02;
+      const v=(Math.sin(r*0.3-a)+1)/2;
+      const glyphs=[' ','·','•','✦','✺','✼'];
+      const idx=Math.floor(v*(glyphs.length-1));
+      const hue=(a*180/Math.PI+frame)%360;
+      out+=`<span style="color:hsl(${hue},70%,${35+50*v}%)">${glyphs[idx]}</span>`;
+    }
+    out+='\n';
+  }
+  gate.innerHTML=out;
+  frame++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>

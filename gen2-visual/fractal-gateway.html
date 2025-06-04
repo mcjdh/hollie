@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Fractal Gateway</title>
+<style>
+  body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #grid{
+    font-size:12px;
+    line-height:1;
+    white-space:pre;
+  }
+  span{display:inline-block;width:0.6em;}
+</style>
+</head>
+<body>
+<pre id="grid"></pre>
+<script>
+const W=70,H=35;
+const φ=(1+Math.sqrt(5))/2;
+let t=0;
+const grid=document.getElementById('grid');
+function logistic(x,r){return r*x*(1-x);}
+function render(){
+  let out='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const dx=(x-W/2)/W;
+      const dy=(y-H/2)/H;
+      let v=Math.sin(φ*dx*3-t*0.02)+Math.cos(φ*dy*3+t*0.015);
+      v=(v+2)/4;
+      v=logistic(v,3.5+Math.sin(t*0.01));
+      const hue=(x*y+t)%360;
+      const glyphs=[' ','·','*','✷','✹','@'];
+      const idx=Math.floor(v*(glyphs.length-1));
+      out+=`<span style="color:hsl(${hue},70%,${40+40*v}%)">${glyphs[idx]}</span>`;
+    }
+    out+='\n';
+  }
+  grid.innerHTML=out;
+  t++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>

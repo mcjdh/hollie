@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lattice Gateway</title>
+<style>
+  body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #lattice{
+    font-size:12px;
+    line-height:1;
+    white-space:pre;
+  }
+  span{display:inline-block;width:0.6em;}
+</style>
+</head>
+<body>
+<pre id="lattice"></pre>
+<script>
+const W=64,H=32;
+const lattice=document.getElementById('lattice');
+let t=0;
+const f=new Float32Array(W*H).fill(0.5);
+function logistic(x,r){return r*x*(1-x);}
+function evolve(){
+  for(let i=0;i<f.length;i++){
+    const r=3.6+0.2*Math.sin(t*0.02+i*0.1);
+    f[i]=logistic(f[i],r);
+  }
+}
+function render(){
+  evolve();
+  let out='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const i=y*W+x;
+      const v=f[i];
+      const hue=(x*8+y*4+t)%360;
+      const glyphs=[' ','·',':','✧','✦','✶','✷'];
+      const idx=Math.floor(v*(glyphs.length-1));
+      out+=`<span style="color:hsl(${hue},70%,${40+45*v}%)">${glyphs[idx]}</span>`;
+    }
+    out+='\n';
+  }
+  lattice.innerHTML=out;
+  t++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>

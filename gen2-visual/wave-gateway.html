@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Wave Gateway</title>
+<style>
+  body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #wave{
+    font-size:12px;
+    line-height:1;
+    white-space:pre;
+  }
+  span{display:inline-block;width:0.6em;}
+</style>
+</head>
+<body>
+<pre id="wave"></pre>
+<script>
+const W=64,H=32;
+let t=0;
+const wave=document.getElementById('wave');
+function render(){
+  let out='';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const v=(Math.sin((x+t)*0.15)+Math.cos((y-t)*0.1)+2)/4;
+      const glyphs=[' ','`','·','~','*','✷','@'];
+      const idx=Math.floor(v*(glyphs.length-1));
+      const hue=(x*5+y*3+t)%360;
+      out+=`<span style="color:hsl(${hue},70%,${40+45*v}%)">${glyphs[idx]}</span>`;
+    }
+    out+='\n';
+  }
+  wave.innerHTML=out;
+  t++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>

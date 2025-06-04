@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Paradox Gateway</title>
+<style>
+  body {
+    margin:0;
+    background:#000;
+    color:#0ff;
+    font-family:monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    overflow:hidden;
+  }
+  #gate {
+    font-size:12px;
+    line-height:1;
+    white-space:pre;
+  }
+  span { display:inline-block; width:0.6em; }
+</style>
+</head>
+<body>
+<pre id="gate"></pre>
+<script>
+const φ = (1 + Math.sqrt(5)) / 2;
+const π = Math.PI;
+const W = 60;
+const H = 30;
+const gate = document.getElementById('gate');
+let t = 0;
+function logistic(x,r){ return r*x*(1-x); }
+function render(){
+  let out = '';
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const dx = x - W/2;
+      const dy = y - H/2;
+      const r = Math.sqrt(dx*dx+dy*dy);
+      const a = Math.atan2(dy,dx);
+      let v = Math.sin(r*0.3 - t*0.02) + Math.cos(a*φ + t*0.03);
+      v = (v + 2)/4; // 0..1
+      v = logistic(v, φ);
+      const glyphs = [' ','·','*','◆','◉','@'];
+      const color = `hsl(${(a/π+1)*180},80%,${40+40*v}%)`;
+      const idx = Math.min(glyphs.length-1, Math.floor(v*glyphs.length));
+      out += `<span style="color:${color}">${glyphs[idx]}</span>`;
+    }
+    out += '\n';
+  }
+  gate.innerHTML = out;
+  t++;
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>
