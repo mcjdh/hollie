@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ASCII World Generation</title>
+    <style>
+        body { margin:0; overflow:hidden; background:#000; }
+        #display {
+            font-family:'Courier New',monospace;
+            font-size:8px;
+            line-height:10px;
+            white-space:pre;
+            color:#0ff;
+            padding:0; margin:0;
+            width:640px; height:480px;
+            margin:auto;
+            margin-top:50px;
+        }
+        .water { color:#08f; }
+        .light { color:#ff0; }
+        .earth { color:#0f0; }
+    </style>
+</head>
+<body>
+    <div class="info" style="position:fixed;top:10px;left:10px;color:#64ffda;font-family:'Courier New',monospace;background:rgba(0,0,0,0.7);padding:10px;border-radius:5px;border:1px solid rgba(100,255,218,0.3);font-size:12px;">
+        ASCII World Generation &mdash; press ESC to close
+    </div>
+    <div id="display"></div>
+    <script>
+        const W = 80, H = 48;
+        let t = 0;
+        const stageDur = 400; // frames per stage
+
+        function symbol(x, y, stage) {
+            if (stage === 0) return ' ';
+            let ch = ' ';
+            let cls = '';
+            if (stage >= 1) { // water
+                const waterLevel = H*0.6 + Math.sin(x*0.3 + t*0.05)*2;
+                if (y > waterLevel) { ch = '~'; cls = 'water'; }
+            }
+            if (stage >= 2) { // light / stars
+                if (Math.random() < 0.02) { ch = '*'; cls = 'light'; }
+            }
+            if (stage >= 3) { // earth
+                if (y > H*0.8 + Math.sin(x*0.2)*2) { ch = '#'; cls = 'earth'; }
+            }
+            return cls ? `<span class="${cls}">${ch}</span>` : ch;
+        }
+
+        function render() {
+            t++;
+            const stage = Math.floor(t / stageDur);
+            let out = '';
+            for (let y=0; y<H; y++) {
+                for (let x=0; x<W; x++) {
+                    out += symbol(x, y, stage);
+                }
+                out += '\n';
+            }
+            document.getElementById('display').innerHTML = out;
+            requestAnimationFrame(render);
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') window.parent.postMessage('close','*');
+        });
+        render();
+    </script>
+</body>
+</html>
