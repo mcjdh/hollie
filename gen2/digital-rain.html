@@ -17,11 +17,16 @@
             line-height: 1.1;
             font-size: 10px;
         }
-        .c0 { color: #003300; }
-        .c1 { color: #00aa00; }
-        .c2 { color: #00ff00; }
-        .c3 { color: #66ff66; }
-        .c4 { color: #ccffcc; }
+        /* Extended green gradient for smoother trails */
+        .c0 { color: #002200; }
+        .c1 { color: #004400; }
+        .c2 { color: #006600; }
+        .c3 { color: #009900; }
+        .c4 { color: #00cc00; }
+        .c5 { color: #33ff33; }
+        .c6 { color: #77ff77; }
+        .c7 { color: #bbffbb; }
+        .c8 { color: #e6ffe6; }
     </style>
 </head>
 <body>
@@ -29,7 +34,9 @@
     <script>
         let W, H;
         let charWidth, charHeight;
+        // Each column holds current drop position and speed
         let columns = [];
+        const trailLength = 20;
 
         function updateDimensions() {
             const test = document.createElement('div');
@@ -52,7 +59,12 @@
             canvas.style.fontSize = '10px';
             canvas.style.lineHeight = '10px';
 
-            columns = Array.from({ length: W }, () => Math.random() * (H + 10));
+            columns = Array.from({
+                length: W
+            }, () => ({
+                pos: Math.random() * (H + trailLength),
+                speed: 0.5 + Math.random() * 1.5
+            }));
         }
 
         const symbols = 'abcdefghijklmnopqrstuvwxyz0123456789@#$%&'.split('');
@@ -60,10 +72,12 @@
             let out = '';
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
-                    const drop = columns[x] - y;
-                    if (drop > 0 && drop < 10) {
+                    const column = columns[x];
+                    const drop = column.pos - y;
+                    if (drop > 0 && drop < trailLength) {
                         const idx = Math.floor(Math.random() * symbols.length);
-                        const colorIdx = Math.floor((10 - drop) / 2);
+                        const intensity = 1 - drop / trailLength;
+                        const colorIdx = Math.floor(intensity * 9);
                         out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
                     } else {
                         out += ' ';
@@ -72,8 +86,11 @@
                 out += '\n';
             }
             document.getElementById('canvas').innerHTML = out;
-            for (let i = 0; i < columns.length; i++) {
-                columns[i] = (columns[i] + Math.random() + 0.5) % (H + 10);
+            for (let column of columns) {
+                column.pos += column.speed;
+                if (column.pos > H + trailLength) {
+                    column.pos = -Math.random() * trailLength;
+                }
             }
             requestAnimationFrame(render);
         }
