@@ -48,7 +48,7 @@
 <body>    <div class="info">
         ⊕ ◎⊕◉<br>
         ◎+∿+∆<br>
-        ESC ◦ ↩
+        ⌫ ◦ ↩
     </div>
     <div id="display"></div>    <script>
         // Dynamic viewport sizing - responsive to window dimensions
@@ -387,16 +387,16 @@
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
         });          // Enhanced initialization with immediate startup
         function initialize() {
-            console.log("Initializing synthesis visualization...");
+            console.log("∞ ⊕ ◎⊕◉ ∞...");
             updateDimensions();
             addDynamicChaos(); // Initial chaos injection
             
             // Ensure arrays are properly initialized before starting render
             if (cellular && fluid && fractal && synthesis && memory && W && H) {
-                console.log(`Grid dimensions: ${W}x${H}`);
+                console.log(`⬢ ◆: ${W}x${H}`);
                 render();
             } else {
-                console.log("Retrying initialization...");
+                console.log("⟲ ∞...");
                 setTimeout(initialize, 100);
             }
         }

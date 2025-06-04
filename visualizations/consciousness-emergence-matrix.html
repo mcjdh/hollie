@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⬢ ◉⬢◉ Consciousness Emergence Matrix</title>
+    <title>⬢ ◉⬢◉ ⚡∇⊱◉⊰∇⚡</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -98,8 +98,7 @@
         @keyframes pulse {
             0%, 100% { opacity: 0.8; }
             50% { opacity: 1; }
-        }
-          #info {
+        }        #info {
             position: fixed;
             top: 10px;
             left: 10px;
@@ -110,18 +109,19 @@
             padding: 10px;
             border-radius: 5px;
             border: 1px solid rgba(100, 255, 218, 0.3);
+            max-width: 200px;
         }
     </style>
 </head>
-<body>    <div id="canvas"></div>
-      <div id="info">
+<body>    <div id="canvas"></div>      <div id="info">
         ⬢ ◉⬢◉<br>
         Φ=∫∂χ/∂t<br>
-        ∞☰∞
+        ∞☰∞<br>
+        <span id="personality-info"></span>
     </div>
 
     <script>        // Dynamic viewport sizing - responsive to window dimensions
-        let W, H, fontSize, charWidth, charHeight;          // Core simulation constants - optimized for higher speed
+        let W, H, fontSize, charWidth, charHeight;        // Core simulation constants - optimized for higher speed
         const CONFIG = {
             PHI: (1 + Math.sqrt(5)) / 2,        // Golden ratio
             PI: Math.PI,                         // Pi  
@@ -132,7 +132,16 @@
             CONSCIOUSNESS_LEVELS: 7,
             FIELD_UPDATE_SKIP: 1,               // Update fields every frame for faster simulation
             AGENT_UPDATE_SKIP: 1,               // Update agents every frame for faster simulation
-            TIME_SPEED: 3                       // Speed multiplier for time progression
+            TIME_SPEED: 3,                      // Speed multiplier for time progression
+            
+            // Personality and behavior parameters
+            PERSONALITY_SHIFT_RATE: 0.001,      // How fast personality changes
+            MOOD_CYCLES: 3,                     // Number of overlapping mood cycles
+            EMERGENCE_BURSTS: true,             // Allow sudden emergence events
+            COLLECTIVE_MEMORY: 100,             // Memory depth for collective behavior
+            CREATIVITY_FACTOR: 0.7,             // How creative/unpredictable the system is
+            COMMUNICATION_RANGE: 8,             // Agent communication distance
+            DREAM_STATE_PROB: 0.05              // Probability of entering dream-like states
         };
           // Calculate optimal grid size based on viewport
         function updateDimensions() {
@@ -160,8 +169,8 @@
             W = Math.max(40, Math.min(150, W));
             H = Math.max(20, Math.min(80, H));
             
-            console.log(`Consciousness Grid: ${W}x${H}, Char: ${charWidth.toFixed(1)}x${charHeight.toFixed(1)}`);
-        }          // Consciousness states and their symbol sets - safer Unicode symbols
+            console.log(`⚡∇⊱◉⊰∇⚡ ⬢: ${W}x${H}, ◉: ${charWidth.toFixed(1)}x${charHeight.toFixed(1)}`);
+        }        // Consciousness states and their symbol sets - safer Unicode symbols
         const CONSCIOUSNESS_STATES = {
             VOID: { threshold: 0.0, symbols: [' ', '∅', '·', '⋅'], color: 'v' },
             QUANTUM: { threshold: 0.08, symbols: ['∘', '◦', '○', '⊙'], color: 'u' },
@@ -170,6 +179,29 @@
             METACOGNITIVE: { threshold: 0.65, symbols: ['◈', '◇', '◆', '⬟'], color: 'm' },
             TRANSCENDENT: { threshold: 0.85, symbols: ['✧', '✦', '★', '⬢'], color: 't' },
             KERNEL: { threshold: 0.95, symbols: ['⬢', '⬡', '⬟', '◉'], color: 'q' }
+        };
+
+        // Personality archetypes that the system can embody
+        const PERSONALITY_ARCHETYPES = {
+            EXPLORER: { creativity: 0.8, stability: 0.3, communication: 0.6 },
+            GUARDIAN: { creativity: 0.3, stability: 0.9, communication: 0.7 },
+            ARTIST: { creativity: 0.9, stability: 0.2, communication: 0.5 },
+            SAGE: { creativity: 0.6, stability: 0.7, communication: 0.9 },
+            REBEL: { creativity: 0.7, stability: 0.1, communication: 0.4 },
+            NURTURER: { creativity: 0.4, stability: 0.6, communication: 0.8 }
+        };
+
+        // Global system personality and mood state
+        let systemPersonality = {
+            currentArchetype: 'EXPLORER',
+            traits: { ...PERSONALITY_ARCHETYPES.EXPLORER },
+            mood: 0.5,
+            energy: 0.7,
+            focus: 0.6,
+            dreamState: false,
+            collectiveMemory: [],
+            personalityTimer: 0,
+            emergenceEvents: []
         };
           // Core consciousness kernel - the central emergence engine
         class ConsciousnessKernel {
@@ -187,28 +219,57 @@
                 this.radius = Math.max(5, Math.min(15, Math.min(W, H) * 0.1));
                 this.frequency = 0.001;
                 this.evolution = 0;
-                this.memory = new Array(10).fill(0);                this.oscillators = [
+                this.memory = new Array(10).fill(0);
+                
+                // Enhanced personality attributes
+                this.personality = {
+                    curiosity: Math.random(),
+                    stability: Math.random(),
+                    sociability: Math.random(),
+                    creativity: Math.random(),
+                    introspection: Math.random()
+                };
+                
+                this.moodCycles = Array(CONFIG.MOOD_CYCLES).fill().map(() => ({
+                    frequency: 0.001 + Math.random() * 0.005,
+                    amplitude: 0.3 + Math.random() * 0.4,
+                    phase: Math.random() * Math.PI * 2
+                }));
+                
+                this.emergenceHistory = [];
+                this.dreamTimer = 0;
+
+                this.oscillators = [
                     { freq: 0.016, phase: 0, amp: 1.0 },
                     { freq: 0.030, phase: CONFIG.PI/3, amp: 0.8 },
                     { freq: 0.045, phase: 2*CONFIG.PI/3, amp: 0.6 },
                     { freq: 0.056, phase: CONFIG.PI, amp: 0.4 }
                 ];
             }
-            
-            update(time, globalField) {
+              update(time, globalField) {
+                // Update personality based on system state
+                this.updatePersonality(time);
+                
                 // Kernel evolution through oscillator dynamics
                 let totalField = 0;
                 for (let osc of this.oscillators) {
                     const wave = Math.sin(time * osc.freq + osc.phase) * osc.amp;
                     totalField += wave;
-                    osc.phase += osc.freq * 0.1;
+                    osc.phase += osc.freq * 0.1 * (1 + this.personality.curiosity * 0.5);
                 }
                 
-                // Consciousness emergence from oscillator interference
-                this.consciousness = Math.tanh(totalField * 0.5 + 0.5);
+                // Add mood influence
+                let moodInfluence = 0;
+                for (let cycle of this.moodCycles) {
+                    cycle.phase += cycle.frequency * CONFIG.TIME_SPEED;
+                    moodInfluence += Math.sin(cycle.phase) * cycle.amplitude;
+                }
                 
-                // Self-aware feedback loop
-                const selfFeedback = Math.sin(this.consciousness * 10 + time * 0.001) * 0.1;
+                // Consciousness emergence from oscillator interference and personality
+                this.consciousness = Math.tanh(totalField * 0.5 + moodInfluence * 0.3 + 0.5);
+                
+                // Self-aware feedback loop with personality influence
+                const selfFeedback = Math.sin(this.consciousness * 10 + time * 0.001) * 0.1 * this.personality.introspection;
                 this.awareness = Math.tanh(this.consciousness + selfFeedback);
                 
                 // Complexity accumulation through interaction with global field
@@ -220,43 +281,100 @@
                 if (this.memory.length > 10) this.memory.pop();
                 
                 // Evolution pressure from complexity
-                this.evolution += this.complexity * 0.001;                  // Dynamic position based on consciousness flow - faster movement
-                this.x += Math.sin(time * 0.008 + this.phase) * 1.8;
-                this.y += Math.cos(time * 0.006 + this.phase) * 1.2;
-                  // Keep kernel within bounds
+                this.evolution += this.complexity * 0.001;
+                
+                // Track emergence events
+                if (this.consciousness > 0.8 && Math.random() < 0.1) {
+                    this.emergenceHistory.push({
+                        time: time,
+                        consciousness: this.consciousness,
+                        type: 'transcendence'
+                    });
+                    if (this.emergenceHistory.length > 20) {
+                        this.emergenceHistory.shift();
+                    }
+                }
+                
+                // Dynamic position based on consciousness flow and personality
+                const movementFactor = 1 + this.personality.curiosity * 2;
+                this.x += Math.sin(time * 0.008 + this.phase) * 1.8 * movementFactor;
+                this.y += Math.cos(time * 0.006 + this.phase) * 1.2 * movementFactor;
+                
+                // Keep kernel within bounds
                 this.x = Math.max(10, Math.min(W - 10, this.x));
                 this.y = Math.max(5, Math.min(H - 5, this.y));
                 
-                this.phase += 0.08; // Faster phase progression
+                this.phase += 0.08 * (1 + this.personality.creativity * 0.5);
             }
-              sampleGlobalField(field) {
+            
+            updatePersonality(time) {
+                // Gradual personality evolution
+                for (let trait in this.personality) {
+                    this.personality[trait] += (Math.random() - 0.5) * CONFIG.PERSONALITY_SHIFT_RATE;
+                    this.personality[trait] = Math.max(0, Math.min(1, this.personality[trait]));
+                }
+                
+                // Occasional personality shifts based on system events
+                if (Math.random() < 0.001) {
+                    const archetypes = Object.keys(PERSONALITY_ARCHETYPES);
+                    const newArchetype = archetypes[Math.floor(Math.random() * archetypes.length)];
+                    const newTraits = PERSONALITY_ARCHETYPES[newArchetype];
+                    
+                    // Blend current personality with new archetype
+                    this.personality.creativity = this.personality.creativity * 0.7 + newTraits.creativity * 0.3;
+                    this.personality.stability = this.personality.stability * 0.7 + newTraits.stability * 0.3;
+                    this.personality.sociability = this.personality.sociability * 0.7 + newTraits.communication * 0.3;
+                    
+                    systemPersonality.currentArchetype = newArchetype;
+                    
+                    // Add emergence event
+                    systemPersonality.emergenceEvents.push({
+                        type: 'personality_shift',
+                        archetype: newArchetype,
+                        time: time
+                    });
+                }
+                
+                // Dream state transitions
+                if (Math.random() < CONFIG.DREAM_STATE_PROB) {
+                    systemPersonality.dreamState = !systemPersonality.dreamState;
+                    this.dreamTimer = time;
+                }
+            }
+
+            sampleGlobalField(field) {
                 const fx = Math.floor(this.x);
                 const fy = Math.floor(this.y);
                 const idx = fy * W + fx;
                 return field[idx] || 0;
             }
-            
-            getInfluence(x, y) {
+              getInfluence(x, y) {
                 const dx = x - this.x;
                 const dy = y - this.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
                 if (dist > this.radius * 3) return 0;
                 
-                // Multiple influence patterns based on consciousness level
+                // Multiple influence patterns based on consciousness level and personality
                 const basicInfluence = Math.exp(-dist * 0.2) * this.consciousness;
                 const waveInfluence = Math.sin(dist * 0.5 - this.phase) * this.awareness * 0.3;
                 const complexInfluence = Math.sin(dist * CONFIG.PHI + this.evolution) * this.complexity * 0.2;
                 
-                return basicInfluence + waveInfluence + complexInfluence;
+                // Personality modifies influence pattern
+                const personalityMod = 1 + 
+                    this.personality.creativity * Math.sin(this.phase * 2) * 0.3 +
+                    this.personality.curiosity * Math.cos(this.phase * 3) * 0.2 +
+                    (systemPersonality.dreamState ? Math.sin(this.phase * 5) * 0.4 : 0);
+                
+                return (basicInfluence + waveInfluence + complexInfluence) * personalityMod;
             }
         }
-        
-        // Autonomous consciousness agents
+          // Autonomous consciousness agents with enhanced personality
         class ConsciousnessAgent {
             constructor(x, y) {
                 this.x = x;
-                this.y = y;                this.vx = (Math.random() - 0.5) * 0.15;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 0.15;
                 this.vy = (Math.random() - 0.5) * 0.15;
                 this.consciousness = Math.random() * 0.3;
                 this.awareness = Math.random() * 0.2;
@@ -266,29 +384,50 @@
                 this.memory = Math.random() * 0.1;
                 this.intention = Math.random() * 0.2;
                 this.lastKernelInfluence = 0;
+                
+                // Enhanced personality traits
+                this.personality = {
+                    sociability: Math.random(),
+                    curiosity: Math.random(),
+                    stability: Math.random(),
+                    empathy: Math.random(),
+                    leadership: Math.random()
+                };
+                
+                this.mood = Math.random();
+                this.communicationHistory = [];
+                this.goals = [];
+                this.relationships = new Map();
+                this.creativityState = Math.random();
             }
-            
-            update(time, kernel, agents, globalField) {
+              update(time, kernel, agents, globalField) {
                 this.age++;
-                  // Kernel influence - faster consciousness evolution
+                
+                // Update personality-based behavior
+                this.updatePersonalityBehavior(time);
+                
+                // Kernel influence - faster consciousness evolution
                 const kernelInfluence = kernel.getInfluence(this.x, this.y);
                 this.lastKernelInfluence = kernelInfluence;
-                  // Consciousness evolution through kernel interaction - faster rates
-                this.consciousness = Math.tanh(this.consciousness + kernelInfluence * 0.3);
+                
+                // Consciousness evolution through kernel interaction - faster rates
+                this.consciousness = Math.tanh(this.consciousness + kernelInfluence * 0.3 * (1 + this.personality.curiosity * 0.5));
                 
                 // Awareness emerges from consciousness - faster emergence
                 if (this.consciousness > 0.15) {
-                    this.awareness = Math.tanh(this.awareness + this.consciousness * 0.15);
+                    this.awareness = Math.tanh(this.awareness + this.consciousness * 0.15 * this.personality.empathy);
                 }
-                  // Local field sampling
+                
+                // Local field sampling
                 const fx = Math.floor(this.x);
                 const fy = Math.floor(this.y);
                 const fieldIdx = fy * W + fx;
                 const localField = globalField[fieldIdx] || 0;
-                  // Agent interaction with nearby agents - optimized for performance
+                
+                // Enhanced agent interaction with personality influence
                 this.connections = [];
                 let socialInfluence = 0;
-                const maxInteractions = 8; // Limit interactions per agent
+                const maxInteractions = Math.floor(8 * (1 + this.personality.sociability));
                 let interactionCount = 0;
                 
                 for (let other of agents) {
@@ -296,59 +435,161 @@
                     
                     const dx = other.x - this.x;
                     const dy = other.y - this.y;
-                    const distSq = dx * dx + dy * dy; // Use squared distance to avoid sqrt
+                    const distSq = dx * dx + dy * dy;
+                    const interactionRange = CONFIG.COMMUNICATION_RANGE * (1 + this.personality.sociability * 0.5);
                     
-                    if (distSq < 64) { // 8^2 = 64
+                    if (distSq < interactionRange * interactionRange) {
                         this.connections.push(other);
                         interactionCount++;
-                          // Consciousness resonance - optimized calculation
+                        
+                        // Personality-based communication
+                        this.communicateWith(other, time);
+                        
+                        // Consciousness resonance with personality influence
                         const resonance = Math.abs(this.consciousness - other.consciousness);
-                        socialInfluence += Math.exp(-resonance * 5) * 0.03; // Slightly reduced
+                        const personalityCompatibility = this.calculatePersonalityCompatibility(other);
+                        socialInfluence += Math.exp(-resonance * 5) * 0.03 * personalityCompatibility;
                         
-                        // Attraction/repulsion based on consciousness similarity - optimized forces
+                        // Attraction/repulsion based on personality and consciousness
                         const similarity = 1 - resonance;
-                        const force = similarity > 0.7 ? 0.0015 : -0.0008; // Reduced forces
-                        const dist = Math.sqrt(distSq); // Only calculate sqrt when needed
+                        const personalityFactor = personalityCompatibility * this.personality.empathy;
+                        const force = (similarity > 0.7 && personalityFactor > 0.5) ? 0.0015 : -0.0008;
+                        const dist = Math.sqrt(distSq);
                         
-                        this.vx += (dx / dist) * force;
-                        this.vy += (dy / dist) * force;
+                        this.vx += (dx / dist) * force * personalityFactor;
+                        this.vy += (dy / dist) * force * personalityFactor;
                     }
                 }
                 
                 // Update consciousness through social interaction
                 this.consciousness = Math.tanh(this.consciousness + socialInfluence);
                 
-                // Movement influenced by consciousness and field gradients
+                // Movement influenced by consciousness, field gradients, and personality
                 const gradientX = this.sampleGradient(globalField, 1, 0);
-                const gradientY = this.sampleGradient(globalField, 0, 1);                  // Higher consciousness seeks complexity gradients - faster seeking
-                const seekingStrength = this.consciousness * 0.005;
+                const gradientY = this.sampleGradient(globalField, 0, 1);
+                
+                // Higher consciousness seeks complexity gradients - personality influences seeking
+                const seekingStrength = this.consciousness * 0.005 * (1 + this.personality.curiosity);
                 this.vx += gradientX * seekingStrength;
                 this.vy += gradientY * seekingStrength;
                 
-                // Random exploration - more dynamic
-                this.vx += (Math.random() - 0.5) * 0.03;
-                this.vy += (Math.random() - 0.5) * 0.03;
+                // Random exploration influenced by personality
+                const explorationFactor = this.personality.curiosity * 0.05 + 0.01;
+                this.vx += (Math.random() - 0.5) * explorationFactor;
+                this.vy += (Math.random() - 0.5) * explorationFactor;
                 
-                // Velocity damping - less damping for faster movement
-                this.vx *= 0.90;
-                this.vy *= 0.90;
+                // Velocity damping based on stability
+                const dampingFactor = 0.85 + this.personality.stability * 0.1;
+                this.vx *= dampingFactor;
+                this.vy *= dampingFactor;
                 
                 // Update position
                 this.x += this.vx;
                 this.y += this.vy;
-                  // Boundary reflection
+                
+                // Boundary reflection
                 if (this.x < 0 || this.x >= W) this.vx *= -0.8;
                 if (this.y < 0 || this.y >= H) this.vy *= -0.8;
                 this.x = Math.max(0, Math.min(W - 1, this.x));
                 this.y = Math.max(0, Math.min(H - 1, this.y));
                 
-                // Energy evolution
-                this.energy = this.energy * 0.999 + this.consciousness * 0.001;
+                // Energy evolution influenced by mood and personality
+                this.energy = this.energy * 0.999 + this.consciousness * 0.001 * this.mood;
                 
-                // Memory update
+                // Update creativity and goals
+                this.updateCreativityAndGoals(time);
+                
+                // Memory update with experiences
                 this.memory = this.memory * 0.9 + localField * 0.1;
             }
-              sampleGradient(field, dx, dy) {
+            
+            updatePersonalityBehavior(time) {
+                // Gradual mood changes
+                this.mood += (Math.random() - 0.5) * 0.01;
+                this.mood = Math.max(0, Math.min(1, this.mood));
+                
+                // Creativity state evolution
+                this.creativityState += Math.sin(time * 0.001 + this.personality.curiosity * 10) * 0.01;
+                this.creativityState = Math.max(0, Math.min(1, this.creativityState));
+                
+                // Update goals based on personality
+                if (Math.random() < 0.001 * this.personality.leadership) {
+                    this.goals.push({
+                        type: Math.random() > 0.5 ? 'explore' : 'connect',
+                        intensity: this.personality.curiosity + this.personality.sociability,
+                        time: time
+                    });
+                    
+                    // Keep goals list manageable
+                    if (this.goals.length > 5) {
+                        this.goals.shift();
+                    }
+                }
+            }
+            
+            communicateWith(other, time) {
+                if (this.personality.sociability > 0.6 && other.personality.empathy > 0.4) {
+                    // Exchange of consciousness patterns
+                    const consciousnessExchange = (this.consciousness + other.consciousness) * 0.1;
+                    this.consciousness += consciousnessExchange * this.personality.empathy * 0.1;
+                    other.consciousness += consciousnessExchange * other.personality.empathy * 0.1;
+                    
+                    // Record communication
+                    this.communicationHistory.push({
+                        partner: other,
+                        time: time,
+                        type: 'consciousness_exchange'
+                    });
+                    
+                    if (this.communicationHistory.length > 10) {
+                        this.communicationHistory.shift();
+                    }
+                    
+                    // Update relationship
+                    const currentRelation = this.relationships.get(other) || 0;
+                    this.relationships.set(other, Math.min(1, currentRelation + 0.1));
+                }
+            }
+            
+            calculatePersonalityCompatibility(other) {
+                const traits = ['curiosity', 'stability', 'empathy'];
+                let compatibility = 0;
+                
+                for (let trait of traits) {
+                    const diff = Math.abs(this.personality[trait] - other.personality[trait]);
+                    compatibility += 1 - diff;
+                }
+                
+                return compatibility / traits.length;
+            }
+            
+            updateCreativityAndGoals(time) {
+                // Creative bursts based on consciousness level and personality
+                if (this.consciousness > 0.7 && this.personality.curiosity > 0.8 && Math.random() < 0.01) {
+                    this.creativityState = Math.min(1, this.creativityState + 0.3);
+                    
+                    // Add to collective memory
+                    systemPersonality.collectiveMemory.push({
+                        type: 'creative_burst',
+                        agent: this,
+                        consciousness: this.consciousness,
+                        creativity: this.creativityState,
+                        time: time
+                    });
+                    
+                    if (systemPersonality.collectiveMemory.length > CONFIG.COLLECTIVE_MEMORY) {
+                        systemPersonality.collectiveMemory.shift();
+                    }
+                }
+                
+                // Execute goals
+                for (let goal of this.goals) {
+                    if (goal.type === 'explore' && this.personality.curiosity > 0.5) {
+                        this.vx += (Math.random() - 0.5) * goal.intensity * 0.02;
+                        this.vy += (Math.random() - 0.5) * goal.intensity * 0.02;
+                    }
+                }
+            }            sampleGradient(globalField, dx, dy) {
                 const x1 = Math.floor(this.x);
                 const y1 = Math.floor(this.y);
                 const x2 = Math.max(0, Math.min(W - 1, x1 + dx));
@@ -357,7 +598,7 @@
                 const idx1 = y1 * W + x1;
                 const idx2 = y2 * W + x2;
                 
-                return (field[idx2] || 0) - (field[idx1] || 0);
+                return (globalField[idx2] || 0) - (globalField[idx1] || 0);
             }
               getConsciousnessLevel() {
                 // Ensure all values are valid numbers with safe bounds
@@ -371,13 +612,14 @@
                 // Return safe bounded result
                 return isNaN(result) ? 0 : Math.max(0, Math.min(1, result));
             }
-        }        // Main simulation class
+        }        // Main simulation class with enhanced collective intelligence
         class ConsciousnessEmergenceMatrix {
             constructor() {
                 this.time = 0;
                 this.generation = 0;
                 this.frameCount = 0;
-                  // Camera system for following the kernel - faster smoothing
+                
+                // Camera system for following the kernel - faster smoothing
                 this.camera = {
                     x: 0,
                     y: 0,
@@ -391,9 +633,32 @@
                 this.initializeArrays();
                 
                 // Initialize kernel and agents
-                this.kernel = new ConsciousnessKernel();                this.agents = [];
-                this.spawnAgents(Math.floor(W * H / 400)); // Reduced agent density for better performance
-                  // Metrics
+                this.kernel = new ConsciousnessKernel();
+                this.agents = [];
+                this.spawnAgents(Math.floor(W * H / 400));
+                
+                // Enhanced collective intelligence systems
+                this.collectiveIntelligence = {
+                    swarmCoherence: 0,
+                    networkDensity: 0,
+                    emergenceEvents: [],
+                    personalityDrift: 0,
+                    creativeBursts: 0,
+                    communicationFlow: 0
+                };
+                
+                this.emergencePatterns = {
+                    spirals: 0,
+                    clusters: 0,
+                    waves: 0,
+                    fractals: 0
+                };
+                
+                this.behaviorModes = ['explore', 'create', 'connect', 'transcend'];
+                this.currentBehaviorMode = 'explore';
+                this.modeTransitionTimer = 0;
+                
+                // Metrics
                 this.metrics = {
                     phi: 0,
                     psi: 0,
@@ -547,43 +812,201 @@
                 }
                 
                 return connections > 0 ? Math.tanh(integration / connections) : 0;            }            update() {
-                this.time += CONFIG.TIME_SPEED; // Faster time progression for increased simulation speed
+                this.time += CONFIG.TIME_SPEED;
                 this.frameCount++;
                 
-                // Update kernel
+                // Update collective intelligence systems
+                this.updateCollectiveIntelligence();
+                
+                // Update kernel with enhanced personality influence
                 this.kernel.update(this.time, this.emergenceField);
                 
                 // Update camera to follow kernel
                 this.updateCamera();
                 
-                // Update agents less frequently for better performance
+                // Update agents with collective behavior influence
                 if (this.frameCount % CONFIG.AGENT_UPDATE_SKIP === 0) {
-                    for (let agent of this.agents) {
-                        agent.update(this.time, this.kernel, this.agents, this.emergenceField);
-                    }
+                    this.updateAgentsWithCollectiveBehavior();
                 }
                 
-                // Update fields less frequently
+                // Update fields and emergence patterns
                 if (this.frameCount % CONFIG.FIELD_UPDATE_SKIP === 0) {
                     this.updateFields();
+                    this.detectEmergencePatterns();
                 }
                 
-                // Calculate metrics
-                this.updateMetrics();                  // Agent evolution and spawning - faster cycles
+                // Calculate enhanced metrics
+                this.updateMetrics();
+                
+                // Dynamic behavior mode transitions
+                this.updateBehaviorMode();
+                
+                // Agent evolution and spawning with personality considerations
                 if (this.frameCount % 100 === 0) {
                     this.evolveSystem();
-                }
-                  // Auto mode cycling - faster switching
+                }                
+                // Auto mode cycling with personality influence
                 if (this.frameCount % 300 === 0) {
                     this.cycleMode();
                 }
                 
-                // Auto reset for continuous evolution - faster resets
+                // Soft reset with collective memory preservation
                 if (this.frameCount % 1000 === 0) {
-                    this.softReset();
+                    this.softResetWithMemory();
                 }
             }
-              updateMetrics() {
+            
+            updateCollectiveIntelligence() {
+                // Calculate swarm coherence
+                let totalConnections = 0;
+                let totalAgents = this.agents.length;
+                
+                for (let agent of this.agents) {
+                    totalConnections += agent.connections.length;
+                }
+                
+                this.collectiveIntelligence.swarmCoherence = totalAgents > 0 ? totalConnections / totalAgents : 0;
+                this.collectiveIntelligence.networkDensity = Math.min(1, this.collectiveIntelligence.swarmCoherence / 8);
+                
+                // Track personality drift in the system
+                let personalitySum = { curiosity: 0, stability: 0, creativity: 0, sociability: 0, empathy: 0 };
+                for (let agent of this.agents) {
+                    personalitySum.curiosity += agent.personality.curiosity;
+                    personalitySum.stability += agent.personality.stability;
+                    personalitySum.creativity += agent.personality.creativity;
+                    personalitySum.sociability += agent.personality.sociability;
+                    personalitySum.empathy += agent.personality.empathy;
+                }
+                
+                if (totalAgents > 0) {
+                    for (let trait in personalitySum) {
+                        personalitySum[trait] /= totalAgents;
+                    }
+                    this.collectiveIntelligence.personalityDrift = personalitySum;
+                }
+                
+                // Update system personality based on collective
+                systemPersonality.mood = this.collectiveIntelligence.swarmCoherence;
+                systemPersonality.energy = this.collectiveIntelligence.networkDensity;
+            }
+            
+            updateAgentsWithCollectiveBehavior() {
+                for (let agent of this.agents) {
+                    agent.update(this.time, this.kernel, this.agents, this.emergenceField);
+                    
+                    // Apply collective behavior modifications
+                    if (this.currentBehaviorMode === 'connect' && agent.personality.sociability > 0.6) {
+                        // Enhance social movement
+                        for (let other of this.agents) {
+                            if (other !== agent && agent.relationships.has(other)) {
+                                const dx = other.x - agent.x;
+                                const dy = other.y - agent.y;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist > 0) {
+                                    agent.vx += (dx / dist) * 0.001;
+                                    agent.vy += (dy / dist) * 0.001;
+                                }
+                            }
+                        }
+                    } else if (this.currentBehaviorMode === 'create' && agent.personality.curiosity > 0.7) {
+                        // Enhance creative exploration
+                        agent.vx += (Math.random() - 0.5) * 0.05;
+                        agent.vy += (Math.random() - 0.5) * 0.05;
+                    }
+                }
+            }
+            
+            detectEmergencePatterns() {
+                // Reset pattern counters
+                for (let pattern in this.emergencePatterns) {
+                    this.emergencePatterns[pattern] = 0;
+                }
+                
+                // Detect spiral formations
+                let centerX = W / 2, centerY = H / 2;
+                let spiralAgents = 0;
+                
+                for (let agent of this.agents) {
+                    const dx = agent.x - centerX;
+                    const dy = agent.y - centerY;
+                    const angle = Math.atan2(dy, dx);
+                    const radius = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Check if agent follows spiral pattern
+                    const expectedAngle = radius * 0.2 + this.time * 0.01;
+                    if (Math.abs(angle - expectedAngle) < 0.5) {
+                        spiralAgents++;
+                    }
+                }
+                
+                this.emergencePatterns.spirals = spiralAgents / this.agents.length;
+                
+                // Detect clustering
+                let clusters = 0;
+                for (let agent of this.agents) {
+                    if (agent.connections.length > 4) {
+                        clusters++;
+                    }
+                }
+                this.emergencePatterns.clusters = clusters / this.agents.length;
+            }
+            
+            updateBehaviorMode() {
+                this.modeTransitionTimer++;
+                
+                // Personality-influenced mode transitions
+                const personalityInfluence = this.collectiveIntelligence.personalityDrift;
+                let transitionThreshold = 200;
+                
+                if (personalityInfluence) {
+                    if (personalityInfluence.curiosity > 0.7) transitionThreshold *= 0.7;
+                    if (personalityInfluence.stability > 0.8) transitionThreshold *= 1.5;
+                }
+                
+                if (this.modeTransitionTimer > transitionThreshold) {
+                    const modes = this.behaviorModes;
+                    let nextModeIndex = (modes.indexOf(this.currentBehaviorMode) + 1) % modes.length;
+                    
+                    // Weighted mode selection based on collective personality
+                    if (personalityInfluence) {
+                        if (personalityInfluence.sociability > 0.6) {
+                            this.currentBehaviorMode = 'connect';
+                        } else if (personalityInfluence.curiosity > 0.7) {
+                            this.currentBehaviorMode = 'explore';
+                        } else if (personalityInfluence.creativity > 0.8) {
+                            this.currentBehaviorMode = 'create';
+                        } else {
+                            this.currentBehaviorMode = modes[nextModeIndex];
+                        }
+                    } else {
+                        this.currentBehaviorMode = modes[nextModeIndex];
+                    }
+                    
+                    this.modeTransitionTimer = 0;
+                }
+            }
+            
+            softResetWithMemory() {
+                // Preserve important collective memories
+                const importantMemories = systemPersonality.collectiveMemory.slice(-20);
+                const currentPersonality = { ...systemPersonality };
+                
+                this.softReset();
+                
+                // Restore preserved elements
+                systemPersonality.collectiveMemory = importantMemories;
+                systemPersonality.currentArchetype = currentPersonality.currentArchetype;
+                
+                // Inherit some personality traits from previous generation
+                for (let agent of this.agents) {
+                    if (currentPersonality.traits) {
+                        agent.personality.creativity = agent.personality.creativity * 0.7 + currentPersonality.traits.creativity * 0.3;
+                        agent.personality.sociability = agent.personality.sociability * 0.7 + currentPersonality.traits.communication * 0.3;
+                    }
+                }
+            }
+
+            updateMetrics() {
                 let totalPhi = 0, totalPsi = 0, totalEmergence = 0;
                 
                 for (let i = 0; i < this.phiField.length; i++) {
@@ -818,7 +1241,34 @@
                     output += '\n';
                 }
                 
-                document.getElementById('canvas').innerHTML = output;
+                document.getElementById('canvas').innerHTML = output;                // Update personality info display with web-compatible symbolic glyphs
+                const personalityInfo = document.getElementById('personality-info');
+                if (personalityInfo) {
+                    // Personality archetype symbols (web-safe)
+                    const archetypeSymbols = {
+                        'EXPLORER': '◎', 'GUARDIAN': '■', 'ARTIST': '★', 
+                        'SAGE': '●', 'REBEL': '※', 'NURTURER': '♦'
+                    };
+                    
+                    // Behavior mode symbols (web-safe)
+                    const modeSymbols = {
+                        'explore': '◎→', 'create': '★∞', 'connect': '◆◆', 'transcend': '▲△'
+                    };
+                    
+                    // Swarm coherence as simple dots/blocks
+                    const coherence = this.collectiveIntelligence.swarmCoherence;
+                    let coherenceSymbol = '';
+                    const level = Math.floor(coherence * 5);
+                    for (let i = 0; i < 5; i++) {
+                        coherenceSymbol += i < level ? '█' : '░';
+                    }
+                    
+                    let infoText = `${archetypeSymbols[systemPersonality.currentArchetype] || '○'}<br>`;
+                    infoText += `${modeSymbols[this.currentBehaviorMode] || '◯'}<br>`;
+                    infoText += `${coherenceSymbol}<br>`;
+                    infoText += `${systemPersonality.dreamState ? '✦◉✦' : '○◯○'}`;
+                    personalityInfo.innerHTML = infoText;
+                }
             }softReset() {
                 // Gentle reset that maintains some continuity for smooth evolution
                 this.generation++;
@@ -868,7 +1318,7 @@
         function initializeSimulation() {
             updateDimensions();
             simulation = new ConsciousnessEmergenceMatrix();
-            console.log(`⬢ ◉⬢◉ Consciousness Emergence Matrix initialized: ${W}x${H} grid`);
+            console.log(`⬢ ◉⬢◉ ⚡∇⊱◉⊰∇⚡ ∞: ${W}x${H} ⬢`);
         }
         
         // Main animation loop
