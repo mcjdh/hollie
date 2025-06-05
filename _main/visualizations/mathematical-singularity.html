@@ -314,7 +314,7 @@
           // resize → updateDimensions
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
-        });
+        }, { passive: true });
         
         // start: size then evolve
         setTimeout(() => {

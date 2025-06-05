@@ -315,7 +315,7 @@
           // ◊ initialize
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100);
-        });
+        }, { passive: true });
         
         setTimeout(() => {
             updateDimensions();

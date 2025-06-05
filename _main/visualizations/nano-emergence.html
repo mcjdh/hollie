@@ -195,8 +195,8 @@ body{background:linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);color:
             }
         }
 
-        window.addEventListener('resize',rsz);
-        window.addEventListener('orientationchange',()=>setTimeout(rsz,100));
+        window.addEventListener('resize', rsz, { passive: true });
+        window.addEventListener('orientationchange', () => setTimeout(rsz, 100), { passive: true });
 
         function frm(){
             ren();

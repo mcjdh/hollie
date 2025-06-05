@@ -133,7 +133,7 @@
         function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
                 return;
             }
-            
+
             const stack = new Error().stack;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;            // Account for zero margin - use full viewport
@@ -214,8 +214,7 @@
             grid.style.top = '20px';
             grid.style.left = '20px';
             grid.style.width = availableWidth + 'px';
-            grid.style.height = availableHeight + 'px';
-            grid.style.margin = '0';
+            grid.style.height = availableHeight + 'px';            grid.style.margin = '0';
             grid.style.padding = '0';
             grid.style.transform = 'none';
             grid.style.overflow = 'visible'; // Allow text effects to extend beyond
@@ -1018,11 +1017,11 @@
                                 collective[newIdx] = data.collective;
                             }
                         }
-                    });                
-                } else {
+                    });                  } else {
+                    // Minor resize, dimensions unchanged
                 }
             }, 150);
-        });
+        }, { passive: true });
         
         // Temporal memory update function
         function updateTemporalMemory() {

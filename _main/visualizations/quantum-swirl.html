@@ -129,8 +129,8 @@
             requestAnimationFrame(render);
         }
 
-        window.addEventListener('resize', updateDimensions);
-        window.addEventListener('orientationchange', () => setTimeout(updateDimensions, 100));
+        window.addEventListener('resize', updateDimensions, { passive: true });
+        window.addEventListener('orientationchange', () => setTimeout(updateDimensions, 100), { passive: true });
         
         // Add ESC key listener to close visualization
         document.addEventListener('keydown', e => {

@@ -158,7 +158,7 @@
         updateDimensions();
         
         // Keyboard controls
-        window.addEventListener('resize', updateDimensions);
+        window.addEventListener('resize', updateDimensions, { passive: true });
         document.addEventListener('keydown', (e) => {
             switch(e.key.toLowerCase()) {
                 case 'escape':
