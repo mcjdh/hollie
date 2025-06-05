@@ -464,7 +464,7 @@
             };
             
             exitOverlay.addEventListener('click', overlayClickHandler, { capture: true });
-            exitOverlay.addEventListener('touchend', overlayClickHandler, { capture: true });
+            exitOverlay.addEventListener('touchend', overlayClickHandler, { capture: true, passive: false });
             exitListeners.push(() => {
                 exitOverlay.removeEventListener('click', overlayClickHandler, { capture: true });
                 exitOverlay.removeEventListener('touchend', overlayClickHandler, { capture: true });
@@ -520,7 +520,7 @@
             };
             
             document.addEventListener('click', failsafeHandler, { capture: true });
-            document.addEventListener('touchstart', failsafeHandler, { capture: true });
+            document.addEventListener('touchstart', failsafeHandler, { capture: true, passive: true });
             document.addEventListener('keydown', failsafeHandler, { capture: true });
             
             exitListeners.push(() => {
@@ -572,7 +572,7 @@
                 e.preventDefault();
             }
             lastTouchEnd = now;
-        }, false);
+        }, { passive: false });
     </script>
 </body>
 </html>
