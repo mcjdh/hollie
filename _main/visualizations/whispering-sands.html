@@ -55,7 +55,9 @@
         ~ ◦●◦ ♦∿♦ ~<br>
         ⌫ ◦ ↩
     </div>
-    <div id="display"></div>    <script>
+    <div id="display"></div>
+    <script>
+        const display = document.getElementById('display');
         // Dynamic responsive grid sizing
         let W, H, fontSize;
         let t = 0;
@@ -207,7 +209,6 @@
             updateFields();
             
             // Update display with responsive font size
-            const display = document.getElementById('display');
             display.style.fontSize = fontSize + 'px';
             display.style.lineHeight = (fontSize * 1.2) + 'px';
             

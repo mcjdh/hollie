@@ -52,7 +52,9 @@
         t→∿→☰<br>
         ⌫ ◦ ↩
     </div>
-    <div id="display"></div>    <script>
+    <div id="display"></div>
+    <script>
+        const display = document.getElementById('display');
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
@@ -98,7 +100,6 @@
             const fontSize = Math.min(optimalFontWidth, optimalFontHeight);
             const finalFontSize = Math.max(6, Math.min(20, fontSize));
             
-            const display = document.getElementById('display');
             if (display) {
                 display.style.fontSize = finalFontSize + 'px';
                 display.style.lineHeight = finalFontSize + 'px';
@@ -250,7 +251,6 @@
                     if (y < renderH - 1) output += '\n';
                 }
                 
-                const display = document.getElementById('display');
                 if (display) {
                     display.innerHTML = output;
                 }

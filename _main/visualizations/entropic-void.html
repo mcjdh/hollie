@@ -88,8 +88,10 @@
         η: <span id="timeDisplay">0</span><br>
         ⌫ ◦ ↩
     </div>
-    <div id="display"></div>    <script>
-        // ∇ Mathematical constants 
+    <div id="display"></div>
+    <script>
+        const display = document.getElementById('display');
+        // ∇ Mathematical constants
         const φ = (1 + Math.sqrt(5)) / 2; // Golden ratio
         const e = 2.718281828459045;
         const π = Math.PI;
@@ -150,7 +152,6 @@
             fontSize = Math.max(6, Math.min(18, fontSize));
             
             // Apply calculated styles to display
-            const display = document.getElementById('display');
             display.style.fontSize = fontSize + 'px';
             display.style.lineHeight = (fontSize * 1.1) + 'px';
             display.style.position = 'absolute';
@@ -323,7 +324,7 @@
             
             // Update DOM less frequently for better performance
             if (time % 3 === 0) {
-                document.getElementById('display').innerHTML = output;
+                display.innerHTML = output;
             }
             document.getElementById('timeDisplay').textContent = `${time} (${W}×${H})`;
         }
