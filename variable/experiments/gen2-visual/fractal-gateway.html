@@ -26,10 +26,26 @@
 <body>
 <pre id="grid"></pre>
 <script>
-const W=70,H=35;
+let W=70,H=35;
 const φ=(1+Math.sqrt(5))/2;
 let t=0;
 const grid=document.getElementById('grid');
+
+function updateSize(){
+    const test=document.createElement('span');
+    test.style.visibility='hidden';
+    test.style.fontFamily='monospace';
+    test.style.fontSize=getComputedStyle(grid).fontSize;
+    test.textContent='0';
+    document.body.appendChild(test);
+    const rect=test.getBoundingClientRect();
+    document.body.removeChild(test);
+    W=Math.floor(window.innerWidth/rect.width);
+    H=Math.floor(window.innerHeight/rect.height);
+}
+window.addEventListener('resize',updateSize);
+updateSize();
+
 function logistic(x,r){return r*x*(1-x);}
 function render(){
   let out='';
@@ -40,7 +56,7 @@ function render(){
       let v=Math.sin(φ*dx*3-t*0.02)+Math.cos(φ*dy*3+t*0.015);
       v=(v+2)/4;
       v=logistic(v,3.5+Math.sin(t*0.01));
-      const hue=(x*y+t)%360;
+      const hue=((x/W)*180+(y/H)*180+t)%360;
       const glyphs=[' ','·','*','✷','✹','@'];
       const idx=Math.floor(v*(glyphs.length-1));
       out+=`<span style="color:hsl(${hue},70%,${40+40*v}%)">${glyphs[idx]}</span>`;
