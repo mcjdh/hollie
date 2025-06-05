@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>∞ ◉ ∞</title>
     <style>
-        * { box-sizing: border-box; }
-        body {
+        * { box-sizing: border-box; }        body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(180deg, #080012 0%, #000 60%, #120018 100%);
-            color: #0ff;
+            background: linear-gradient(180deg, #450920 0%, #000 60%, #450920 100%);
+            color: #F8AD9D;
             font-family: 'Courier New', monospace;
             overflow-x: hidden;
             overflow-y: auto;
@@ -18,18 +17,16 @@
             width: 100vw;
             max-width: 480px;
             margin: 0 auto;
-        }
-
-        .header {
+        }        .header {
             position: fixed;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
             max-width: 480px;
-            background: rgba(0,0,0,0.6);
+            background: rgba(69,9,32,0.6);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #AA3D53;
             z-index: 100;
             padding: 8px;
             text-align: center;
@@ -37,7 +34,7 @@
 
         .title {
             font-size: 14px;
-            color: #0ff;
+            color: #F8AD9D;
             margin: 0;
             letter-spacing: 1px;
         }
@@ -52,12 +49,10 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             width: 100%;
-        }
-
-        .viz-card {
-            background: rgba(0,255,255,0.05);
-            border: 1px solid rgba(0,255,255,0.2);
-            box-shadow: 0 0 6px rgba(255,255,255,0.1);
+        }        .viz-card {
+            background: rgba(248,173,157,0.05);
+            border: 1px solid rgba(170,61,83,0.3);
+            box-shadow: 0 0 6px rgba(255,218,185,0.1);
             border-radius: 6px;
             padding: 12px 8px;
             cursor: pointer;
@@ -71,25 +66,23 @@
         }
 
         .viz-card:hover {
-            background: rgba(0,255,255,0.08);
-            box-shadow: 0 0 10px rgba(255,255,255,0.15);
+            background: rgba(248,173,157,0.08);
+            box-shadow: 0 0 10px rgba(255,218,185,0.15);
         }
 
         .viz-card:active {
             transform: scale(0.98);
-            background: rgba(0,255,255,0.1);
-        }
-
-        .viz-symbol {
+            background: rgba(248,173,157,0.1);
+        }        .viz-symbol {
             font-size: 24px;
             margin-bottom: 6px;
-            color: #0ff;
-            text-shadow: 0 0 10px #0ff;
+            color: #F08080;
+            text-shadow: 0 0 10px #F08080;
         }
 
         .viz-label {
             font-size: 10px;
-            color: #888;
+            color: #AA3D53;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 4px;
@@ -97,22 +90,20 @@
 
         .viz-desc {
             font-size: 8px;
-            color: #666;
+            color: #FFDAB9;
             line-height: 1.2;
             max-height: 24px;
             overflow: hidden;
-        }
-
-        .controls {
+        }        .controls {
             position: fixed;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
             max-width: 480px;
-            background: rgba(0,0,0,0.6);
+            background: rgba(69,9,32,0.6);
             backdrop-filter: blur(12px);
-            border-top: 1px solid #333;
+            border-top: 1px solid #AA3D53;
             padding: 8px;
             display: flex;
             justify-content: space-around;
@@ -120,9 +111,9 @@
         }
 
         .ctrl-btn {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(0,255,255,0.3);
-            color: #0ff;
+            background: rgba(255,238,227,0.02);
+            border: 1px solid rgba(170,61,83,0.4);
+            color: #F8AD9D;
             padding: 6px 12px;
             border-radius: 4px;
             font-family: 'Courier New', monospace;
@@ -133,7 +124,7 @@
         }
 
         .ctrl-btn:active {
-            background: rgba(0,255,255,0.1);
+            background: rgba(248,173,157,0.1);
             transform: scale(0.95);
         }        .fullscreen {
             position: fixed;
@@ -141,7 +132,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #000;
+            background: #450920;
             z-index: 1000;
             display: none;
             cursor: pointer;
@@ -157,16 +148,14 @@
             cursor: pointer;
             background: transparent;
             pointer-events: auto;
-        }
-
-        .exit-hint {
+        }        .exit-hint {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,255,255,0.1);
-            border: 1px solid rgba(0,255,255,0.3);
-            color: #0ff;
+            background: rgba(248,173,157,0.1);
+            border: 1px solid rgba(170,61,83,0.4);
+            color: #F8AD9D;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 10px;
@@ -180,18 +169,16 @@
         @keyframes fadeInOut {
             0%, 100% { opacity: 0.3; }
             50% { opacity: 0.8; }
-        }
-
-        .close-x {
+        }        .close-x {
             position: absolute;
             top: 10px;
             right: 10px;
             width: 30px;
             height: 30px;
-            background: rgba(0,255,255,0.1);
-            border: 1px solid #0ff;
+            background: rgba(248,173,157,0.1);
+            border: 1px solid #F08080;
             border-radius: 50%;
-            color: #0ff;
+            color: #F8AD9D;
             font-size: 16px;
             cursor: pointer;
             display: flex;
@@ -201,7 +188,7 @@
         }
 
         .close-x:active {
-            background: rgba(0,255,255,0.2);
+            background: rgba(248,173,157,0.2);
         }.frame {
             position: absolute;
             top: 0;
@@ -221,17 +208,15 @@
 
         .viz-symbol {
             animation: pulse 3s ease-in-out infinite;
-        }
-
-        /* Minimize scrollbar */
+        }        /* Minimize scrollbar */
         ::-webkit-scrollbar {
             width: 2px;
         }
         ::-webkit-scrollbar-track {
-            background: #111;
+            background: #450920;
         }
         ::-webkit-scrollbar-thumb {
-            background: #333;
+            background: #AA3D53;
             border-radius: 1px;
         }
     </style>
