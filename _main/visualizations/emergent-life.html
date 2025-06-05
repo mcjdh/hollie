@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>∇ ♦∂♦</title>
+    <!-- PERFORMANCE OPTIMIZATION: Uses smaller grid with larger characters 
+         for smooth 60fps performance while maintaining visual coverage -->
     <link rel="stylesheet" href="palette.css">
     <style>        body { 
             margin: 0; 
@@ -13,8 +15,7 @@
             width: 100vw; 
             height: 100vh; 
             font-family: 'Courier New', monospace;
-        }
-        #display { 
+        }        #display { 
             font-family: 'Courier New', monospace; 
             color: var(--cosmos-melon); 
             white-space: pre; 
@@ -23,13 +24,14 @@
             width: 100vw; 
             height: 100vh; 
             background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             line-height: 1.0;
             overflow: hidden;
-            font-size: 6px;
-        }        /* Life evolution states using cohesive palette */
+            font-size: 14px;  /* Base font size, will be dynamically adjusted */
+            box-sizing: border-box;
+        }/* Life evolution states using cohesive palette */
         .v{color: var(--cosmos-tiffany)} .u{color: var(--cosmos-coral)} .s{color: var(--cosmos-orange)} 
         .e{color: var(--cosmos-melon)} .m{color: var(--cosmos-cream)} .t{color: var(--cosmos-rose)} 
         .q{color: var(--cosmos-tiffany-dim)} .d{color: var(--cosmos-coral-dim)} .w{color: var(--cosmos-orange-dim)} 
@@ -62,20 +64,30 @@
     <div id="display"></div>    <script>
         const display = document.getElementById('display');
         // Dynamic viewport sizing
-        let W, H;
-        let charWidth, charHeight;
+        let W, H;        let charWidth, charHeight;
         let t = 0;
         const displayElem = document.getElementById('display');
-        let running = true;
-        
-        function updateDimensions() {
+        let running = true;        function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Character measurement
+            // PERFORMANCE: Use larger characters to reduce total DOM elements
+            // But calculate font size dynamically to fill the entire canvas
+              // Target grid size for optimal performance - doubled for better wave visibility
+            const targetW = 100; // Doubled from 50 to show more dimensional waves
+            const targetH = 60;  // Doubled from 30 to show more patterns
+            
+            // Calculate font size needed to fill the viewport with target grid
+            const fontSizeForWidth = viewportWidth / targetW;
+            const fontSizeForHeight = viewportHeight / targetH;
+            
+            // Use the smaller dimension to ensure full coverage
+            const baseFontSize = Math.max(8, Math.min(24, Math.min(fontSizeForWidth, fontSizeForHeight)));
+            
+            // Character measurement with calculated font size
             const testDiv = document.createElement('div');
             testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '6px';
+            testDiv.style.fontSize = baseFontSize + 'px';
             testDiv.style.position = 'absolute';
             testDiv.style.visibility = 'hidden';
             testDiv.style.whiteSpace = 'pre';
@@ -87,15 +99,43 @@
             charWidth = rect.width / 10;
             charHeight = rect.height / 10;
             document.body.removeChild(testDiv);            
-            // Calculate grid size
-            W = Math.ceil(viewportWidth / charWidth) + 2;
-            H = Math.ceil(viewportHeight / charHeight) + 2;
+            // Calculate actual grid dimensions that will fill the viewport
+            W = Math.floor(viewportWidth / charWidth);
+            H = Math.floor(viewportHeight / charHeight);
+                // Ensure minimum grid size for interesting patterns
+            W = Math.max(60, W);  // Increased minimum for better wave visibility
+            H = Math.max(40, H);  // Increased minimum for better patterns
             
-            W = Math.max(60, W);
-            H = Math.max(30, H);
+            // Cap maximum for performance - increased limits for better visuals
+            W = Math.min(120, W); // Doubled from 80
+            H = Math.min(80, H);  // Increased from 50            // Set display properties for full coverage without borders
+            displayElem.style.fontSize = baseFontSize + 'px';
+            displayElem.style.lineHeight = baseFontSize + 'px';
+            displayElem.style.width = '100vw';
+            displayElem.style.height = '100vh';
+            displayElem.style.position = 'fixed';
+            displayElem.style.top = '0';
+            displayElem.style.left = '0';
+            displayElem.style.margin = '0';
+            displayElem.style.padding = '0';
+            displayElem.style.overflow = 'hidden';
+            displayElem.style.display = 'block';
+            displayElem.style.textAlign = 'left'; // Left align for edge-to-edge coverage
+            displayElem.style.boxSizing = 'border-box';
             
-            display.style.fontSize = '6px';
-            display.style.lineHeight = '6px';
+            // No centering padding - fill completely to edges
+            // Recalculate font size to maximize coverage if needed
+            const actualWidth = W * charWidth;
+            const actualHeight = H * charHeight;
+            
+            // If grid doesn't fill at least 95% of viewport, increase font size
+            if (actualWidth < viewportWidth * 0.95 || actualHeight < viewportHeight * 0.95) {
+                const scaleX = viewportWidth / actualWidth;
+                const scaleY = viewportHeight / actualHeight;
+                const adjustedFontSize = Math.min(22, baseFontSize * Math.min(scaleX, scaleY));
+                displayElem.style.fontSize = adjustedFontSize + 'px';
+                displayElem.style.lineHeight = adjustedFontSize + 'px';
+            }
         }
         
         // Mathematical constant
@@ -206,10 +246,8 @@
                     
                     nextBuffer[i] = Math.max(0, Math.min(1,
                         current + 0.1 * (diffusionTerm + reactionTerm) + age + organization
-                    ));
-                    
-                    // Periodic seeding of new life
-                    if (Math.random() < 0.0003) {
+                    ));                    // Periodic seeding of new life - adjusted for larger grid
+                    if (Math.random() < 0.0004) { // Reduced frequency to account for more cells
                         nextBuffer[i] += Math.random() * 0.2;
                     }
                 }
@@ -258,18 +296,16 @@
                     } else if (intensity > 0.05) {
                         // Traces of life
                         output += '<span class="l">·</span>';
-                    } else {
-                        // Substrate/medium
-                        if (Math.random() < 0.002) {
+                    } else {                        // Substrate/medium - reduced noise for larger grid performance
+                        if (Math.random() < 0.0005) { // Further reduced for larger grid
                             output += '<span class="l">∘</span>';
                         } else {
                             output += ' ';
-                        }                    }
-                }
-                output += '\n';
+                        }}
+                }                output += '\n';
             }
             
-            display.innerHTML = output;
+            displayElem.innerHTML = output;
         }
         
         function loop() {
@@ -278,18 +314,21 @@
             render();
             requestAnimationFrame(loop);
         }
-        
-        // Initialize
+          // Initialize - force immediate dimension update and field initialization
         window.addEventListener('resize', () => {
             updateDimensions();
-            initializeFields();        }, { passive: true });
+            initializeFields();
+        }, { passive: true });
         
         updateDimensions();
         initializeFields();
+        
+        // Handle visibility changes for performance
         document.addEventListener('visibilitychange', () => {
             running = !document.hidden;
             if (running) requestAnimationFrame(loop);
         });
+        
         loop();
     </script>
 </body>

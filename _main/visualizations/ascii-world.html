@@ -66,16 +66,14 @@
         ⌫ ◦ ↩    </div>
     <div id="canvas"></div>
 
-    <script>
-        // ∂ viewport ∞ world parameters
+    <script>        // ∂ viewport ∞ world parameters
         let W, H;
         let charWidth, charHeight;
-        let t = 0;
         const canvasElem = document.getElementById('canvas');
+        let t = 0;
         const MAX_COLS = 160;
         const MAX_ROWS = 80;
         const FPS = 30;        let lastFrame = 0;
-        const canvas = document.getElementById('canvas');
         const measureDiv = document.createElement('div');
         measureDiv.style.fontFamily = 'Courier New, monospace';
         measureDiv.style.position = 'absolute';
@@ -108,8 +106,8 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            canvas.style.fontSize = fontSize + 'px';
-            canvas.style.lineHeight = (fontSize * 1.0) + 'px';
+            canvasElem.style.fontSize = fontSize + 'px';
+            canvasElem.style.lineHeight = (fontSize * 1.0) + 'px';
             
             reallocateLife();}
         
@@ -285,11 +283,10 @@
                     const state = getLifeState(life, cons, mem, para);
                     const color = getLifeColor(state, life, cons);
                     const symbol = getLifeSymbol(state, life, cons, t + idx);
-                    
-                    output += `<span class="${color}">${symbol}</span>`;
+                      output += `<span class="${color}">${symbol}</span>`;
                 }                if (y < renderH - 1) output += '\n';            }
             
-            canvas.innerHTML = output;
+            canvasElem.innerHTML = output;
             t++;        }
         
         // ∞ evolution loop

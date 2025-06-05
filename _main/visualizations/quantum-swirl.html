@@ -73,20 +73,19 @@
     <script>
         const canvas = document.getElementById('canvas');
         const timeDisplay = document.getElementById('timeDisplay');
-        let W, H;
-        let charWidth, charHeight;
+        let W, H;        let charWidth, charHeight;
         let t = 0;
+        const dt = 0.5;
         const canvasElem = document.getElementById('canvas');
-        const timeElem = document.getElementById('timeDisplay');        const dt = 0.5;
+        const timeElem = document.getElementById('timeDisplay');
         let running = true;
         
         function updateDimensions() {
             const test = document.createElement('div');
             test.style.position = 'absolute';
-            test.style.visibility = 'hidden';
-            test.style.whiteSpace = 'pre';
+            test.style.visibility = 'hidden';            test.style.whiteSpace = 'pre';
             test.style.fontFamily = 'Courier New, monospace';
-            test.style.fontSize = getComputedStyle(canvas).fontSize;
+            test.style.fontSize = getComputedStyle(canvasElem).fontSize;
             test.style.lineHeight = '1.1';
             test.textContent = '0'.repeat(10) + '\n'.repeat(10);
             document.body.appendChild(test);
@@ -122,12 +121,12 @@
                     val = Math.max(0, Math.min(1, val));
                     
                     const idx = Math.floor(val * (symbols.length - 1));
-                    const colorIdx = Math.floor(val * 6.999);
-                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
+                    const colorIdx = Math.floor(val * 6.999);                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
                 }
-                out += '\n';            }
-            canvas.innerHTML = out;
-            timeDisplay.textContent = t.toFixed(0);
+                out += '\n';
+            }
+            canvasElem.innerHTML = out;
+            timeElem.textContent = t.toFixed(0);
             t += dt;
             requestAnimationFrame(render);
         }

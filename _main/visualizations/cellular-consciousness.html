@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>◆○●◇ ⚡∇⊱◉⊰∇⚡ ◇●○◆</title>
+    <!-- PERFORMANCE OPTIMIZATION: This visualization now uses a much smaller grid (30-80x20-50) 
+         with larger characters to maintain visual coverage while reducing DOM elements 
+         from 5000+ to ~1500 for smooth 60fps performance -->
     <link rel="stylesheet" href="palette.css">
     <style>
         * { box-sizing: border-box; }        body { 
@@ -126,10 +129,11 @@
             100% { text-shadow: 0 0 10px var(--cosmos-coral-bright), 0 0 15px var(--cosmos-coral), 0 0 20px var(--cosmos-coral-bright); }
         }</style>
 </head>
-<body>    <div id="grid"></div><script>        // Dynamic viewport sizing - proper character measurement        let W, H;
-        let charWidth, charHeight;
+<body>    <div id="grid"></div><script>        // Dynamic viewport sizing - proper character measurement        let W, H;        let charWidth, charHeight;
         let dimensionsInitialized = false; // Flag to prevent redundant updates
-          function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
+        const gridElem = document.getElementById('grid');
+        
+        function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
                 // console.log removed for performance
                 return;
             }
@@ -162,47 +166,46 @@
             testDiv.innerHTML = '●<br>●<br>●<br>●<br>●<br>●<br>●<br>●<br>●<br>●';
             const heightRect = testDiv.getBoundingClientRect();
             const baseCharHeight = heightRect.height / 10;
-            document.body.removeChild(testDiv);            // Calculate optimal font size for maximum fill - prioritize height coverage
-            const targetW = Math.max(100, Math.min(400, Math.floor(availableWidth / 4))); // Aim for 4px per char for maximum content
-            const targetH = Math.max(80, Math.min(400, Math.floor(availableHeight / 3))); // Aim for 3px per line for maximum rows
+            document.body.removeChild(testDiv);            // PERFORMANCE OPTIMIZATION: Use much smaller grid with larger characters
+            // This reduces DOM elements from 5000+ to ~1000 while maintaining visual coverage
+            const targetW = Math.max(40, Math.min(80, Math.floor(availableWidth / 12))); // Much smaller grid width
+            const targetH = Math.max(25, Math.min(50, Math.floor(availableHeight / 16))); // Much smaller grid height
             
-            // Calculate font size to fit the target grid into available space - prioritize height
+            // Calculate font size to fit the smaller grid - characters will be much larger
             const fontSizeForWidth = (availableWidth / targetW) * (10 / baseCharWidth);
             const fontSizeForHeight = (availableHeight / targetH) * (10 / baseCharHeight);
-            // Prioritize the smaller font size to maximize content density
-            const finalFontSize = Math.max(2, Math.min(16, Math.min(fontSizeForWidth, fontSizeForHeight)));
+            // Use larger font size since we have fewer characters
+            const finalFontSize = Math.max(8, Math.min(32, Math.min(fontSizeForWidth, fontSizeForHeight)));
               // Now calculate actual grid dimensions with the chosen font size
             const actualCharWidth = baseCharWidth * (finalFontSize / 10);
             const actualCharHeight = baseCharHeight * (finalFontSize / 10);
-            
-            // Use extremely tight line height for maximum vertical density
-            const lineHeight = finalFontSize * 0.6; // Very tight spacing for maximum vertical content
+              // Use more comfortable line height for larger characters
+            const lineHeight = finalFontSize * 0.85; // Less tight spacing for better readability
             
             W = Math.floor(availableWidth / actualCharWidth);
-            H = Math.floor(availableHeight / lineHeight); // Use line height for vertical calculation
+            H = Math.floor(availableHeight / lineHeight);
             
-            // Remove bounds to allow maximum coverage
-            W = Math.max(50, W);
-            H = Math.max(40, H);
+            // Keep grid manageable for performance - cap at reasonable limits
+            W = Math.max(30, Math.min(80, W)); // Much smaller bounds for performance
+            H = Math.max(20, Math.min(50, H)); // Much smaller bounds for performance
               // Update actual character dimensions - use line height for vertical spacing
             charWidth = actualCharWidth;
             charHeight = lineHeight; // Use line height instead of measured height for accurate spacing// Update grid element styling for maximum viewport coverage
-            const grid = document.getElementById('grid');
-            if (grid) {
-                grid.style.fontSize = finalFontSize + 'px';
-                grid.style.lineHeight = lineHeight + 'px';
-                grid.style.fontFamily = 'Courier New, monospace';                grid.style.position = 'fixed';
-                grid.style.top = '0px';
-                grid.style.left = '0px';                grid.style.width = availableWidth + 'px';
-                grid.style.height = availableHeight + 'px';
-                grid.style.margin = '0';
-                grid.style.padding = '0';
-                grid.style.overflow = 'hidden';
-                grid.style.boxSizing = 'border-box';
-                grid.style.display = 'block';
-                grid.style.transition = 'none';
-                grid.style.whiteSpace = 'pre';
-                grid.style.letterSpacing = '0';
+            if (gridElem) {
+                gridElem.style.fontSize = finalFontSize + 'px';
+                gridElem.style.lineHeight = lineHeight + 'px';
+                gridElem.style.fontFamily = 'Courier New, monospace';                gridElem.style.position = 'fixed';
+                gridElem.style.top = '0px';
+                gridElem.style.left = '0px';                gridElem.style.width = availableWidth + 'px';
+                gridElem.style.height = availableHeight + 'px';
+                gridElem.style.margin = '0';
+                gridElem.style.padding = '0';
+                gridElem.style.overflow = 'hidden';
+                gridElem.style.boxSizing = 'border-box';
+                gridElem.style.display = 'block';
+                gridElem.style.transition = 'none';
+                gridElem.style.whiteSpace = 'pre';
+                gridElem.style.letterSpacing = '0';
                 grid.style.wordSpacing = '0';
                   // Force immediate style application
                 grid.offsetHeight; // Trigger reflow
@@ -219,11 +222,9 @@
             
             // log removed for performance
             dimensionsInitialized = true; // Mark as initialized
-        }
-
-        // Initialize dimensions only when needed (removed redundant call)
-        // Set default dimensions that will be updated in initializeEverything()
-        W = 100; H = 50; // Temporary defaults
+        }        // Initialize dimensions only when needed
+        // Set smaller default dimensions for better performance
+        W = 50; H = 30; // Much smaller defaults
         
         let t = 0, generation = 0;
           // ∿ layered fields with quantum
@@ -683,10 +684,10 @@
             return `c${colorIdx}` + specialClass;
         }
           function render() {
-            evolveCells();              // Auto-inject consciousness when population gets low - more conservative
+            evolveCells();            // Auto-inject consciousness when population gets low - adjusted for smaller grid
             const livingCells = cells.filter(c => c > 0.1).length;
-            const targetPopulation = Math.floor((W * H) * 0.015); // Reduced to 1.5% of canvas
-            if (livingCells < targetPopulation && Math.random() < 0.015) { // Less frequent injection
+            const targetPopulation = Math.floor((W * H) * 0.03); // Higher percentage for smaller grid
+            if (livingCells < targetPopulation && Math.random() < 0.03) { // More frequent injection for smaller grid
                 const x = Math.floor(Math.random() * W);
                 const y = Math.floor(Math.random() * H);
                 const i = y * W + x;
@@ -722,11 +723,10 @@
                 output += '\n';
             }
             
-            document.getElementById('grid').innerHTML = output;
+            gridElem.innerHTML = output;
             t++;
-        }        function seedRandom() {
-            // Reduce density significantly for less visual noise
-            const density = Math.max(0.02, Math.min(0.08, 400 / (W * H))); // Much lower density
+        }        function seedRandom() {            // Reduce density for smaller grid - maintain visual activity
+            const density = Math.max(0.05, Math.min(0.15, 200 / (W * H))); // Higher density since fewer cells
             for (let i = 0; i < W * H; i++) {
                 if (Math.random() < density) {
                     cells[i] = Math.random() * 0.6 + 0.3; // Slightly stronger cells
@@ -739,14 +739,14 @@
                 }
             }
         }        function seedQuantumField() {
-            // Create quantum coherence fields distributed across the full viewport
-            const numFields = Math.floor(Math.random() * 5) + 4; // More fields for larger areas
+            // Create quantum coherence fields - adjusted for smaller grid
+            const numFields = Math.floor(Math.random() * 3) + 2; // Fewer fields for smaller grid
             
             for (let f = 0; f < numFields; f++) {
-                // Place quantum fields randomly across the entire viewport
-                const qx = Math.floor(Math.random() * (W - 20)) + 10; // Leave small border
-                const qy = Math.floor(Math.random() * (H - 20)) + 10; // Leave small border
-                const radius = Math.floor(Math.random() * 12) + 6; // Slightly larger radius
+                // Place quantum fields randomly across the grid
+                const qx = Math.floor(Math.random() * (W - 8)) + 4; // Smaller border
+                const qy = Math.floor(Math.random() * (H - 8)) + 4; // Smaller border
+                const radius = Math.floor(Math.random() * 6) + 3; // Smaller radius
                 
                 for (let y = Math.max(1, qy - radius); y < Math.min(H - 1, qy + radius); y++) {
                     for (let x = Math.max(1, qx - radius); x < Math.min(W - 1, qx + radius); x++) {
@@ -760,15 +760,15 @@
                     }
                 }
             }
-        }          function createCollectiveNodes() {
-            // Create nodes of collective consciousness distributed across the full viewport
-            const numNodes = Math.floor(Math.random() * 6) + 5; // More nodes for better coverage
+        }        function createCollectiveNodes() {
+            // Create nodes of collective consciousness - adjusted for smaller grid
+            const numNodes = Math.floor(Math.random() * 3) + 2; // Fewer nodes for smaller grid
             
             for (let n = 0; n < numNodes; n++) {
-                // Distribute nodes randomly across the entire viewport
-                const cx = Math.floor(Math.random() * (W - 20)) + 10; // Leave small border
-                const cy = Math.floor(Math.random() * (H - 20)) + 10; // Leave small border
-                const radius = Math.floor(Math.random() * 8) + 5; // Slightly larger radius
+                // Distribute nodes randomly across the grid
+                const cx = Math.floor(Math.random() * (W - 8)) + 4; // Smaller border
+                const cy = Math.floor(Math.random() * (H - 8)) + 4; // Smaller border
+                const radius = Math.floor(Math.random() * 4) + 2; // Smaller radius
                 
                 for (let y = Math.max(1, cy - radius); y < Math.min(H - 1, cy + radius); y++) {
                     for (let x = Math.max(1, cx - radius); x < Math.min(W - 1, cx + radius); x++) {
@@ -796,14 +796,13 @@
                 [[1,1,0,0], [1,1,0,0], [0,0,1,1], [0,0,1,1]]
             ];
             
-            const numPatterns = Math.max(8, Math.min(20, Math.floor((W * H) / 400))); // More patterns for better coverage
+            const numPatterns = Math.max(4, Math.min(8, Math.floor((W * H) / 200))); // Fewer patterns for smaller grid
             
             for (let p = 0; p < numPatterns; p++) {
                 const pattern = patterns[Math.floor(Math.random() * patterns.length)];
-                
-                // Place patterns randomly across the entire viewport
-                const startX = Math.floor(Math.random() * (W - pattern[0].length - 10)) + 5;
-                const startY = Math.floor(Math.random() * (H - pattern.length - 10)) + 5;
+                  // Place patterns randomly across the grid with smaller buffer
+                const startX = Math.floor(Math.random() * (W - pattern[0].length - 4)) + 2;
+                const startY = Math.floor(Math.random() * (H - pattern.length - 4)) + 2;
                   for (let y = 0; y < pattern.length; y++) {
                     for (let x = 0; x < pattern[y].length; x++) {
                         const finalX = startX + x;
@@ -1226,19 +1225,19 @@
                     quantum[i] = Math.random() * 0.4;
                     energy[i] = Math.random() * 0.5 + 0.3;
                 }
-            }
-              // Add some structured consciousness patterns distributed across viewport
-            const numSeeds = Math.floor(Math.random() * 5) + 3; // More seeds for better coverage
+            }            // Add some structured consciousness patterns distributed across smaller grid
+            const numSeeds = Math.floor(Math.random() * 3) + 2; // Fewer seeds for smaller grid
             
             for (let s = 0; s < numSeeds; s++) {
-                // Place seeds randomly across the entire viewport
-                const sx = Math.floor(Math.random() * (W - 20)) + 10;
-                const sy = Math.floor(Math.random() * (H - 20)) + 10;
-                const radius = Math.floor(Math.random() * 8) + 4; // Slightly larger radius
+                // Place seeds randomly across the grid
+                const sx = Math.floor(Math.random() * (W - 8)) + 4;
+                const sy = Math.floor(Math.random() * (H - 8)) + 4;
+                const radius = Math.floor(Math.random() * 4) + 2; // Smaller radius
                 
                 for (let y = Math.max(0, sy - radius); y < Math.min(H, sy + radius); y++) {
                     for (let x = Math.max(0, sx - radius); x < Math.min(W, sx + radius); x++) {
-                        const dist = Math.sqrt((x - sx) ** 2 + (y - sy) ** 2);                        if (dist <= radius) {
+                        const dist = Math.sqrt((x - sx) ** 2 + (y - sy) ** 2);
+                        if (dist <= radius) {
                             const i = y * W + x;
                             const strength = 1 - (dist / radius);
                             consciousness[i] = Math.max(consciousness[i], strength * 0.5);

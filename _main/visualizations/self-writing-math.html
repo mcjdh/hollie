@@ -66,16 +66,15 @@
         ∂ 🧬⟲<br>
         ∂→∇→∞<br>
         ⌫ ◦ ↩
-    </div>
-    <div id="canvas"></div>
+    </div>    <div id="canvas"></div>
     <script>
         const canvas = document.getElementById('canvas');
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
         let t = 0;
-        const canvas = document.getElementById('canvas');
-
+        const canvasElem = document.getElementById('canvas');
+        
         // Calculate optimal grid size based on viewport
         function updateDimensions() {
             // Get actual viewport dimensions
@@ -101,8 +100,7 @@
             // Calculate grid size with padding buffer
             W = Math.ceil(viewportWidth / charWidth) + 2; // Extra columns
             H = Math.ceil(viewportHeight / charHeight) + 2; // Extra rows
-            
-            // Ensure minimum viable grid
+              // Ensure minimum viable grid
             W = Math.max(40, W);
             H = Math.max(20, H);
             
@@ -111,15 +109,15 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            canvas.style.fontSize = fontSize + 'px';
-            canvas.style.lineHeight = (fontSize * 1.0) + 'px';
+            canvasElem.style.fontSize = fontSize + 'px';
+            canvasElem.style.lineHeight = (fontSize * 1.0) + 'px';
             
             // align canvas to grid
-            canvas.style.position = 'absolute';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.margin = '0';
-            canvas.style.padding = '0';
+            canvasElem.style.position = 'absolute';
+            canvasElem.style.top = '0';
+            canvasElem.style.left = '0';
+            canvasElem.style.margin = '0';
+            canvasElem.style.padding = '0';
             
             // Reallocate arrays for new dimensions
             reallocateArrays();
@@ -386,12 +384,11 @@
                     const symbol = generateSymbol(intensity, gradMag, temporal, complexity);
                     const colorClass = getColorClass(intensity, complexity, evolution[idx] || 0);
                     
-                    output += `<span class="${colorClass}">${symbol}</span>`;
-                }
+                    output += `<span class="${colorClass}">${symbol}</span>`;                }
                 if (y < renderH - 1) output += '\n';
             }
             
-            canvas.innerHTML = output;
+            canvasElem.innerHTML = output;
             t++;
         }
         
