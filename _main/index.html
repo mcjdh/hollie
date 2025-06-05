@@ -426,13 +426,16 @@
         
         let isFullscreenOpen = false;
         let exitListeners = [];
+        let currentViz = '';
 
         function open_viz(file) {
+            if (isFullscreenOpen && currentViz === file) return;
+            currentViz = file;
             frameElem.src = 'visualizations/' + file;
             fsElem.style.display = 'block';
             document.body.style.overflow = 'hidden';
             isFullscreenOpen = true;
-              // Setup multiple exit paths
+            // Setup multiple exit paths
             setupExitMechanisms();
         }
 
