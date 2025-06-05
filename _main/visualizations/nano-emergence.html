@@ -189,11 +189,11 @@ body{background:linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);color:
                 }else{
                     const dis=ƒ[0]+Math.sin(τ*φ/250)*50+ℏ*10;
                     snd(dis,85,'square');
-                }
-            }else{
+                }            }else{
                 const pro=ƒ[0]+Math.sin(τ*φ/220)*60+ℏ*14;
                 snd(pro,75);
             }
+        }
 
         window.addEventListener('resize',rsz);
         window.addEventListener('orientationchange',()=>setTimeout(rsz,100));
