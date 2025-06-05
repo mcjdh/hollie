@@ -55,14 +55,14 @@
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
-        let t = 0;        // Enhanced dynamic viewport sizing with robust character measurement
+        let t = 0;        // ◎ viewport size via char metrics
         function updateDimensions() {
             // Get actual viewport dimensions
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
             try {
-                // Precise character measurement using actual font
+                // precise char metrics from font
                 const testDiv = document.createElement('div');
                 testDiv.style.fontFamily = 'Courier New, monospace';
                 testDiv.style.fontSize = '10px';
@@ -83,7 +83,7 @@
                 charHeight = 10;
             }
             
-            // Calculate grid size for perfect viewport coverage
+            // Calculate grid size for full coverage
             W = Math.ceil(viewportWidth / charWidth) + 2; // Extra buffer for edge coverage
             H = Math.ceil(viewportHeight / charHeight) + 2;
             
@@ -91,7 +91,7 @@
             W = Math.max(60, Math.min(200, W));
             H = Math.max(30, Math.min(120, H));
             
-            // Calculate optimal font size for perfect fit
+            // Calculate font size for full fit
             const optimalFontWidth = viewportWidth / W * 1.8;
             const optimalFontHeight = viewportHeight / H * 1.2;
             const fontSize = Math.min(optimalFontWidth, optimalFontHeight);
@@ -102,7 +102,7 @@
                 display.style.fontSize = finalFontSize + 'px';
                 display.style.lineHeight = finalFontSize + 'px';
                 
-                // Perfect positioning to eliminate gaps
+                // align display to grid
                 display.style.position = 'absolute';
                 display.style.top = '0';
                 display.style.left = '0';
@@ -152,7 +152,7 @@
         ];        
         const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
         
-        // Enhanced temporal field updates with viewport scaling
+        // ∂ temporal fields scale with viewport
         function updateFields() {
             const tau = t * 0.02;
             const scaleFactor = Math.sqrt(W * H) / 100; // Viewport adaptation
@@ -164,7 +164,7 @@
                     const cx = nx - 0.5, cy = ny - 0.5;
                     const r = Math.sqrt(cx * cx + cy * cy);
                     
-                    // Enhanced temporal waves with viewport scaling
+                    // temporal waves scale with view
                     // Low frequency temporal wave - deep time rhythms
                     const slow = Math.sin(nx * 3 * scaleFactor + tau * 0.5) * Math.cos(ny * 2.5 * scaleFactor - tau * 0.3);
                     
@@ -177,10 +177,10 @@
                     const fast = Math.sin(r * 12 * scaleFactor - tau * 2.5) * 0.5;
                     const fastHarmonic = Math.cos(r * 8 * scaleFactor / phi - tau * 1.8) * 0.2;
                     
-                    // Enhanced circular wave - time ripples from center with depth
+                    // circular waves (time ripples)
                     const ripple = Math.sin((r * 15 * scaleFactor - tau * 3) * Math.PI) * (1 - r);
                     const deepRipple = Math.cos((r * 9 * scaleFactor - tau * 2.2) * Math.PI) * (1 - r * 0.7) * 0.4;
-                    // Enhanced temporal interference pattern with multiple layers
+                    // temporal interference layers
                     const interference = slow + (mid + harmonicMid) + (fast + fastHarmonic) + (ripple + deepRipple);
                     
                     // Temporal quantum fluctuations - uncertainty in time itself
@@ -190,14 +190,14 @@
                     temporal[i] = temporal[i] * 0.94 + (interference + quantum) * 0.06;
                     resonance[i] = resonance[i] * 0.97 + (slow * mid + harmonicMid * fast) * 0.03;
                     
-                    // Enhanced memory trace - past states bleeding through with temporal decay
+                    // memory trace with decay
                     if (Math.random() < 0.01 * scaleFactor) {
                         memory[i] = temporal[i] + Math.sin(tau * 7) * 0.1;
                     } else {
                         memory[i] *= 0.999;
                     }
                     
-                    // Enhanced echo field - multi-dimensional temporal delays
+                    // echo field for time delay
                     const delayOffset = Math.floor(W * 0.1); // Dynamic delay based on grid size
                     const echoSource = Math.max(0, Math.min(W * H - 1, i - delayOffset));
                     echo[i] = echo[i] * 0.92 + temporal[echoSource] * 0.08 + resonance[echoSource] * 0.03;
@@ -213,7 +213,7 @@
                 updateFields();
                 let output = '';
                 
-                // Enhanced temporal breathing with multiple harmonics
+                // temporal breathing with harmonics
                 const breath1 = Math.sin(t * 0.05) * 0.15 + 0.85;
                 const breath2 = Math.cos(t * 0.037) * 0.08 + 0.92;
                 const breath3 = Math.sin(t * 0.063) * 0.04 + 0.96;
@@ -227,7 +227,7 @@
                     for (let x = 0; x < renderW; x++) {
                         const i = Math.min(y * W + x, (W * H) - 1); // Bounds safety
                         
-                        // Enhanced temporal layer combination with resonance modulation
+                        // combine layers via resonance
                         let intensity = (temporal[i] || 0) * 0.5 + 
                                       (resonance[i] || 0) * 0.3 + 
                                       (memory[i] || 0) * 0.1 + 
@@ -236,7 +236,7 @@
                         // Apply temporal breathing - time itself breathing
                         intensity *= globalBreath;
                         
-                        // Enhanced temporal noise - quantum fluctuations in time with coherence
+                        // temporal noise with coherence
                         const coherentNoise = Math.sin(t * 0.1 + x * 0.05 + y * 0.07) * 0.02;
                         intensity += (Math.random() - 0.5) * 0.03 + coherentNoise;                    
                         
@@ -288,7 +288,7 @@
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
         });
-          // Enhanced initialization with temporal field setup
+          // init with temporal field
         function initialize() {
             updateDimensions();
             addTemporalChaos(); // Initial temporal disturbance

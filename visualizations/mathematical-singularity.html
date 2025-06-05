@@ -89,7 +89,7 @@
             W = Math.max(40, W);
             H = Math.max(20, H);
             
-            // Calculate optimal font size for perfect fit
+            // Calculate font size for full fit
             const optimalFontWidth = viewportWidth / W;
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
@@ -98,7 +98,7 @@
             canvas.style.fontSize = fontSize + 'px';
             canvas.style.lineHeight = (fontSize * 1.0) + 'px';
             
-            // Perfect positioning to eliminate gaps
+            // align canvas to grid
             canvas.style.position = 'absolute';
             canvas.style.top = '0';
             canvas.style.left = '0';
@@ -178,7 +178,7 @@
             
             return { field, complexity };
         }
-          // Enhanced parameter evolution with viewport scaling
+          // ∆ params adapt to viewport
         function evolveParameters() {
             const tau = t * 0.001;
             const scaleFactor = Math.sqrt(W * H) / 100; // Scale with viewport size
@@ -249,7 +249,7 @@
             
             return classes[index];
         }
-          // Enhanced render with perfect coverage
+          // ∆ render covers entire grid
         function render() {
             evolveParameters();
             updateFields();
@@ -263,7 +263,7 @@
                 Math.sin(t * omega[2] / phi)
             ) / 3 * 0.2 + 0.8;
             
-            // Ensure we fill every pixel by rendering extra if needed
+            // fill grid fully with extra lines
             const renderH = Math.min(H, Math.ceil(window.innerHeight / (charHeight || 8)) + 3);
             const renderW = Math.min(W, Math.ceil(window.innerWidth / (charWidth || 6)) + 3);
             
@@ -289,7 +289,7 @@
             document.getElementById('canvas').innerHTML = output;
             t++;
         }
-          // Anti-equilibrium enhancement - prevent static patterns
+          // ∇ chaos avoids static patterns
         function addDynamicChaos() {
             const tau = t * 0.0001;
             
@@ -306,18 +306,18 @@
             }
         }
         
-        // Enhanced evolution with viewport adaptation
+        // evolve() scales with viewport
         function evolve() {
             render();
             addDynamicChaos(); // Prevent equilibrium
             requestAnimationFrame(evolve);
         }
-          // Responsive event handling with immediate update
+          // resize → updateDimensions
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
         });
         
-        // Initialize with dynamic sizing and ensure proper startup
+        // start: size then evolve
         setTimeout(() => {
             updateDimensions();
             evolve();        }, 50);

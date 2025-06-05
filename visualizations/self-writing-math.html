@@ -89,7 +89,7 @@
             W = Math.max(40, W);
             H = Math.max(20, H);
             
-            // Calculate optimal font size for perfect fit
+            // Calculate font size for full fit
             const optimalFontWidth = viewportWidth / W;
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
@@ -98,7 +98,7 @@
             canvas.style.fontSize = fontSize + 'px';
             canvas.style.lineHeight = (fontSize * 1.0) + 'px';
             
-            // Perfect positioning to eliminate gaps
+            // align canvas to grid
             canvas.style.position = 'absolute';
             canvas.style.top = '0';
             canvas.style.left = '0';
@@ -198,7 +198,7 @@
         ];
         // Generator functions with proper centering
         function generateField(x, y, gen) {
-            // Perfect centering accounting for padding buffer
+            // center w/ padding offset
             // Since we add +2 to W and H, we need to center on the actual visible grid
             const actualW = W - 2; // Remove padding for centering calculation
             const actualH = H - 2; // Remove padding for centering calculation
@@ -207,7 +207,7 @@
             const dx = x - cx;
             const dy = y - cy;
             
-            // Perfect normalization using actual display dimensions
+            // normalize with display size
             const normFactorX = actualW * 0.4; // Slightly larger factor for better spread
             const normFactorY = actualH * 0.4; // Slightly larger factor for better spread
             const nx = dx / normFactorX; // Normalized x in proper range
@@ -260,14 +260,14 @@
             totalField += Math.sin(totalField * pi + t * 0.003) * 0.2;
             
             return { field: totalField, complexity };
-        }        // Enhanced symbol generation with perfect centering
+        }        // ◐ symbol selection uses grid center
         function generateSymbol(intensity, gradMag, temporal, complexity) {
             const magnitude = Math.abs(intensity);
             const flow = gradMag;
             const change = Math.abs(temporal);
             const chaos = complexity % 1;
             
-            // Perfect mathematical mapping with corrected viewport scaling
+            // math mapping scaled to viewport
             const actualSize = Math.sqrt((W-2) * (H-2)); // Use actual display area
             const scaleFactor = actualSize / 100;
             const symbolSpace = (magnitude + flow * 2 + change * 3 + chaos * 5) * scaleFactor * 0.5;
@@ -330,7 +330,7 @@
                     }
                 }
             }
-        }        // Enhanced render with perfect coverage and centering
+        }        // ∆ render fills viewport
         function render() {
             updateFields();
             
@@ -343,7 +343,7 @@
                 Math.sin(t * genome.generators[2].freq * 100 / phi)
             ) / 3 * 0.15 + 0.85;
             
-            // Perfect viewport coverage - render exactly what we see
+            // render exactly visible cells
             const viewportCols = Math.ceil(window.innerWidth / (charWidth || 6));
             const viewportRows = Math.ceil(window.innerHeight / (charHeight || 8));
             const renderW = Math.min(W, viewportCols + 1); // Small buffer for smoothness
@@ -372,7 +372,7 @@
             t++;
         }
         
-        // Anti-equilibrium enhancement - prevent static patterns
+        // ∇ chaos to avoid stagnation
         function addDynamicChaos() {
             const tau = t * 0.0001;
             
@@ -394,12 +394,12 @@
             requestAnimationFrame(evolve);
         }
         
-        // Responsive event handling with immediate update
+        // resize → updateDimensions
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
         });
         
-        // Initialize with dynamic sizing and ensure proper startup
+        // start: size then evolve
         setTimeout(() => {
             updateDimensions();
             evolve();        }, 50);

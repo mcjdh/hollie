@@ -358,7 +358,7 @@
             fsElem.style.display = 'block';
             document.body.style.overflow = 'hidden';
             isFullscreenOpen = true;
-              // Setup multiple exit mechanisms
+              // Setup multiple exit paths
             setupExitMechanisms();
         }
 
@@ -370,7 +370,7 @@
             frameElem.src = '';
             document.body.style.overflow = 'auto';
             
-            // Clean up all event listeners
+            // remove all event listeners
             cleanupExitMechanisms();
         }
 
@@ -379,10 +379,10 @@
         }
 
         function setupExitMechanisms() {
-            // Clean up any existing listeners first
+            // remove old listeners
             cleanupExitMechanisms();
             
-            // Method 1: Overlay click/touch (highest priority - always works)
+            // ① overlay click/touch
             const overlayClickHandler = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -396,7 +396,7 @@
                 exitOverlay.removeEventListener('touchend', overlayClickHandler, { capture: true });
             });
             
-            // Method 2: Document-level keyboard capture
+            // ② capture ESC key
             const keyHandler = (e) => {
                 if (isFullscreenOpen && (e.key === 'Escape' || e.key === 'Esc')) {
                     e.preventDefault();
@@ -412,7 +412,7 @@
                 document.removeEventListener('keyup', keyHandler, { capture: true });
             });
             
-            // Method 3: Fullscreen container backup
+            // ③ click outside frame
             const fsClickHandler = (e) => {
                 if (e.target === fsElem) {
                     close_viz_force();
@@ -424,7 +424,7 @@
                 fsElem.removeEventListener('click', fsClickHandler, { capture: true });
             });
             
-            // Method 4: PostMessage communication with iframe
+            // ④ iframe postMessage
             const messageHandler = (e) => {
                 if (e.data === 'close' || e.data === 'exit' || e.data === 'escape') {
                     close_viz_force();
@@ -436,7 +436,7 @@
                 window.removeEventListener('message', messageHandler);
             });
             
-            // Method 5: Failsafe - detect prolonged interaction attempts
+            // ⑤ failsafe on many events
             let interactionAttempts = 0;
             const failsafeHandler = () => {
                 interactionAttempts++;
@@ -455,7 +455,7 @@
                 document.removeEventListener('keydown', failsafeHandler, { capture: true });
             });
             
-            // Reset attempt counter after 2 seconds
+            // reset counter after 2s
             setTimeout(() => {
                 interactionAttempts = 0;
             }, 2000);

@@ -99,7 +99,7 @@
         // Temporal defects - points where time breaks down
         let temporalDefects = [];
         
-        // Crystal formation symbols: void → nucleation → growth → perfect order
+        // Crystal formation symbols: void → nucleation → growth → complete order
         const symbols = ' ·∘○◯⬢⬡⬣⬢⟐⬟⊠⊡◉❋';
         
         function temporalCrystal(x, y, seed, time) {
@@ -119,7 +119,7 @@
             // Radial crystal structure with discrete layers
             const radialOrder = Math.cos(dist * 0.4 + time * 0.01);
             
-            // Perfect periodicity near center, chaos at edges
+            // periodicity near center, chaos at edges
             const orderParameter = Math.exp(-dist * 0.08);
             const crystalOrder = symmetryWave * radialOrder * orderParameter;
             

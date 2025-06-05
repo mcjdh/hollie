@@ -120,12 +120,12 @@
         let initialized = false;
         let fontSize = 12;
         let charWidth = 7;
-        let charHeight = 14;        // ◦ Enhanced dynamic scaling with precise character measurement
+        let charHeight = 14;        // ◦ dynamic scaling via char metrics
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Precise character measurement for optimal fit
+            // measure characters for fit
             const testDiv = document.createElement('div');
             testDiv.style.fontFamily = 'Courier New, monospace';
             testDiv.style.fontSize = '10px';
@@ -141,15 +141,15 @@
             charHeight = rect.height / 10;
             document.body.removeChild(testDiv);
             
-            // Calculate grid size with buffer for perfect coverage
+            // grid size + buffer for full view
             W = Math.ceil(viewportWidth / charWidth) + 1;
             H = Math.ceil(viewportHeight / charHeight) + 1;
             
-            // Apply reasonable limits
+            // clamp to sensible bounds
             W = Math.max(40, Math.min(160, W));
             H = Math.max(20, Math.min(100, H));
             
-            // Calculate optimal font size for perfect viewport fit
+            // font size tuned to viewport
             const optimalFontWidth = viewportWidth / W * 1.8;
             const optimalFontHeight = viewportHeight / H * 1.2;
             fontSize = Math.min(optimalFontWidth, optimalFontHeight);
@@ -179,9 +179,9 @@
             emergenceField = new Float32Array(size);
             flowField = new Float32Array(size);
             
-            // If we had previous data and this is a resize, try to preserve some of it
+            // on resize, carry over old data
             if (oldInfo && initialized) {
-                // Simple data preservation for resize
+                // basic data carryover
                 const oldW = Math.sqrt(oldInfo.length * W / H);
                 for (let y = 0; y < Math.min(H, oldInfo.length / oldW); y++) {
                     for (let x = 0; x < Math.min(W, oldW); x++) {
@@ -195,7 +195,7 @@
                     }
                 }
             } else {
-                // Initialize with sparse information for first time
+                // init with sparse info
                 for (let i = 0; i < size; i++) {
                     if (Math.random() < 0.03) {
                         informationField[i] = Math.random() * 0.6;
@@ -207,7 +207,7 @@
               initialized = true;
             console.log(`∇ Entropic Grid: ${W}×${H} (${viewportWidth}×${viewportHeight}) fontSize: ${fontSize.toFixed(1)}px charSize: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
         }
-          // ∿ Optimized evolution functions
+          // ∿ evolution functions
         function evolveEntropy() {
             // Only update every few frames for performance
             if (time % 2 !== 0) return;
@@ -267,7 +267,7 @@
             informationField.set(newInfo);
             entropyField.set(newEntropy);
             emergenceField.set(newEmergence);
-        }        // ◈ Enhanced symbol selection with more visual variety
+        }        // ◈ choose symbols for variety
         function getSymbol(x, y) {
             const i = y * W + x;
             const info = informationField[i];
@@ -275,7 +275,7 @@
             const emergence = emergenceField[i];
             const totalIntensity = info + entropy + emergence;
             
-            // Enhanced symbol selection for better visual variety
+            // pick glyphs by intensity
             if (emergence > 0.3) return '⊙';
             if (emergence > 0.2) return '○';
             if (info > 0.6) return '◉';
@@ -290,7 +290,7 @@
             return ' ';
         }
         
-        // ◎ Enhanced color class selection
+        // ◎ color class via field
         function getColorClass(symbol, x, y) {
             const i = y * W + x;
             const info = informationField[i];
@@ -298,7 +298,7 @@
             const emergence = emergenceField[i];
             const totalIntensity = info + entropy + emergence;
             
-            // Enhanced color logic with more variety
+            // color logic adds variety
             if (emergence > 0.3) return 'w'; // White for highest emergence
             if (emergence > 0.2) return 'u'; // Cyan for emergence
             if (entropy > 0.5) return 'q'; // Magenta for high entropy
@@ -310,7 +310,7 @@
             if (totalIntensity > 0.05) return 'a'; // Gray for low
             if (totalIntensity > 0.01) return 'f'; // Dark gray for very low
             return 'n'; // Very dim for near-void
-        }// ◐ Optimized render frame with canvas-like scaling
+        }// ◐ render frame scales like canvas
         function render() {
             if (!initialized) return;
             
@@ -332,7 +332,7 @@
             document.getElementById('timeDisplay').textContent = `${time} (${W}×${H})`;
         }
         
-        // ∞ Optimized animation loop
+        // ∞ animation loop
         function animate() {
             try {
                 time++;
@@ -357,7 +357,7 @@
             }
         }
         
-        // Add debounced resize handling for dynamic scaling
+        // debounce resize for scaling
         let resizeTimeout;
         function handleResize() {
             clearTimeout(resizeTimeout);
@@ -367,7 +367,7 @@
             }, 250); // Debounce resize events
         }
         
-        // ◯ Initialize and start with dynamic scaling
+        // ◯ start with dynamic scaling
         window.addEventListener('resize', handleResize);
         
         // Add error handling
