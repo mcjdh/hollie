@@ -295,15 +295,11 @@
         }
         
         // Initialize with dynamic sizing and ensure proper startup
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initialize, 50);
-        });
-        
-        // Fallback initialization in case DOMContentLoaded already fired
         if (document.readyState === 'loading') {
-            // DOM is still loading
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initialize, 50);
+            });
         } else {
-            // DOM is already loaded
             setTimeout(initialize, 50);
         }
     </script>
