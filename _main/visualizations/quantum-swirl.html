@@ -80,19 +80,46 @@
         const timeElem = document.getElementById('timeDisplay');
         let running = true;
         
-        function updateDimensions() {
+        // Global character measurement cache
+        const charMeasurementCache = new Map();
+        
+        function getCachedCharacterMeasurement(fontFamily, fontSize, testContent = '0'.repeat(10) + '\n'.repeat(10)) {
+            const cacheKey = `${fontFamily}-${fontSize}px`;
+            
+            if (charMeasurementCache.has(cacheKey)) {
+                return charMeasurementCache.get(cacheKey);
+            }
+            
+            // Create measurement element only if not cached
             const test = document.createElement('div');
+            test.style.fontFamily = fontFamily;
+            test.style.fontSize = fontSize + 'px';
             test.style.position = 'absolute';
-            test.style.visibility = 'hidden';            test.style.whiteSpace = 'pre';
-            test.style.fontFamily = 'Courier New, monospace';
-            test.style.fontSize = getComputedStyle(canvasElem).fontSize;
+            test.style.visibility = 'hidden';
+            test.style.whiteSpace = 'pre';
             test.style.lineHeight = '1.1';
-            test.textContent = '0'.repeat(10) + '\n'.repeat(10);
+            test.textContent = testContent;
             document.body.appendChild(test);
+            
             const rect = test.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
+            const result = {
+                charWidth: rect.width / 10,
+                charHeight: rect.height / 10
+            };
+            
             document.body.removeChild(test);
+            
+            // Cache the result
+            charMeasurementCache.set(cacheKey, result);
+            return result;
+        }
+        
+        function updateDimensions() {
+            // Use cached character measurement
+            const computedFontSize = parseFloat(getComputedStyle(canvasElem).fontSize);
+            const measurements = getCachedCharacterMeasurement('Courier New, monospace', computedFontSize);
+            charWidth = measurements.charWidth;
+            charHeight = measurements.charHeight;
 
             W = Math.ceil(window.innerWidth / charWidth) + 1;
             H = Math.ceil(window.innerHeight / charHeight) + 1;
@@ -120,8 +147,9 @@
                     val = (val + 2) / 4;
                     val = Math.max(0, Math.min(1, val));
                     
-                    const idx = Math.floor(val * (symbols.length - 1));
-                    const colorIdx = Math.floor(val * 6.999);                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
+                    const idx = Math.max(0, Math.min(symbols.length - 1, Math.floor(val * (symbols.length - 1))));
+                    const colorIdx = Math.max(0, Math.min(6, Math.floor(val * 6.999)));
+                    out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
                 }
                 out += '\n';
             }

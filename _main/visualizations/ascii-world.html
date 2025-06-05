@@ -20,7 +20,7 @@
             width: 100vw;
             height: 100vh;
             display: block;
-            line-height: 1.0;
+            line-height: 1.6;
             position: absolute;
             top: 0;
             left: 0;
@@ -74,12 +74,41 @@
         const MAX_COLS = 160;
         const MAX_ROWS = 80;
         const FPS = 30;        let lastFrame = 0;
-        const measureDiv = document.createElement('div');
-        measureDiv.style.fontFamily = 'Courier New, monospace';
-        measureDiv.style.position = 'absolute';
-        measureDiv.style.visibility = 'hidden';
-        measureDiv.style.whiteSpace = 'pre';
-        measureDiv.style.lineHeight = '1.0';
+        
+        // Global character measurement cache
+        const charMeasurementCache = new Map();
+        
+        function getCachedCharacterMeasurement(fontFamily, fontSize, testContent = '●'.repeat(10) + '\n'.repeat(10)) {
+            const cacheKey = `${fontFamily}-${fontSize}px`;
+            
+            if (charMeasurementCache.has(cacheKey)) {
+                return charMeasurementCache.get(cacheKey);
+            }
+            
+            // Create measurement element only if not cached
+            const measureDiv = document.createElement('div');
+            measureDiv.style.fontFamily = fontFamily;
+            measureDiv.style.fontSize = fontSize + 'px';
+            measureDiv.style.position = 'absolute';
+            measureDiv.style.visibility = 'hidden';
+            measureDiv.style.whiteSpace = 'pre';
+            measureDiv.style.lineHeight = '1.6';
+            measureDiv.textContent = testContent;
+            document.body.appendChild(measureDiv);
+            
+            const rect = measureDiv.getBoundingClientRect();
+            const result = {
+                charWidth: rect.width / 10,
+                charHeight: rect.height / 10
+            };
+            
+            document.body.removeChild(measureDiv);
+            
+            // Cache the result
+            charMeasurementCache.set(cacheKey, result);
+            return result;
+        }
+        
         let running = true;
         
         // ◊ optimal grid dimensions
@@ -87,27 +116,22 @@
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
 
-            // ◦ measurement for fit
-            measureDiv.style.fontSize = '8px';
-            measureDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(measureDiv);
-
-            const rect = measureDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(measureDiv);
+            // ◦ measurement for fit using cached function
+            const measurements = getCachedCharacterMeasurement('Courier New, monospace', 8);
+            charWidth = measurements.charWidth;
+            charHeight = measurements.charHeight;
             
             W = Math.ceil(viewportWidth / charWidth) + 2;
             H = Math.ceil(viewportHeight / charHeight) + 2;
-            W = Math.max(60, W);
-            H = Math.max(30, H);
+            W = Math.max(40, W);
+            H = Math.max(20, H);
             W = Math.min(MAX_COLS, W);
             H = Math.min(MAX_ROWS, H);            const optimalFontWidth = viewportWidth / W;
             const optimalFontHeight = viewportHeight / H;
-            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 0.7);
             
             canvasElem.style.fontSize = fontSize + 'px';
-            canvasElem.style.lineHeight = (fontSize * 1.0) + 'px';
+            canvasElem.style.lineHeight = (fontSize * 1.6) + 'px';
             
             reallocateLife();}
         

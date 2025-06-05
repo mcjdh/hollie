@@ -16,7 +16,7 @@
         }        #display { 
             font-family: 'Courier New', monospace; 
             white-space: pre; 
-            padding: 10px; 
+            padding: 0; 
             margin: 0;
             width: 100vw; 
             height: 100vh; 
@@ -119,26 +119,51 @@
         let initialized = false;
         let fontSize = 12;
         let charWidth = 7;
-        let charHeight = 14;        // ◦ dynamic scaling via char metrics
-        function updateDimensions() {
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+        let charHeight = 14;
+        
+        // Global character measurement cache
+        const charMeasurementCache = new Map();
+        
+        function getCachedCharacterMeasurement(fontFamily, fontSize, testContent = '●'.repeat(10) + '\n'.repeat(10)) {
+            const cacheKey = `${fontFamily}-${fontSize}px`;
             
-            // measure characters for fit
+            if (charMeasurementCache.has(cacheKey)) {
+                return charMeasurementCache.get(cacheKey);
+            }
+            
+            // Create measurement element only if not cached
             const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '10px';
+            testDiv.style.fontFamily = fontFamily;
+            testDiv.style.fontSize = fontSize + 'px';
             testDiv.style.position = 'absolute';
             testDiv.style.visibility = 'hidden';
             testDiv.style.whiteSpace = 'pre';
             testDiv.style.lineHeight = '1.1';
-            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            testDiv.textContent = testContent;
             document.body.appendChild(testDiv);
             
             const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
+            const result = {
+                charWidth: rect.width / 10,
+                charHeight: rect.height / 10
+            };
+            
             document.body.removeChild(testDiv);
+            
+            // Cache the result
+            charMeasurementCache.set(cacheKey, result);
+            return result;
+        }
+        
+        // ◦ dynamic scaling via char metrics
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Use cached character measurement
+            const measurements = getCachedCharacterMeasurement('Courier New, monospace', 10);
+            charWidth = measurements.charWidth;
+            charHeight = measurements.charHeight;
             
             // grid size + buffer for full view
             W = Math.ceil(viewportWidth / charWidth) + 1;

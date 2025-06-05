@@ -15,13 +15,13 @@
             overflow: hidden; 
             font-family: 'Courier New', monospace; 
             font-size: 8px; 
-            line-height: 9px;
+            line-height: 12px;
             height: 100vh;
             width: 100vw;
         }#grid {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 0;
+            left: 0;
             white-space: pre;
             color: var(--cosmos-rose-dim);
             margin: 0;
@@ -31,8 +31,8 @@
             word-spacing: 0;
             letter-spacing: 0;
             /* font-size and line-height will be set by JavaScript */
-            width: calc(100vw - 40px); /* Account for positioning */
-            height: calc(100vh - 40px); /* Account for positioning */
+            width: 100vw;
+            height: 100vh;
             box-sizing: border-box;
             transform-origin: top left;
         }/* ∑ color spectrum for consciousness using cosmos palette */
@@ -71,27 +71,32 @@
         }        /* Special transcendent effects */
         .transcend { 
             color: var(--cosmos-cream); 
-            text-shadow: 0 0 3px var(--cosmos-tiffany), 0 0 6px var(--cosmos-tiffany), 0 0 9px var(--cosmos-tiffany-dim); 
+            text-shadow: 0 0 6px var(--cosmos-tiffany), 0 0 12px var(--cosmos-tiffany-dim);
+            will-change: opacity; 
             animation: pulse 2s ease-in-out infinite;
         }        
         .transcend-gold { 
             color: var(--cosmos-orange); 
-            text-shadow: 0 0 4px var(--cosmos-orange-bright), 0 0 8px var(--cosmos-orange-dim), 0 0 12px var(--cosmos-melon); 
+            text-shadow: 0 0 6px var(--cosmos-orange-bright), 0 0 12px var(--cosmos-orange-dim);
+            will-change: opacity; 
             animation: pulse 1.8s ease-in-out infinite;
         }
         .transcend-crystal { 
             color: var(--cosmos-tiffany-bright); 
-            text-shadow: 0 0 4px var(--cosmos-tiffany), 0 0 8px var(--cosmos-tiffany-bright), 0 0 12px var(--cosmos-tiffany-dim); 
+            text-shadow: 0 0 6px var(--cosmos-tiffany), 0 0 12px var(--cosmos-tiffany-bright);
+            will-change: opacity; 
             animation: pulse 2.2s ease-in-out infinite;
         }        
         .transcend-violet { 
             color: var(--cosmos-rose); 
-            text-shadow: 0 0 4px var(--cosmos-coral), 0 0 8px var(--cosmos-coral-dim), 0 0 12px var(--cosmos-dark); 
+            text-shadow: 0 0 6px var(--cosmos-coral), 0 0 12px var(--cosmos-coral-dim);
+            will-change: opacity; 
             animation: pulse 2.4s ease-in-out infinite;
         }
         .transcend-aqua { 
             color: var(--cosmos-tiffany); 
-            text-shadow: 0 0 4px var(--cosmos-tiffany-bright), 0 0 8px var(--cosmos-tiffany-dim), 0 0 12px var(--cosmos-melon); 
+            text-shadow: 0 0 6px var(--cosmos-tiffany-bright), 0 0 12px var(--cosmos-tiffany-dim);
+            will-change: opacity; 
             animation: pulse 2.0s ease-in-out infinite;
         }
           @keyframes pulse {
@@ -133,40 +138,56 @@
         let dimensionsInitialized = false; // Flag to prevent redundant updates
         const gridElem = document.getElementById('grid');
         
+        // Global character measurement cache
+        const charMeasurementCache = new Map();
+        
+        function getCachedCharacterMeasurement(fontFamily, fontSize, testContent = '⊙'.repeat(10) + '\n'.repeat(10)) {
+            const cacheKey = `${fontFamily}-${fontSize}px`;
+            
+            if (charMeasurementCache.has(cacheKey)) {
+                return charMeasurementCache.get(cacheKey);
+            }
+            
+            // Create measurement element only if not cached
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = fontFamily;
+            testDiv.style.fontSize = fontSize + 'px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.2';
+            testDiv.textContent = testContent;
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            const result = {
+                charWidth: rect.width / 10,
+                charHeight: rect.height / 10
+            };
+            
+            document.body.removeChild(testDiv);
+            
+            // Cache the result
+            charMeasurementCache.set(cacheKey, result);
+            return result;
+        }
+        
         function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
                 // console.log removed for performance
                 return;
             }
             
             const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;            // Account for zero margin - use full viewport
+            const viewportHeight = window.innerHeight;            // Use full viewport without margins
             const availableWidth = viewportWidth;
             const availableHeight = viewportHeight;
             
-            // More accurate character measurement with consistent base size
-            const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '10px'; // Fixed base size for consistent measurement
-            testDiv.style.position = 'absolute';
-            testDiv.style.visibility = 'hidden';
-            testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1.0';
-            testDiv.style.letterSpacing = '0';
-            testDiv.style.wordSpacing = '0';
-            testDiv.style.margin = '0';
-            testDiv.style.padding = '0';
+            // Use cached character measurement
+            const measurements = getCachedCharacterMeasurement('Courier New, monospace', 10);
+            const baseCharWidth = measurements.charWidth;
+            const baseCharHeight = measurements.charHeight;
             
-            // Measure character width with sample text
-            testDiv.textContent = '●'.repeat(20);
-            document.body.appendChild(testDiv);
-            const widthRect = testDiv.getBoundingClientRect();
-            const baseCharWidth = widthRect.width / 20;
-            
-            // Measure line height more accurately using HTML breaks
-            testDiv.innerHTML = '●<br>●<br>●<br>●<br>●<br>●<br>●<br>●<br>●<br>●';
-            const heightRect = testDiv.getBoundingClientRect();
-            const baseCharHeight = heightRect.height / 10;
-            document.body.removeChild(testDiv);            // PERFORMANCE OPTIMIZATION: Use much smaller grid with larger characters
+            // PERFORMANCE OPTIMIZATION: Use much smaller grid with larger characters
             // This reduces DOM elements from 5000+ to ~1000 while maintaining visual coverage
             const targetW = Math.max(40, Math.min(80, Math.floor(availableWidth / 12))); // Much smaller grid width
             const targetH = Math.max(25, Math.min(50, Math.floor(availableHeight / 16))); // Much smaller grid height
@@ -180,7 +201,7 @@
             const actualCharWidth = baseCharWidth * (finalFontSize / 10);
             const actualCharHeight = baseCharHeight * (finalFontSize / 10);
               // Use more comfortable line height for larger characters
-            const lineHeight = finalFontSize * 0.85; // Less tight spacing for better readability
+            const lineHeight = finalFontSize * 1.2; // Balanced spacing for good coverage
             
             W = Math.floor(availableWidth / actualCharWidth);
             H = Math.floor(availableHeight / lineHeight);
@@ -213,8 +234,8 @@
             
             // Ensure the grid stays properly positioned and sized
             grid.style.position = 'fixed';
-            grid.style.top = '20px';
-            grid.style.left = '20px';
+            grid.style.top = '0px';
+            grid.style.left = '0px';
             grid.style.width = availableWidth + 'px';
             grid.style.height = availableHeight + 'px';            grid.style.margin = '0';
             grid.style.padding = '0';            grid.style.transform = 'none';
@@ -684,6 +705,7 @@
             return `c${colorIdx}` + specialClass;
         }
           function render() {
+            if (document.hidden) return;
             evolveCells();            // Auto-inject consciousness when population gets low - adjusted for smaller grid
             const livingCells = cells.filter(c => c > 0.1).length;
             const targetPopulation = Math.floor((W * H) * 0.03); // Higher percentage for smaller grid
@@ -723,7 +745,9 @@
                 output += '\n';
             }
             
-            gridElem.innerHTML = output;
+            if (gridElem) {
+                gridElem.innerHTML = output;
+            }
             t++;
         }        function seedRandom() {            // Reduce density for smaller grid - maintain visual activity
             const density = Math.max(0.05, Math.min(0.15, 200 / (W * H))); // Higher density since fewer cells
@@ -873,10 +897,22 @@
             generation = 0;        }
         
         // Evolution loop
+        let running = true;
+        
         function evolve() {
+            if (!running || document.hidden) return;
             render();
             requestAnimationFrame(evolve);
-        }        // Initialize with enhanced seeding
+        }
+        
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                running = false;
+            } else {
+                running = true;
+                evolve();
+            }
+        });        // Initialize with enhanced seeding
         let initializationComplete = false;        function initializeEverything() {
             if (initializationComplete) {
                 return;

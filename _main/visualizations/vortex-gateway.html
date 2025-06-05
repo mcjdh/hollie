@@ -10,26 +10,30 @@
             color: var(--cosmos-tiffany);
             font-family: 'Courier New', monospace;
             overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-            margin: 0;
-            padding: 0;
-            cursor: pointer;
-        }
-
-        #vortex {
-            font-size: 10px;
-            line-height: 1.0;
-            white-space: pre;
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            margin: 0;
-            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        #vortex {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            white-space: pre;
             overflow: hidden;
             filter: drop-shadow(0 0 3px currentColor);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
         }.glyph {
             display: inline-block;
             width: 0.6em;
@@ -93,41 +97,47 @@
         let paused = false;
         
         const vortex = document.getElementById('vortex');
-          function updateDimensions() {
+          
+        function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-            
-            // Calculate optimal character dimensions
-            const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '10px';
-            testDiv.style.position = 'absolute';
-            testDiv.style.visibility = 'hidden';
-            testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1.0';
-            testDiv.textContent = '○'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(testDiv);
-            
-            const rect = testDiv.getBoundingClientRect();
-            const charWidth = rect.width / 10;
-            const charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);
-            
-            // Calculate dynamic grid size for full coverage
-            W = Math.ceil(viewportWidth / charWidth) + 1;
-            H = Math.ceil(viewportHeight / charHeight) + 1;
-            
-            // Ensure reasonable bounds
-            W = Math.max(40, Math.min(120, W));
-            H = Math.max(20, Math.min(80, H));
-            
-            // Calculate font size for full viewport coverage
-            const optimalFontWidth = viewportWidth / W;
-            const optimalFontHeight = viewportHeight / H;
-            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
-            
-            vortex.style.fontSize = Math.max(fontSize, 6) + 'px';
-            vortex.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
+
+            // Create temporary element to measure actual character dimensions
+            const temp = document.createElement('div');
+            temp.style.position = 'absolute';
+            temp.style.left = '-9999px';
+            temp.style.fontSize = '14px';  // Base measurement size
+            temp.style.fontFamily = 'Courier New, monospace';
+            temp.style.whiteSpace = 'pre';
+            temp.style.lineHeight = '1';
+
+            // Measure with representative characters
+            temp.innerHTML = '◉○';
+            document.body.appendChild(temp);
+            const rect = temp.getBoundingClientRect();
+            const baseCharWidth = rect.width / 2;
+            const baseCharHeight = rect.height;
+            document.body.removeChild(temp);
+
+            // Calculate dimensions to fill viewport
+            let testW = Math.floor(viewportWidth / baseCharWidth);
+            let testH = Math.floor(viewportHeight / baseCharHeight);
+
+            // Calculate font size to fill viewport exactly
+            const fontSizeForWidth = (viewportWidth / testW) * (14 / baseCharWidth);
+            const fontSizeForHeight = (viewportHeight / testH) * (14 / baseCharHeight);
+            const finalFontSize = Math.min(fontSizeForWidth, fontSizeForHeight);
+
+            // Recalculate dimensions with final font size
+            const charWidth = (baseCharWidth / 14) * finalFontSize;
+            const charHeight = (baseCharHeight / 14) * finalFontSize;
+
+            W = Math.floor(viewportWidth / charWidth);
+            H = Math.floor(viewportHeight / charHeight);
+
+            // Apply styling for edge-to-edge fill
+            vortex.style.fontSize = finalFontSize + 'px';
+            vortex.style.lineHeight = charHeight + 'px';
         }
         
         const glyphs = [' ', '·', '•', '◦', '○', '●', '◉', '⊙', '⬢', '✶', '✷', '✹', '✺', '✼', '※', '@'];
@@ -154,9 +164,22 @@
         
         function render() {
             if (!paused) {
-                let output = '';
+                // Clear and rebuild display div for precise positioning
+                vortex.innerHTML = '';
                 
+                const charHeight = parseFloat(vortex.style.lineHeight);
+                
+                // Create each row as a separate div for precise control
                 for (let y = 0; y < H; y++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.style.height = charHeight + 'px';
+                    rowDiv.style.lineHeight = charHeight + 'px';
+                    rowDiv.style.margin = '0';
+                    rowDiv.style.padding = '0';
+                    rowDiv.style.whiteSpace = 'pre';
+                    rowDiv.style.overflow = 'hidden';
+                    
+                    let rowContent = '';
                     for (let x = 0; x < W; x++) {
                         const dx = x - W/2;
                         const dy = y - H/2;
@@ -172,22 +195,24 @@
                         const combined = vortex1 + vortex2 + turbulence + spiral;
                         const normalizedValue = (combined + 3) / 6; // Normalize to 0-1
                         const clampedValue = Math.max(0, Math.min(1, normalizedValue));
-                          const glyphIndex = Math.floor(clampedValue * (glyphs.length - 1));
+                        
+                        const glyphIndex = Math.floor(clampedValue * (glyphs.length - 1));
                         const glyph = glyphs[glyphIndex];
                         
                         // Dynamic cosmos color with vortex energy
                         const colorClass = getVortexCosmosClass(clampedValue, angle, r, frame, turbulence);
                         
                         if (glyph === ' ') {
-                            output += '<span class="glyph"> </span>';
+                            rowContent += '<span class="glyph"> </span>';
                         } else {
-                            output += `<span class="glyph ${colorClass}">${glyph}</span>`;
+                            rowContent += `<span class="glyph ${colorClass}">${glyph}</span>`;
                         }
                     }
-                    output += '\n';
+                    
+                    rowDiv.innerHTML = rowContent;
+                    vortex.appendChild(rowDiv);
                 }
                 
-                vortex.innerHTML = output;
                 frame++;
             }
             

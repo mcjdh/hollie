@@ -23,13 +23,17 @@
             width: 100vw; 
             height: 100vh; 
             background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             line-height: 1.0;
             overflow: hidden;
             font-size: 10px;
             text-shadow: 0 0 2px currentColor;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
         }
         
         /* Enhanced color effects for starfield */
@@ -81,35 +85,43 @@
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
 
-            // Performance-oriented grid sizing
-            // Cap maximum grid dimensions to prevent lag on high-res screens
-            const maxW = 160; // Max width in characters
-            const maxH = 80;  // Max height in characters
-            const minW = 40;  // Min width
-            const minH = 20;  // Min height
+            // Create temporary element to measure actual character dimensions
+            const temp = document.createElement('div');
+            temp.style.position = 'absolute';
+            temp.style.left = '-9999px';
+            temp.style.fontSize = '14px';  // Base measurement size
+            temp.style.fontFamily = 'monospace';
+            temp.style.whiteSpace = 'pre';
+            temp.style.lineHeight = '1';
 
-            // Base font size - larger for better performance
-            let baseFontSize = 12;
-            
-            // Adjust base font size based on screen size
-            if (viewportWidth > 2560) baseFontSize = 16; // 4K+ screens
-            else if (viewportWidth > 1920) baseFontSize = 14; // 2K screens
-            else if (viewportWidth < 800) baseFontSize = 10;  // Mobile            // Calculate grid dimensions based on font size
-            const estimatedCharWidth = baseFontSize * 0.6; // Monospace approximation
-            const estimatedCharHeight = baseFontSize;
+            // Measure with representative characters
+            temp.innerHTML = '★◦';
+            document.body.appendChild(temp);
+            const rect = temp.getBoundingClientRect();
+            const baseCharWidth = rect.width / 2;
+            const baseCharHeight = rect.height;
+            document.body.removeChild(temp);
 
-            W = Math.min(maxW, Math.max(minW, Math.floor(viewportWidth / estimatedCharWidth)));
-            H = Math.min(maxH, Math.max(minH, Math.floor(viewportHeight / estimatedCharHeight)));            // Calculate final font size to fill viewport efficiently
-            const fontSize = Math.min(
-                viewportWidth / W * 1.8,   // More aggressive scaling for edge-to-edge
-                viewportHeight / H * 1.2
-            );
+            // Calculate dimensions to fill viewport with buffer for complete coverage
+            let testW = Math.floor(viewportWidth / baseCharWidth);
+            let testH = Math.floor(viewportHeight / baseCharHeight);
 
-            display.style.fontSize = Math.max(fontSize, 6) + 'px';
-            display.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
+            // Calculate font size to fill viewport exactly
+            const fontSizeForWidth = (viewportWidth / testW) * (14 / baseCharWidth);
+            const fontSizeForHeight = (viewportHeight / testH) * (14 / baseCharHeight);
+            const finalFontSize = Math.min(fontSizeForWidth, fontSizeForHeight);
 
-            charWidth = Math.max(fontSize, 6) * 0.6;
-            charHeight = Math.max(fontSize, 6);
+            // Recalculate dimensions with final font size
+            charWidth = (baseCharWidth / 14) * finalFontSize;
+            charHeight = (baseCharHeight / 14) * finalFontSize;
+
+            // Use ceil to ensure complete coverage, adding buffer rows/cols for edge-to-edge fill
+            W = Math.ceil(viewportWidth / charWidth) + 1;
+            H = Math.ceil(viewportHeight / charHeight) + 1;
+
+            // Apply styling for edge-to-edge fill
+            display.style.fontSize = finalFontSize + 'px';
+            display.style.lineHeight = charHeight + 'px';
 
             
             // Precompute values for performance optimization
@@ -231,9 +243,20 @@
             }        }
         
         function render() {
-            let output = '';
+            // Clear and rebuild display div for precise positioning
+            display.innerHTML = '';
             
+            // Create each row as a separate div for precise control
             for (let y = 0, row = 0; y < H; y++, row += W) {
+                const rowDiv = document.createElement('div');
+                rowDiv.style.height = charHeight + 'px';
+                rowDiv.style.lineHeight = charHeight + 'px';
+                rowDiv.style.margin = '0';
+                rowDiv.style.padding = '0';
+                rowDiv.style.whiteSpace = 'pre';
+                rowDiv.style.overflow = 'hidden';
+                
+                let rowContent = '';
                 for (let x = 0; x < W; x++) {
                     const idx = row + x;
                     const intensity = luminosity[idx];
@@ -243,47 +266,49 @@
                     // Enhanced visibility with lower thresholds
                     if (intensity > 0.45) {
                         // Bright stars - complex symbols with enhanced color mapping
-                        const symbolIdx = Math.floor(intensity * starCount * 0.9) +
-                                        Math.floor(starCount * 0.1);
-                        const colorIdx = Math.floor((intensity * 0.7 + (1 - dist) * 0.2 + Math.abs(motion) * 0.4) * colorCount);
-                        const symbol = starSymbols[Math.min(symbolIdx, starCount - 1)];
-                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorCount - 1)];
-                        output += `<span class="${colorClass}">${symbol}</span>`;
+                        const symbolIdx = Math.max(0, Math.min(starCount - 1, 
+                            Math.floor(intensity * starCount * 0.9) + Math.floor(starCount * 0.1)));
+                        const colorIdx = Math.max(0, Math.min(colorCount - 1, 
+                            Math.floor((intensity * 0.7 + (1 - dist) * 0.2 + Math.abs(motion) * 0.4) * colorCount)));
+                        const symbol = starSymbols[symbolIdx];
+                        const colorClass = colorClasses[colorIdx];
+                        rowContent += `<span class="${colorClass}">${symbol}</span>`;
                     } else if (intensity > 0.25) {
                         // Medium stars with better color variety
-                        const symbolIdx = Math.floor(intensity * starCount * 0.7);
-                        const colorIdx = Math.floor((intensity * 0.8 + (1 - dist) * 0.3 + Math.abs(motion) * 0.2) * colorCount * 0.85);
-                        const symbol = starSymbols[Math.min(symbolIdx, starCount - 1)];
-                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorCount - 1)];
-                        output += `<span class="${colorClass}">${symbol}</span>`;
+                        const symbolIdx = Math.max(0, Math.min(starCount - 1, Math.floor(intensity * starCount * 0.7)));
+                        const colorIdx = Math.max(0, Math.min(colorCount - 1, 
+                            Math.floor((intensity * 0.8 + (1 - dist) * 0.3 + Math.abs(motion) * 0.2) * colorCount * 0.85)));
+                        const symbol = starSymbols[symbolIdx];
+                        const colorClass = colorClasses[colorIdx];
+                        rowContent += `<span class="${colorClass}">${symbol}</span>`;
                     } else if (intensity > 0.12) {
                         // Dim stars with motion-based coloring
-                        const symbol = starSymbols[Math.floor(intensity * 8)];
+                        const symbol = starSymbols[Math.max(0, Math.min(starCount - 1, Math.floor(intensity * 8)))];
                         const motionColor = Math.abs(motion) > 0.1 ? 'u' : 'q'; // Coral for moving, dim tiffany for static
-                        output += `<span class="${motionColor}">${symbol}</span>`;
+                        rowContent += `<span class="${motionColor}">${symbol}</span>`;
                     } else if (intensity > 0.05) {
                         // Very dim background stars
                         const symbol = Math.random() < 0.7 ? '·' : '∘';
-                        output += `<span class="l">${symbol}</span>`;
+                        rowContent += `<span class="l">${symbol}</span>`;
                     } else {
                         // Cosmic background with nebular dust
                         const dustChance = Math.max(0, intensity * 0.8 - 0.02);
                         if (Math.random() < dustChance) {
                             const dustSymbol = Math.random() < 0.6 ? '∘' : '·';
                             const dustColor = Math.random() < 0.4 ? 'w' : 'c'; // Orange-dim or melon-dim
-                            output += `<span class="${dustColor}">${dustSymbol}</span>`;
+                            rowContent += `<span class="${dustColor}">${dustSymbol}</span>`;
                         } else if (Math.random() < 0.002) {
                             // Rare cosmic background
-                            output += '<span class="l">∙</span>';
+                            rowContent += '<span class="l">∙</span>';
                         } else {
-                            output += ' ';
+                            rowContent += ' ';
                         }
                     }
                 }
-                output += '\n';
+                
+                rowDiv.innerHTML = rowContent;
+                display.appendChild(rowDiv);
             }
-            
-            display.innerHTML = output;
         }
           function loop(now) {
             if (!running) return;

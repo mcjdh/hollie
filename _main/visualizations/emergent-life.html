@@ -29,8 +29,11 @@
             left: 0;
             line-height: 1.0;
             overflow: hidden;
-            font-size: 14px;  /* Base font size, will be dynamically adjusted */
+            font-size: 14px;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
         }/* Life evolution states using cohesive palette */
         .v{color: var(--cosmos-tiffany)} .u{color: var(--cosmos-coral)} .s{color: var(--cosmos-orange)} 
         .e{color: var(--cosmos-melon)} .m{color: var(--cosmos-cream)} .t{color: var(--cosmos-rose)} 
@@ -67,75 +70,83 @@
         let W, H;        let charWidth, charHeight;
         let t = 0;
         const displayElem = document.getElementById('display');
-        let running = true;        function updateDimensions() {
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+        let running = true;
+        
+        // Global character measurement cache
+        const charMeasurementCache = new Map();
+        
+        function getCachedCharacterMeasurement(fontFamily, fontSize, testContent = '♦'.repeat(10) + '\n'.repeat(10)) {
+            const cacheKey = `${fontFamily}-${fontSize}px`;
             
-            // PERFORMANCE: Use larger characters to reduce total DOM elements
-            // But calculate font size dynamically to fill the entire canvas
-              // Target grid size for optimal performance - doubled for better wave visibility
-            const targetW = 100; // Doubled from 50 to show more dimensional waves
-            const targetH = 60;  // Doubled from 30 to show more patterns
+            if (charMeasurementCache.has(cacheKey)) {
+                return charMeasurementCache.get(cacheKey);
+            }
             
-            // Calculate font size needed to fill the viewport with target grid
-            const fontSizeForWidth = viewportWidth / targetW;
-            const fontSizeForHeight = viewportHeight / targetH;
-            
-            // Use the smaller dimension to ensure full coverage
-            const baseFontSize = Math.max(8, Math.min(24, Math.min(fontSizeForWidth, fontSizeForHeight)));
-            
-            // Character measurement with calculated font size
+            // Create measurement element only if not cached
             const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = baseFontSize + 'px';
+            testDiv.style.fontFamily = fontFamily;
+            testDiv.style.fontSize = fontSize + 'px';
             testDiv.style.position = 'absolute';
             testDiv.style.visibility = 'hidden';
             testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1.0';
-            testDiv.textContent = '♦'.repeat(10) + '\n'.repeat(10);
+            testDiv.style.lineHeight = '1.5';
+            testDiv.textContent = testContent;
             document.body.appendChild(testDiv);
             
             const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);            
-            // Calculate actual grid dimensions that will fill the viewport
+            const result = {
+                charWidth: rect.width / 10,
+                charHeight: rect.height / 10
+            };
+            
+            document.body.removeChild(testDiv);
+            
+            // Cache the result
+            charMeasurementCache.set(cacheKey, result);
+            return result;
+        }
+        
+        function updateDimensions() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate based on actual character measurements
+            const testChar = '♦';
+            const tempSpan = document.createElement('span');
+            tempSpan.style.fontFamily = 'Courier New, monospace';
+            tempSpan.style.fontSize = '16px';
+            tempSpan.style.position = 'absolute';
+            tempSpan.style.visibility = 'hidden';
+            tempSpan.style.whiteSpace = 'pre';
+            tempSpan.textContent = testChar;
+            document.body.appendChild(tempSpan);
+            
+            const baseCharWidth = tempSpan.getBoundingClientRect().width;
+            const baseCharHeight = tempSpan.getBoundingClientRect().height;
+            document.body.removeChild(tempSpan);
+            
+            // Calculate how many characters fit in viewport
+            const targetCharsWidth = Math.floor(viewportWidth / baseCharWidth) + 5;
+            const targetCharsHeight = Math.floor(viewportHeight / baseCharHeight) + 5;
+            
+            // Calculate font size to fill viewport
+            const fontSizeForWidth = viewportWidth / targetCharsWidth;
+            const fontSizeForHeight = viewportHeight / targetCharsHeight;
+            const fontSize = Math.min(fontSizeForWidth, fontSizeForHeight);
+            
+            // Update character measurements with final font size
+            charWidth = (baseCharWidth / 16) * fontSize;
+            charHeight = (baseCharHeight / 16) * fontSize;
+            
+            // Calculate grid dimensions
             W = Math.floor(viewportWidth / charWidth);
             H = Math.floor(viewportHeight / charHeight);
-                // Ensure minimum grid size for interesting patterns
-            W = Math.max(60, W);  // Increased minimum for better wave visibility
-            H = Math.max(40, H);  // Increased minimum for better patterns
             
-            // Cap maximum for performance - increased limits for better visuals
-            W = Math.min(120, W); // Doubled from 80
-            H = Math.min(80, H);  // Increased from 50            // Set display properties for full coverage without borders
-            displayElem.style.fontSize = baseFontSize + 'px';
-            displayElem.style.lineHeight = baseFontSize + 'px';
-            displayElem.style.width = '100vw';
-            displayElem.style.height = '100vh';
-            displayElem.style.position = 'fixed';
-            displayElem.style.top = '0';
-            displayElem.style.left = '0';
-            displayElem.style.margin = '0';
-            displayElem.style.padding = '0';
-            displayElem.style.overflow = 'hidden';
-            displayElem.style.display = 'block';
-            displayElem.style.textAlign = 'left'; // Left align for edge-to-edge coverage
-            displayElem.style.boxSizing = 'border-box';
-            
-            // No centering padding - fill completely to edges
-            // Recalculate font size to maximize coverage if needed
-            const actualWidth = W * charWidth;
-            const actualHeight = H * charHeight;
-            
-            // If grid doesn't fill at least 95% of viewport, increase font size
-            if (actualWidth < viewportWidth * 0.95 || actualHeight < viewportHeight * 0.95) {
-                const scaleX = viewportWidth / actualWidth;
-                const scaleY = viewportHeight / actualHeight;
-                const adjustedFontSize = Math.min(22, baseFontSize * Math.min(scaleX, scaleY));
-                displayElem.style.fontSize = adjustedFontSize + 'px';
-                displayElem.style.lineHeight = adjustedFontSize + 'px';
-            }
+            // Set styles
+            displayElem.style.fontSize = fontSize + 'px';
+            displayElem.style.lineHeight = charHeight + 'px';
+            displayElem.style.letterSpacing = '0';
+            displayElem.style.wordSpacing = '0';
         }
         
         // Mathematical constant
@@ -246,8 +257,8 @@
                     
                     nextBuffer[i] = Math.max(0, Math.min(1,
                         current + 0.1 * (diffusionTerm + reactionTerm) + age + organization
-                    ));                    // Periodic seeding of new life - adjusted for larger grid
-                    if (Math.random() < 0.0004) { // Reduced frequency to account for more cells
+                    ));                    // Periodic seeding of new life - adjusted for grid size
+                    if (Math.random() < 0.0008) { // Adjusted frequency for smaller grid
                         nextBuffer[i] += Math.random() * 0.2;
                     }
                 }
@@ -265,9 +276,20 @@
         }
         
         function render() {
-            let output = '';
+            // Clear and rebuild display div for precise positioning
+            displayElem.innerHTML = '';
             
+            // Create each row as a separate div for precise control
             for (let y = 0; y < H; y++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.style.height = charHeight + 'px';
+                rowDiv.style.lineHeight = charHeight + 'px';
+                rowDiv.style.margin = '0';
+                rowDiv.style.padding = '0';
+                rowDiv.style.whiteSpace = 'pre';
+                rowDiv.style.overflow = 'hidden';
+                
+                let rowContent = '';
                 for (let x = 0; x < W; x++) {
                     const i = idx(x, y);
                     const intensity = concentration[i];
@@ -280,32 +302,35 @@
                         const colorIdx = Math.floor((intensity + react * 0.3) * colorClasses.length);
                         const symbol = lifeSymbols[Math.min(symbolIdx, lifeSymbols.length - 1)];
                         const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorClasses.length - 1)];
-                        output += `<span class="${colorClass}">${symbol}</span>`;
+                        rowContent += `<span class="${colorClass}">${symbol}</span>`;
                     } else if (intensity > 0.5) {
                         // Developing life
                         const symbolIdx = Math.floor(intensity * lifeSymbols.length * 0.6);
                         const colorIdx = Math.floor(intensity * colorClasses.length * 0.8);
                         const symbol = lifeSymbols[Math.min(symbolIdx, lifeSymbols.length - 1)];
                         const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorClasses.length - 1)];
-                        output += `<span class="${colorClass}">${symbol}</span>`;
+                        rowContent += `<span class="${colorClass}">${symbol}</span>`;
                     } else if (intensity > 0.2) {
                         // Emerging life
                         const symbolIdx = Math.floor(intensity * lifeSymbols.length * 0.3);
                         const symbol = lifeSymbols[Math.min(symbolIdx, lifeSymbols.length - 1)];
-                        output += `<span class="u">${symbol}</span>`;
+                        rowContent += `<span class="u">${symbol}</span>`;
                     } else if (intensity > 0.05) {
                         // Traces of life
-                        output += '<span class="l">·</span>';
-                    } else {                        // Substrate/medium - reduced noise for larger grid performance
-                        if (Math.random() < 0.0005) { // Further reduced for larger grid
-                            output += '<span class="l">∘</span>';
+                        rowContent += '<span class="l">·</span>';
+                    } else {
+                        // Substrate/medium
+                        if (Math.random() < 0.001) {
+                            rowContent += '<span class="l">∘</span>';
                         } else {
-                            output += ' ';
-                        }}
-                }                output += '\n';
+                            rowContent += ' ';
+                        }
+                    }
+                }
+                
+                rowDiv.innerHTML = rowContent;
+                displayElem.appendChild(rowDiv);
             }
-            
-            displayElem.innerHTML = output;
         }
         
         function loop() {

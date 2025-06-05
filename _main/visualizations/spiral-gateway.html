@@ -21,7 +21,7 @@
             font-size: 10px;
             line-height: 1.0;
             white-space: pre;
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
@@ -30,6 +30,10 @@
             padding: 0;
             overflow: hidden;
             filter: drop-shadow(0 0 2px currentColor);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
         }.glyph {
             display: inline-block;
             width: 0.6em;
@@ -78,41 +82,44 @@
         let paused = false;
         
         const gateway = document.getElementById('gateway');
-          function updateDimensions() {
+          
+        function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Calculate optimal character dimensions
-            const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '10px';
-            testDiv.style.position = 'absolute';
-            testDiv.style.visibility = 'hidden';
-            testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1.0';
-            testDiv.textContent = '○'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(testDiv);
+            // Calculate based on actual character measurements
+            const testChar = '○';
+            const tempSpan = document.createElement('span');
+            tempSpan.style.fontFamily = 'Courier New, monospace';
+            tempSpan.style.fontSize = '16px';
+            tempSpan.style.position = 'absolute';
+            tempSpan.style.visibility = 'hidden';
+            tempSpan.style.whiteSpace = 'pre';
+            tempSpan.textContent = testChar;
+            document.body.appendChild(tempSpan);
             
-            const rect = testDiv.getBoundingClientRect();
-            const charWidth = rect.width / 10;
-            const charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);
+            const baseCharWidth = tempSpan.getBoundingClientRect().width;
+            const baseCharHeight = tempSpan.getBoundingClientRect().height;
+            document.body.removeChild(tempSpan);
             
-            // Calculate dynamic grid size for full coverage
-            W = Math.ceil(viewportWidth / charWidth) + 1;
-            H = Math.ceil(viewportHeight / charHeight) + 1;
+            // Calculate how many characters fit in viewport with buffer for edge-to-edge fill
+            const targetCharsWidth = Math.floor(viewportWidth / baseCharWidth) + 3;
+            const targetCharsHeight = Math.floor(viewportHeight / baseCharHeight) + 3;
             
-            // Ensure reasonable bounds
-            W = Math.max(40, Math.min(120, W));
-            H = Math.max(20, Math.min(80, H));
+            // Calculate font size to fill viewport
+            const fontSizeForWidth = viewportWidth / targetCharsWidth;
+            const fontSizeForHeight = viewportHeight / targetCharsHeight;
+            const fontSize = Math.min(fontSizeForWidth, fontSizeForHeight);
             
-            // Calculate font size for full viewport coverage
-            const optimalFontWidth = viewportWidth / W;
-            const optimalFontHeight = viewportHeight / H;
-            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            // Calculate grid dimensions with ceiling to ensure complete coverage
+            W = Math.ceil(viewportWidth / ((baseCharWidth / 16) * fontSize)) + 1;
+            H = Math.ceil(viewportHeight / ((baseCharHeight / 16) * fontSize)) + 1;
             
-            gateway.style.fontSize = Math.max(fontSize, 6) + 'px';
-            gateway.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
+            // Set styles
+            gateway.style.fontSize = fontSize + 'px';
+            gateway.style.lineHeight = ((baseCharHeight / 16) * fontSize) + 'px';
+            gateway.style.letterSpacing = '0';
+            gateway.style.wordSpacing = '0';
         }
         
         const glyphs = [' ', '·', '•', '◦', '○', '◉', '⊙', '⬢', '✦', '✺', '✼', '※'];
@@ -131,9 +138,22 @@
         
         function render() {
             if (!paused) {
-                let output = '';
+                // Clear and rebuild display div for precise positioning
+                gateway.innerHTML = '';
                 
+                const charHeight = parseFloat(gateway.style.lineHeight);
+                
+                // Create each row as a separate div for precise control
                 for (let y = 0; y < H; y++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.style.height = charHeight + 'px';
+                    rowDiv.style.lineHeight = charHeight + 'px';
+                    rowDiv.style.margin = '0';
+                    rowDiv.style.padding = '0';
+                    rowDiv.style.whiteSpace = 'pre';
+                    rowDiv.style.overflow = 'hidden';
+                    
+                    let rowContent = '';
                     for (let x = 0; x < W; x++) {
                         const dx = x - W/2;
                         const dy = y - H/2;
@@ -147,22 +167,24 @@
                         
                         const intensity = (spiral1 + spiral2 * 0.5 + spiral3 * 0.3 + 3) / 4;
                         const normalizedIntensity = Math.max(0, Math.min(1, intensity));
-                          const glyphIndex = Math.floor(normalizedIntensity * (glyphs.length - 1));
+                        
+                        const glyphIndex = Math.floor(normalizedIntensity * (glyphs.length - 1));
                         const glyph = glyphs[glyphIndex];
                         
                         // Dynamic cosmos color based on spiral properties
                         const colorClass = getCosmosColorClass(normalizedIntensity, angle, r, frame);
                         
                         if (glyph === ' ') {
-                            output += '<span class="glyph"> </span>';
+                            rowContent += '<span class="glyph"> </span>';
                         } else {
-                            output += `<span class="glyph ${colorClass}">${glyph}</span>`;
+                            rowContent += `<span class="glyph ${colorClass}">${glyph}</span>`;
                         }
                     }
-                    output += '\n';
+                    
+                    rowDiv.innerHTML = rowContent;
+                    gateway.appendChild(rowDiv);
                 }
                 
-                gateway.innerHTML = output;
                 frame++;
             }
             

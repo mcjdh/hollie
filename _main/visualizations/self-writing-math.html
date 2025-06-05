@@ -75,27 +75,50 @@
         let t = 0;
         const canvasElem = document.getElementById('canvas');
         
+        // Global character measurement cache
+        const charMeasurementCache = new Map();
+        
+        function getCachedCharacterMeasurement(fontFamily, fontSize, testContent = '●'.repeat(10) + '\n'.repeat(10)) {
+            const cacheKey = `${fontFamily}-${fontSize}px`;
+            
+            if (charMeasurementCache.has(cacheKey)) {
+                return charMeasurementCache.get(cacheKey);
+            }
+            
+            // Create measurement element only if not cached
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = fontFamily;
+            testDiv.style.fontSize = fontSize + 'px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = testContent;
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            const result = {
+                charWidth: rect.width / 10,
+                charHeight: rect.height / 10
+            };
+            
+            document.body.removeChild(testDiv);
+            
+            // Cache the result
+            charMeasurementCache.set(cacheKey, result);
+            return result;
+        }
+        
         // Calculate optimal grid size based on viewport
         function updateDimensions() {
             // Get actual viewport dimensions
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Create accurate character measurement
-            const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '8px';
-            testDiv.style.position = 'absolute';
-            testDiv.style.visibility = 'hidden';
-            testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1.0';
-            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(testDiv);
-            
-            const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);
+            // Use cached character measurement
+            const measurements = getCachedCharacterMeasurement('Courier New, monospace', 8);
+            charWidth = measurements.charWidth;
+            charHeight = measurements.charHeight;
             
             // Calculate grid size with padding buffer
             W = Math.ceil(viewportWidth / charWidth) + 2; // Extra columns

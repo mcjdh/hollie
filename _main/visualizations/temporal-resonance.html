@@ -58,28 +58,53 @@
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
-        let t = 0;        // ◎ viewport size via char metrics
+        let t = 0;
+        
+        // Global character measurement cache
+        const charMeasurementCache = new Map();
+        
+        function getCachedCharacterMeasurement(fontFamily, fontSize, testContent = '⧖'.repeat(10) + '\n'.repeat(10)) {
+            const cacheKey = `${fontFamily}-${fontSize}px`;
+            
+            if (charMeasurementCache.has(cacheKey)) {
+                return charMeasurementCache.get(cacheKey);
+            }
+            
+            // Create measurement element only if not cached
+            const testDiv = document.createElement('div');
+            testDiv.style.fontFamily = fontFamily;
+            testDiv.style.fontSize = fontSize + 'px';
+            testDiv.style.position = 'absolute';
+            testDiv.style.visibility = 'hidden';
+            testDiv.style.whiteSpace = 'pre';
+            testDiv.style.lineHeight = '1.0';
+            testDiv.textContent = testContent;
+            document.body.appendChild(testDiv);
+            
+            const rect = testDiv.getBoundingClientRect();
+            const result = {
+                charWidth: rect.width > 0 ? rect.width / 10 : 6,
+                charHeight: rect.height > 0 ? rect.height / 10 : 10
+            };
+            
+            document.body.removeChild(testDiv);
+            
+            // Cache the result
+            charMeasurementCache.set(cacheKey, result);
+            return result;
+        }
+        
+        // ◎ viewport size via char metrics
         function updateDimensions() {
             // Get actual viewport dimensions
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
             try {
-                // precise char metrics from font
-                const testDiv = document.createElement('div');
-                testDiv.style.fontFamily = 'Courier New, monospace';
-                testDiv.style.fontSize = '10px';
-                testDiv.style.position = 'absolute';
-                testDiv.style.visibility = 'hidden';
-                testDiv.style.whiteSpace = 'pre';
-                testDiv.style.lineHeight = '1.0';
-                testDiv.textContent = '⧖'.repeat(10) + '\n'.repeat(10);
-                document.body.appendChild(testDiv);
-                
-                const rect = testDiv.getBoundingClientRect();
-                charWidth = rect.width > 0 ? rect.width / 10 : 6;
-                charHeight = rect.height > 0 ? rect.height / 10 : 10;
-                document.body.removeChild(testDiv);
+                // Use cached character measurement
+                const measurements = getCachedCharacterMeasurement('Courier New, monospace', 10);
+                charWidth = measurements.charWidth;
+                charHeight = measurements.charHeight;
             } catch(e) {
                 // Fallback to default values if measurement fails
                 charWidth = 6;
