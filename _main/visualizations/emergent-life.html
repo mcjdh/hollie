@@ -101,7 +101,7 @@
         const pi = 3.141592653589793;
         
         // Reaction-diffusion field arrays
-        let concentration, diffusion, reaction, gradient;
+        let concentration, diffusion, reaction, gradient, nextBuffer;
         
         function initializeFields() {
             const size = W * H;
@@ -109,6 +109,7 @@
             diffusion = new Float32Array(size);       // Diffusion coefficients
             reaction = new Float32Array(size);        // Reaction rates
             gradient = new Float32Array(size * 2);    // Gradient field
+            nextBuffer = new Float32Array(size);      // Temp buffer
             
             // Initialize with organic patterns
             for (let y = 0; y < H; y++) {
@@ -171,8 +172,7 @@
         
         function update() {
             t += 0.03;
-            
-            const next = new Float32Array(W * H);
+            nextBuffer.fill(0);
             
             // Reaction-diffusion update
             for (let y = 0; y < H; y++) {
@@ -203,18 +203,20 @@
                     // Self-organization bias
                     const organization = Math.sin(current * pi * 2) * 0.01;
                     
-                    next[i] = Math.max(0, Math.min(1, 
+                    nextBuffer[i] = Math.max(0, Math.min(1,
                         current + 0.1 * (diffusionTerm + reactionTerm) + age + organization
                     ));
                     
                     // Periodic seeding of new life
                     if (Math.random() < 0.0003) {
-                        next[i] += Math.random() * 0.2;
+                        nextBuffer[i] += Math.random() * 0.2;
                     }
                 }
             }
             
-            concentration = next;
+            const temp = concentration;
+            concentration = nextBuffer;
+            nextBuffer = temp;
             
             // Update diffusion and reaction fields
             for (let i = 0; i < W * H; i++) {
