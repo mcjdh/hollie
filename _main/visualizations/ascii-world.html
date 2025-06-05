@@ -75,6 +75,7 @@
         const MAX_ROWS = 80;
         const FPS = 30;
         let lastFrame = 0;
+        const canvas = document.getElementById('canvas');
         
         // ◊ optimal grid dimensions
         function updateDimensions() {            const viewportWidth = window.innerWidth;
@@ -107,7 +108,6 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            const canvas = document.getElementById('canvas');
             canvas.style.fontSize = fontSize + 'px';
             canvas.style.lineHeight = (fontSize * 1.0) + 'px';
             
@@ -217,8 +217,8 @@
         
         // ∂ update world ∞ emergent ⟲
         function updateWorld() {
-            for (let y = 0; y < H; y++) {
-                for (let x = 0; x < W; x++) {                    const idx = y * W + x;
+            for (let y = 0, row = 0; y < H; y++, row += W) {
+                for (let x = 0; x < W; x++) {                    const idx = row + x;
                     
                     // ◊ calculate paradox-based field
                     const result = paradoxFunction(x, y, t);
@@ -232,11 +232,13 @@
                     if (x > 0 && x < W-1 && y > 0 && y < H-1) {
                         let neighborSum = 0;
                         for (let dy = -1; dy <= 1; dy++) {
+                            const nRow = row + dy * W;
                             for (let dx = -1; dx <= 1; dx++) {
                                 if (dx === 0 && dy === 0) continue;
-                                const nIdx = (y + dy) * W + (x + dx);
+                                const nIdx = nRow + (x + dx);
                                 neighborSum += lifeField[nIdx] || 0;
-                            }                        }
+                            }
+                        }
                         
                         // ◊ conway-like rules ∞ continuous values
                         const avgNeighbor = neighborSum / 8;
@@ -271,9 +273,9 @@
             
             let output = '';
             
-            for (let y = 0; y < renderH; y++) {
+            for (let y = 0, row = 0; y < renderH; y++, row += W) {
                 for (let x = 0; x < renderW; x++) {
-                    const idx = Math.min(y * W + x, W * H - 1);
+                    const idx = Math.min(row + x, W * H - 1);
                     
                     const life = lifeField[idx] || 0;
                     const cons = consciousness[idx] || 0;
@@ -289,7 +291,7 @@
                 if (y < renderH - 1) output += '\n';
             }
             
-            document.getElementById('canvas').innerHTML = output;
+            canvas.innerHTML = output;
             t++;        }
         
         // ∞ evolution loop
