@@ -58,6 +58,10 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
+        const MAX_COLS = 160;
+        const MAX_ROWS = 80;
+        const FPS = 30;
+        let lastFrame = 0;
         
         // Calculate optimal grid size based on viewport
         function updateDimensions() {
@@ -86,6 +90,8 @@
 
             W = Math.max(40, W);
             H = Math.max(20, H);
+            W = Math.min(MAX_COLS, W);
+            H = Math.min(MAX_ROWS, H);
 
             // Scale font to fill viewport
             const fontSize = Math.min(viewportWidth / W, viewportHeight / H);
@@ -227,7 +233,9 @@
             display.innerHTML = output;
         }
         
-        function loop() {
+        function loop(now) {
+            if (now - lastFrame < 1000/FPS) { requestAnimationFrame(loop); return; }
+            lastFrame = now;
             update();
             render();
             requestAnimationFrame(loop);
@@ -254,7 +262,7 @@
 
         updateDimensions();
         initializeFields();
-        loop();
+        requestAnimationFrame(loop);
     </script>
 </body>
 </html>
