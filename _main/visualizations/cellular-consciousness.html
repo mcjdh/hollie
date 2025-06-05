@@ -129,6 +129,7 @@
 <body>    <div id="grid"></div><script>        // Dynamic viewport sizing - proper character measurement        let W, H;
         let charWidth, charHeight;
         let dimensionsInitialized = false; // Flag to prevent redundant updates
+        const gridElem = document.getElementById('grid');
         
         function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
                 console.log('◆ Dimensions already initialized, skipping');
@@ -191,22 +192,21 @@
               // Update actual character dimensions - use line height for vertical spacing
             charWidth = actualCharWidth;
             charHeight = lineHeight; // Use line height instead of measured height for accurate spacing// Update grid element styling for maximum viewport coverage
-            const grid = document.getElementById('grid');
-            if (grid) {
-                grid.style.fontSize = finalFontSize + 'px';
-                grid.style.lineHeight = lineHeight + 'px';
-                grid.style.fontFamily = 'Courier New, monospace';                grid.style.position = 'fixed';
-                grid.style.top = '0px';
-                grid.style.left = '0px';                grid.style.width = availableWidth + 'px';
-                grid.style.height = availableHeight + 'px';
-                grid.style.margin = '0';
-                grid.style.padding = '0';
-                grid.style.overflow = 'hidden';
-                grid.style.boxSizing = 'border-box';
-                grid.style.display = 'block';
-                grid.style.transition = 'none';
-                grid.style.whiteSpace = 'pre';
-                grid.style.letterSpacing = '0';
+            if (gridElem) {
+                gridElem.style.fontSize = finalFontSize + 'px';
+                gridElem.style.lineHeight = lineHeight + 'px';
+                gridElem.style.fontFamily = 'Courier New, monospace';                gridElem.style.position = 'fixed';
+                gridElem.style.top = '0px';
+                gridElem.style.left = '0px';                gridElem.style.width = availableWidth + 'px';
+                gridElem.style.height = availableHeight + 'px';
+                gridElem.style.margin = '0';
+                gridElem.style.padding = '0';
+                gridElem.style.overflow = 'hidden';
+                gridElem.style.boxSizing = 'border-box';
+                gridElem.style.display = 'block';
+                gridElem.style.transition = 'none';
+                gridElem.style.whiteSpace = 'pre';
+                gridElem.style.letterSpacing = '0';
                 grid.style.wordSpacing = '0';
                   // Force immediate style application
                 grid.offsetHeight; // Trigger reflow
@@ -728,7 +728,7 @@
                 output += '\n';
             }
             
-            document.getElementById('grid').innerHTML = output;
+            gridElem.innerHTML = output;
             t++;
         }        function seedRandom() {
             // Reduce density significantly for less visual noise

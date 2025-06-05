@@ -94,6 +94,8 @@
         const e = 2.718281828459045;
         const π = Math.PI;
         const k = 1.380649e-23; // Boltzmann constant (scaled)
+        const displayElem = document.getElementById('display');
+        const timeElem = document.getElementById('timeDisplay');
         
         // ⊙ Entropy symbols
         const entropySymbols = {
@@ -150,12 +152,11 @@
             fontSize = Math.max(6, Math.min(18, fontSize));
             
             // Apply calculated styles to display
-            const display = document.getElementById('display');
-            display.style.fontSize = fontSize + 'px';
-            display.style.lineHeight = (fontSize * 1.1) + 'px';
-            display.style.position = 'absolute';
-            display.style.top = '0';
-            display.style.left = '0';
+            displayElem.style.fontSize = fontSize + 'px';
+            displayElem.style.lineHeight = (fontSize * 1.1) + 'px';
+            displayElem.style.position = 'absolute';
+            displayElem.style.top = '0';
+            displayElem.style.left = '0';
             display.style.margin = '0';
             display.style.padding = '0';
             
@@ -323,9 +324,9 @@
             
             // Update DOM less frequently for better performance
             if (time % 3 === 0) {
-                document.getElementById('display').innerHTML = output;
+                displayElem.innerHTML = output;
             }
-            document.getElementById('timeDisplay').textContent = `${time} (${W}×${H})`;
+            timeElem.textContent = `${time} (${W}×${H})`;
         }
         
         // ∞ animation loop

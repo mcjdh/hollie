@@ -428,7 +428,8 @@
         let exitListeners = [];
 
         function open_viz(file) {
-            frameElem.src = 'visualizations/' + file;
+            const newSrc = 'visualizations/' + file;
+            if (frameElem.src !== newSrc) frameElem.src = newSrc;
             fsElem.style.display = 'block';
             document.body.style.overflow = 'hidden';
             isFullscreenOpen = true;
