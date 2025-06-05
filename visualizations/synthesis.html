@@ -77,7 +77,7 @@
             charHeight = Math.max(rect.height / 10, 6); // Ensure minimum char height
             document.body.removeChild(testDiv);
             
-            // Calculate grid size to fill viewport perfectly
+            // Calculate grid size to fill viewport
             W = Math.ceil(viewportWidth / charWidth) + 1; // Small buffer
             H = Math.ceil(viewportHeight / charHeight) + 1; // Small buffer
             
@@ -85,7 +85,7 @@
             W = Math.max(60, Math.min(W, 200)); // Also add maximum to prevent huge arrays
             H = Math.max(30, Math.min(H, 100));
             
-            // Calculate optimal font size for perfect viewport fit
+            // Calculate font size to fit viewport
             const optimalFontWidth = viewportWidth / W;
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
@@ -95,7 +95,7 @@
                 display.style.fontSize = Math.max(fontSize, 6) + 'px';
                 display.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
                 
-                // Perfect positioning to eliminate gaps
+                // align display with grid
                 display.style.position = 'absolute';
                 display.style.top = '0';
                 display.style.left = '0';
@@ -141,7 +141,7 @@
             '⊕', '⊖', '⊗', '⊘', '⊙', '⊚', '⊛', '⊜', '⊝', '⊞'   // fractal synthesis
         ];        
         const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
-          // Enhanced cellular automata with viewport-aware scaling
+          // cellular automata scaled by viewport
         function updateCellular() {
             // Safety check for array initialization
             if (!cellular || !fluid || !fractal || !W || !H) return;
@@ -194,7 +194,7 @@
                 }
             }
             
-            // Anti-equilibrium: periodic seeding to prevent stagnation
+            // ∇ periodic seeding prevents stagnation
             if (t % 200 === 0) {
                 for (let i = 0; i < W * H; i++) {
                     if (Math.random() < 0.001) {
@@ -219,7 +219,7 @@
                     const nx = x / W, ny = y / H;
                     const cx = nx - 0.5, cy = ny - 0.5;
                     
-                    // Enhanced circular fluid flow with viewport scaling
+                    // fluid flow uses viewport scale
                     const angle = Math.atan2(cy, cx) + τ;
                     const r = Math.sqrt(cx * cx + cy * cy);
                     const flow = Math.sin(r * 8 * scaleFactor + τ * 2) * Math.cos(angle * 3);
@@ -253,7 +253,7 @@
                 for (let x = 0; x < W; x++) {
                     const i = y * W + x;
                     
-                    // Enhanced Julia set with viewport-aware scaling
+                    // Julia set uses viewport scale
                     const zx = (x - W/2) / (W/8 * scaleFactor);
                     const zy = (y - H/2) / (H/8 * scaleFactor);
                     
@@ -274,7 +274,7 @@
                     
                     let value = iter / maxIter;
                     
-                    // Enhanced system interactions with temporal modulation
+                    // systems interact via time phase
                     if (cellular[i] > 0.3) value *= (1.2 + Math.sin(τ * 10) * 0.1);
                     if (fluid[i] > 0.2) value *= (1 + fluid[i] * 0.3 + Math.cos(τ * 7) * 0.05);
                     
@@ -289,7 +289,7 @@
             const τ = t * 0.001;
             
             for (let i = 0; i < W * H; i++) {
-                // Enhanced synthesis with harmonic resonance
+                // synthesis via harmonic resonance
                 const interaction = cellular[i] * fluid[i] * fractal[i];
                 const combination = (cellular[i] + fluid[i] + fractal[i]) / 3;
                 const resonance = Math.sin(τ * 5 + interaction * 10) * 0.1;
@@ -297,7 +297,7 @@
                 
                 synthesis[i] = synthesis[i] * 0.95 + emergence * 0.05;
                 
-                // Enhanced memory accumulation with temporal waves
+                // memory builds with time waves
                 if (synthesis[i] > 0.7) {
                     memory[i] = Math.min(1, memory[i] + 0.01 + Math.sin(τ * 8) * 0.005);
                 } else {
@@ -318,7 +318,7 @@
             
             let output = '';
             
-            // Enhanced breathing synthesis effect with harmonic waves
+            // breathing effect using harmonic waves
             const breath1 = Math.sin(t * 0.04) * 0.1 + 0.9;
             const breath2 = Math.cos(t * 0.03) * 0.05 + 0.95;
             const globalBreath = (breath1 + breath2) / 2;
@@ -367,7 +367,7 @@
             t += 0.5;
             requestAnimationFrame(render);
         }
-          // Anti-equilibrium enhancement - prevent static patterns
+          // ∇ chaos avoids stagnation
         function addDynamicChaos() {
             if (!cellular || !fluid || !W || !H) return;
             
@@ -382,10 +382,10 @@
             }
         }
         
-        // Responsive event handling with immediate update
+        // resize → updateDimensions
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
-        });          // Enhanced initialization with immediate startup
+        });          // quick init with dynamic size
         function initialize() {
             console.log("∞ ⊕ ◎⊕◉ ∞...");
             updateDimensions();
@@ -401,7 +401,7 @@
             }
         }
         
-        // Initialize with dynamic sizing and ensure proper startup
+        // start: size then run
         document.addEventListener('DOMContentLoaded', initialize);
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initialize);

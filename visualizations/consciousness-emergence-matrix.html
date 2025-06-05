@@ -161,7 +161,7 @@
             charHeight = rect.height / 10;
             document.body.removeChild(test);
             
-            // Calculate grid size to fill viewport perfectly
+            // Calculate grid size to fill viewport
             W = Math.ceil(window.innerWidth / charWidth) + 1;
             H = Math.ceil(window.innerHeight / charHeight) + 1;
             
@@ -221,7 +221,7 @@
                 this.evolution = 0;
                 this.memory = new Array(10).fill(0);
                 
-                // Enhanced personality attributes
+                // personality attributes
                 this.personality = {
                     curiosity: Math.random(),
                     stability: Math.random(),
@@ -385,7 +385,7 @@
                 this.intention = Math.random() * 0.2;
                 this.lastKernelInfluence = 0;
                 
-                // Enhanced personality traits
+                // personality traits
                 this.personality = {
                     sociability: Math.random(),
                     curiosity: Math.random(),
@@ -424,7 +424,7 @@
                 const fieldIdx = fy * W + fx;
                 const localField = globalField[fieldIdx] || 0;
                 
-                // Enhanced agent interaction with personality influence
+                // agent interaction with personality
                 this.connections = [];
                 let socialInfluence = 0;
                 const maxInteractions = Math.floor(8 * (1 + this.personality.sociability));
@@ -637,7 +637,7 @@
                 this.agents = [];
                 this.spawnAgents(Math.floor(W * H / 400));
                 
-                // Enhanced collective intelligence systems
+                // collective intelligence systems
                 this.collectiveIntelligence = {
                     swarmCoherence: 0,
                     networkDensity: 0,
@@ -1208,7 +1208,7 @@
                                 symbol = stateInfo.symbols[safeIdx] || ' ';
                             }
                             
-                            // Enhanced coloring based on field combination patterns
+                            // coloring by field combinations
                             let colorClass;
                             if (compositeIntensity > 0.8) {
                                 colorClass = 'transcendent';

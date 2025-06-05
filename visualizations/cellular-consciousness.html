@@ -31,7 +31,7 @@
             font-size: 10px;
             line-height: 12px;
             transition: all 0.3s ease;
-        }/* Enhanced dynamic color spectrum for consciousness evolution */
+        }/* ∑ color spectrum for consciousness */
         .c0{color:#111} .c1{color:#222} .c2{color:#333} .c3{color:#444} .c4{color:#555}        .c5{color:#666} .c6{color:#777} .c7{color:#888} .c8{color:#999} .c9{color:#aaa}
         .c10{color:#889} .c11{color:#99a} .c12{color:#aab} .c13{color:#bbc} .c14{color:#ccd}
         .c15{color:#cc2222} .c16{color:#dd3333} .c17{color:#ee4444} .c18{color:#ff5555} .c19{color:#ff6666}
@@ -88,7 +88,7 @@
           @keyframes pulse {
             0%, 100% { opacity: 0.8; }
             50% { opacity: 1; }
-        }/* Enhanced special effect classes for new states */        .info-flow {
+        }/* extra effect styles */        .info-flow {
             text-shadow: 0 0 8px #444, 0 0 12px #444;
             animation: info-pulse 2s ease-in-out infinite;
         }
@@ -121,7 +121,7 @@
     <div id="grid"></div><script>
         // Dynamic viewport sizing - proper character measurement
         let W, H;
-        let charWidth, charHeight;        // Enhanced dynamic viewport sizing with precise character measurement
+        let charWidth, charHeight;        // ◎ size via char metrics
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -150,7 +150,7 @@
             W = Math.max(50, Math.min(200, W));
             H = Math.max(30, Math.min(120, H));
             
-            // Calculate optimal font size for perfect viewport fit
+            // Calculate font size to fit viewport
             const optimalFontWidth = viewportWidth / W * 1.8;
             const optimalFontHeight = viewportHeight / H * 1.2;
             const fontSize = Math.min(optimalFontWidth, optimalFontHeight);
@@ -178,7 +178,7 @@
         
         const phi = (1 + Math.sqrt(5)) / 2;
         let t = 0, generation = 0;
-          // Enhanced multi-layered consciousness fields with quantum effects
+          // ∿ layered fields with quantum
         let cells = new Float32Array(W * H);           
         let nextCells = new Float32Array(W * H);       
         let memory = new Float32Array(W * H);
@@ -234,7 +234,7 @@
         let evolutionPhase = 0;
         let ruleVariant = 0;
         let quantumCoherence = 0.5;
-          // Enhanced consciousness symbols with quantum states
+          // symbols reflect quantum states
         const symbols = {
             void: [' ', '·', '⠀', '⠄'],
             birth: ['⠁', '⠃', '⠇', '⠏', '⠟'],
@@ -292,7 +292,7 @@
                     let newValue = 0;
                     
                     if (current > 0.1) {
-                        // Enhanced living cell rules with quantum effects
+                        // cell rules with quantum twist
                         const quantumInfluence = quantum[i] * 0.2;
                         const energyBonus = energy[i] > 0.5 ? 0.1 : -0.05;
                         const temporalStability = stability[i] * 0.05;
@@ -301,7 +301,7 @@
                             // Survive with consciousness evolution and quantum enhancement
                             newValue = Math.min(1, current + average * 0.03 + quantumInfluence + energyBonus + temporalStability);
                             
-                            // Enhanced consciousness emergence with collective intelligence
+                            // emergence via collective learning
                             if (current > 0.5 && count === 3) {
                                 consciousness[i] = Math.min(1, consciousness[i] + 0.02 + collective[i] * 0.01 + emergence[i] * 0.015);
                                 
@@ -321,7 +321,7 @@
                             newValue = Math.max(0, current - overcrowdPenalty);
                         }
                     } else {
-                        // Enhanced birth rules with pattern memory and collective intelligence
+                        // birth rules use memory + collectives
                         if (count === 3 || (count === 2 && patterns[i] > 0.5)) {
                             const consciousnessInfluence = getNeighborhood(x, y, consciousness).average;
                             const collectiveBonus = collective[i] * 0.2;
@@ -343,7 +343,7 @@
                         }
                     }
                     
-                    // Enhanced cross-field influences with information flow
+                    // ∴ cross-field info flow
                     newValue += memory[i] * 0.02 + consciousness[i] * 0.03 + patterns[i] * 0.015 + informationFlow[i] * 0.01;
                     
                     // Dynamic complexity calculation with rule variants
@@ -351,7 +351,7 @@
                     const ruleComplexity = Math.sin(ruleVariant * 0.5) * 0.1;
                     complexity[i] = complexity[i] * 0.85 + (localVar + ruleComplexity) * 0.15;
                     
-                    // Enhanced neural connections with collective behavior
+                    // neural links for collective behavior
                     if (newValue > 0.3 && consciousness[i] > 0.2) {
                         connections[i] = Math.min(1, connections[i] + 0.05);
                         
@@ -479,7 +479,7 @@
                 return '◥'; // Declining temporal pattern
             }
             
-            // Enhanced consciousness hierarchy with new states
+            // hierarchy grows with new states
             if (coll > 0.7 && cons > 0.6 && conn > 0.5) {
                 // Collective consciousness with information flow
                 const syms = symbols.collective;
@@ -588,7 +588,7 @@
                 return variant + specialClass;
             }
             
-            // Enhanced intensity calculation with new fields
+            // intensity uses new fields
             let intensity = 0;
             
             if (symbols.collective.includes(symbol)) {
@@ -617,7 +617,7 @@
                 intensity = Math.min(1, (cell * 0.3 + mem * 0.15 + cons * 0.2 + quant * 0.15 + info * 0.1 + emer * 0.1));
             }
             
-            // Enhanced temporal and emergence-based color shifting
+            // colors shift with time & emergence
             let phaseShift = Math.floor(Math.sin(evolutionPhase + emer * 3) * 5);
             
             // Temporal memory influence on color
@@ -868,7 +868,7 @@
                 }
             }
         }, 1000);
-          // Enhanced automated consciousness evolution cycles
+          // auto evolution cycles
         setInterval(() => {
             if (Math.random() < 0.15) { // Reduced probability
                 seedRandom();
