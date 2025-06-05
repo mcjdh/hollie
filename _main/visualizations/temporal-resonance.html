@@ -149,6 +149,7 @@
             '⏀', '⏁', '⏂', '⏃', '⧖', '⧗', '⟲', '⟳', '↻', '↺'   // time circulation
         ];        
         const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
+        const phi = 1.618033988749895;
         
         // ∂ temporal fields scale with viewport
         function updateFields() {
@@ -171,7 +172,6 @@
                     const harmonicMid = Math.cos((nx - ny) * 3 * scaleFactor + tau * 0.8) * 0.3;
                     
                     // High frequency echo - temporal reflections with golden ratio
-                    const phi = 1.618033988749895;
                     const fast = Math.sin(r * 12 * scaleFactor - tau * 2.5) * 0.5;
                     const fastHarmonic = Math.cos(r * 8 * scaleFactor / phi - tau * 1.8) * 0.2;
                     
