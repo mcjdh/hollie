@@ -227,9 +227,13 @@
             display.innerHTML = output;
         }
         
-        function loop() {
-            update();
-            render();
+        let lastFrame = 0;
+        function loop(now) {
+            if (now - lastFrame > 33) {
+                update();
+                render();
+                lastFrame = now;
+            }
             requestAnimationFrame(loop);
         }
         
@@ -254,7 +258,7 @@
 
         updateDimensions();
         initializeFields();
-        loop();
+        requestAnimationFrame(loop);
     </script>
 </body>
 </html>

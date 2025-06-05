@@ -880,8 +880,12 @@
             generation = 0;        }
         
         // Evolution loop
-        function evolve() {
-            render();
+        let lastFrame = 0;
+        function evolve(now) {
+            if (now - lastFrame > 33) {
+                render();
+                lastFrame = now;
+            }
             requestAnimationFrame(evolve);
         }        // Initialize with enhanced seeding
         let initializationComplete = false;
@@ -916,7 +920,7 @@
                 console.log('◆ R-pentomino pattern added');
             }, 1000);
             
-            evolve();
+            requestAnimationFrame(evolve);
             initializationComplete = true;
         }
         

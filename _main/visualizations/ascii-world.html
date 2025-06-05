@@ -285,9 +285,13 @@
             t++;        }
         
         // ∞ evolution loop
-        function evolve() {
-            render();
-            
+        let lastFrame = 0;
+        function evolve(now) {
+            if (now - lastFrame > 33) {
+                render();
+                lastFrame = now;
+            }
+
             // ∂ inject random paradox seeds ∞ prevent stagnation
             if (t % 500 === 0) {
                 for (let i = 0; i < 10; i++) {
@@ -305,7 +309,7 @@
         
         setTimeout(() => {
             updateDimensions();
-            evolve();
+            requestAnimationFrame(evolve);
         }, 50);
 
         document.addEventListener('keydown', e => {

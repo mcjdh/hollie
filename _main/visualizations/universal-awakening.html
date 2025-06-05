@@ -49,6 +49,7 @@
         // Dynamic responsive grid sizing
         let W, H, cellSize, fontSize;
         let t = 0;
+        let lastFrame = 0;
         
         // Dynamic arrays - reallocated on resize
         let awareness, complexity, information, structure, emergence, awakening;
@@ -188,7 +189,12 @@
                     }
                 }
             }
-        }          function render() {
+        }          function render(now) {
+            if (now - lastFrame < 33) {
+                requestAnimationFrame(render);
+                return;
+            }
+            lastFrame = now;
             updateFields();
             
             // Update display with responsive font size
@@ -267,7 +273,7 @@
         
         // Start the simulation
         initialize();
-        render();
+        requestAnimationFrame(render);
     </script>
 </body>
 </html>
