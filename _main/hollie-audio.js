@@ -1411,9 +1411,8 @@ class HollieAudio {
         
         // Generate completely new section
         this.generateNewSection();
-        
-        // Update arpeggio pattern based on section
-        switch (sectionType) {
+          // Update arpeggio pattern based on section length
+        switch (this.nextSectionLength) {
             case 4:
                 this.arpeggioPattern = [0, 2, 4, 2]; // Simple triad
                 break;
@@ -1423,14 +1422,16 @@ class HollieAudio {
             case 16:
                 this.arpeggioPattern = [0, 2, 4, 2, 1, 3, 4, 3]; // Complex pattern
                 break;
+            default:
+                this.arpeggioPattern = [0, 2, 4, 2]; // Default simple pattern
+                break;
         }
         
         // Legacy harmonic changes for ambient layer
         this.oscillators.forEach((osc, i) => {
             if (osc.frequency) {
                 let scaleIndex;
-                
-                switch (sectionType) {
+                  switch (this.nextSectionLength) {
                     case 4: // Short phrase - stay close to root
                         scaleIndex = [0, 4, 2, 0, 1][i] || 0;
                         scaleIndex = scaleIndex % this.scale.length; // Ensure within bounds
@@ -1454,9 +1455,8 @@ class HollieAudio {
                 }
             }
         });
-        
-        // Master volume changes based on section
-        const volumeMultiplier = sectionType === 16 ? 1.1 : (sectionType === 8 ? 0.95 : 0.85);
+          // Master volume changes based on section length
+        const volumeMultiplier = this.nextSectionLength === 16 ? 1.1 : (this.nextSectionLength === 8 ? 0.95 : 0.85);
         const targetVolume = 0.06 * volumeMultiplier; // Reduced overall volume for 8-bit mix
         this.masterGain.gain.exponentialRampToValueAtTime(
             Math.max(targetVolume, 0.01), 
