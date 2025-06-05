@@ -65,10 +65,8 @@
         const display = document.getElementById('display');
         // Dynamic viewport sizing
         let W, H;
-        let charWidth, charHeight;
-        let t = 0;
-        const displayElem = document.getElementById('display');
-        
+        let charWidth, charHeight;        let t = 0;
+
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -92,11 +90,10 @@
             // Calculate grid size
             W = Math.ceil(viewportWidth / charWidth) + 2;
             H = Math.ceil(viewportHeight / charHeight) + 2;
-              W = Math.max(60, W);
-            H = Math.max(30, H);
+              W = Math.max(60, W);            H = Math.max(30, H);
             
-            displayElem.style.fontSize = '6px';
-            displayElem.style.lineHeight = '6px';
+            display.style.fontSize = '6px';
+            display.style.lineHeight = '6px';
         }
         
         // Mathematical constant
@@ -267,10 +264,9 @@
                             output += ' ';
                         }
                     }
-                }
-                output += '\n';            }
+                }                output += '\n';            }
             
-            displayElem.innerHTML = output;
+            display.innerHTML = output;
         }
         
         function loop() {

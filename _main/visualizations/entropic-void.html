@@ -117,6 +117,8 @@
         let fontSize = 12;
         let charWidth = 7;
         let charHeight = 14;        // ◦ dynamic scaling via char metrics
+        const display = document.getElementById('display');
+        const timeDisplay = document.getElementById('timeDisplay');
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -326,7 +328,7 @@
             if (time % 3 === 0) {
                 display.innerHTML = output;
             }
-            document.getElementById('timeDisplay').textContent = `${time} (${W}×${H})`;
+            timeDisplay.textContent = `${time} (${W}×${H})`;
         }
         
         // ∞ animation loop
