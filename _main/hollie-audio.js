@@ -349,11 +349,11 @@ class HollieAudio {
         this.currentMeasure = 0;
         this.currentBeat = 0;
         this.currentSection = 0;
-        this.sectionMeasure = 0;
-        this.arpeggioIndex = 0;
+        this.sectionMeasure = 0;        this.arpeggioIndex = 0;
         this.currentNote = 0;        this.currentChord = 0;
         this.developmentStage = 0;
         this.lastTempoChange = 0;
+        this.lastRestart = 0; // Track restart attempts
         
         // Initialize procedural music system
         this.initializeProceduralSystem();
@@ -416,10 +416,9 @@ class HollieAudio {
         this.oscillators.forEach(osc => {
             osc.start(this.audioContext.currentTime);
         });
-        
-        // Set initial gains for legacy harmonics - increased volume
+          // Set initial gains for legacy harmonics - increased volume
         this.harmonics.forEach((harmonic, i) => {
-            const baseGain = 0.1 + (i * 0.02); // Increased base levels for audibility
+            const baseGain = 0.2 + (i * 0.03); // Increased base levels for audibility
             harmonic.gain.gain.setValueAtTime(baseGain, this.audioContext.currentTime);
         });
         
@@ -619,22 +618,23 @@ class HollieAudio {
         
         return extensions;
     }
-    
-    generateRhythmPatterns() {
-        // Generate kick drum pattern
-        this.rhythmPatterns.kick = this.generateRhythmPattern(4, 0.6); // 4 beats, 60% chance
+      generateRhythmPatterns() {
+        // Generate kick drum pattern - ensure strong 4/4 foundation
+        this.rhythmPatterns.kick = [true, false, false, false]; // Classic four-on-the-floor start
         
-        // Generate snare pattern (usually on beats 2 and 4)
-        this.rhythmPatterns.snare = this.generateRhythmPattern(4, 0.3, [1, 3]); // Favor beats 2,4
+        // Generate snare pattern - strong backbeats
+        this.rhythmPatterns.snare = [false, true, false, true]; // Beats 2 and 4
         
-        // Generate hihat pattern (more frequent)
-        this.rhythmPatterns.hihat = this.generateRhythmPattern(8, 0.7); // 8th notes
+        // Generate hihat pattern - consistent 8th notes with some variation
+        this.rhythmPatterns.hihat = [true, true, true, false, true, true, true, false]; // Consistent with breaks
         
-        // Generate melody rhythm
-        this.rhythmPatterns.melody = this.generateRhythmPattern(8, 0.5);
+        // Generate melody rhythm - balanced with rests
+        this.rhythmPatterns.melody = [true, false, true, true, false, true, false, true];
         
-        // Generate bass rhythm
-        this.rhythmPatterns.bass = this.generateRhythmPattern(4, 0.4, [0, 2]); // Favor strong beats
+        // Generate bass rhythm - emphasize strong beats
+        this.rhythmPatterns.bass = [true, false, true, false]; // Strong beats with syncopation
+        
+        console.log('🎵 Generated balanced 4/4 rhythm patterns');
     }
     
     generateRhythmPattern(divisions, probability, favoredBeats = []) {
@@ -879,23 +879,91 @@ class HollieAudio {
         
         return newRoot;
     }
-    
-    evolveRhythmPatterns() {
-        // Evolve each rhythm pattern slightly
-        Object.keys(this.rhythmPatterns).forEach(patternType => {
-            this.rhythmPatterns[patternType] = this.evolvePattern(this.rhythmPatterns[patternType]);
-        });
+      evolveRhythmPatterns() {
+        // Evolve patterns but maintain musical structure
+        this.rhythmPatterns.kick = this.evolveKickPattern(this.rhythmPatterns.kick);
+        this.rhythmPatterns.snare = this.evolveSnarePattern(this.rhythmPatterns.snare);
+        this.rhythmPatterns.hihat = this.evolveHihatPattern(this.rhythmPatterns.hihat);
+        this.rhythmPatterns.melody = this.evolveMelodyPattern(this.rhythmPatterns.melody);
+        this.rhythmPatterns.bass = this.evolveBassPattern(this.rhythmPatterns.bass);
+        
+        console.log('🎵 Evolved rhythm patterns while maintaining 4/4 structure');
     }
     
-    evolvePattern(pattern) {
+    evolveKickPattern(pattern) {
+        // Keep kick strong on beat 1, allow variation on others
         const evolved = [...pattern];
-        const numChanges = Math.floor(Math.random() * Math.max(1, pattern.length / 4));
+        evolved[0] = true; // Always keep beat 1
+        
+        // Randomly vary other beats but maintain some pattern
+        for (let i = 1; i < evolved.length; i++) {
+            if (Math.random() < 0.3) {
+                evolved[i] = !evolved[i];
+            }
+        }
+        return evolved;
+    }
+    
+    evolveSnarePattern(pattern) {
+        // Keep snare strong on beats 2 and 4
+        const evolved = [...pattern];
+        evolved[1] = true; // Always keep beat 2
+        evolved[3] = true; // Always keep beat 4
+        return evolved;
+    }
+    
+    evolveHihatPattern(pattern) {
+        // Maintain consistent hihat flow
+        const evolved = [...pattern];
+        const numChanges = Math.min(2, Math.floor(Math.random() * pattern.length / 2));
         
         for (let i = 0; i < numChanges; i++) {
             const index = Math.floor(Math.random() * pattern.length);
-            evolved[index] = !evolved[index]; // Flip the beat
+            evolved[index] = !evolved[index];
         }
         
+        // Ensure at least half the beats are active
+        const activeBeats = evolved.filter(beat => beat).length;
+        if (activeBeats < pattern.length / 2) {
+            evolved[0] = true;
+            evolved[2] = true;
+        }
+        
+        return evolved;
+    }
+    
+    evolveMelodyPattern(pattern) {
+        // Keep melody active but allow subtle changes
+        const evolved = [...pattern];
+        const numChanges = Math.floor(Math.random() * 2) + 1;
+        
+        for (let i = 0; i < numChanges; i++) {
+            const index = Math.floor(Math.random() * pattern.length);
+            evolved[index] = !evolved[index];
+        }
+        
+        // Ensure melody doesn't become too sparse
+        const activeBeats = evolved.filter(beat => beat).length;
+        if (activeBeats < 3) {
+            evolved[0] = true;
+            evolved[2] = true;
+            evolved[4] = true;
+        }
+        
+        return evolved;
+    }
+    
+    evolveBassPattern(pattern) {
+        // Keep bass strong and foundational
+        const evolved = [...pattern];
+        evolved[0] = true; // Always keep beat 1
+        
+        // Allow some variation on other beats
+        for (let i = 1; i < evolved.length; i++) {
+            if (Math.random() < 0.25) {
+                evolved[i] = !evolved[i];
+            }
+        }
         return evolved;
     }
     
@@ -1134,18 +1202,17 @@ class HollieAudio {
             if (usePattern) {
                 const noteIndex = totalBeats % this.melodyNotes.length;
                 const freq = this.baseFreq * 2 * this.melodyNotes[noteIndex];
-                
-                if (freq && isFinite(freq) && freq > 0) {
+                  if (freq && isFinite(freq) && freq > 0) {
                     this.channels.pulse1.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
                     
-                    // Dynamic volume based on theme character
-                    let gain = 0.12;
+                    // Dynamic volume based on theme character - increased base volume
+                    let gain = 0.25;
                     if (this.currentTheme) {
                         gain *= this.getThemeVolumeMultiplier(this.currentTheme.character);
                     }
                     
                     this.channels.pulse1.gain.gain.setValueAtTime(gain, beatTime);
-                    this.channels.pulse1.gain.gain.exponentialRampToValueAtTime(gain * 0.3, beatTime + this.beatDuration * 0.8);
+                    this.channels.pulse1.gain.gain.exponentialRampToValueAtTime(gain * 0.4, beatTime + this.beatDuration * 0.8);
                 }
             }
         }
@@ -1153,22 +1220,20 @@ class HollieAudio {
         // Pulse 2 - Harmony (based on current chord)
         if (this.channels.pulse2 && currentChord) {
             const usePattern = this.rhythmPatterns.melody[(beatInPattern + 2) % this.rhythmPatterns.melody.length];
-            
-            if (usePattern && !isDownbeat) {
+              if (usePattern && !isDownbeat) {
                 const harmonyNote = this.getChordTone(currentChord, 1); // Third of chord
                 const freq = this.baseFreq * 1.5 * harmonyNote;
                 
                 if (freq && isFinite(freq) && freq > 0) {
                     this.channels.pulse2.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
                     
-                    const gain = isUpbeat ? 0.08 : 0.05;
+                    const gain = isUpbeat ? 0.16 : 0.10;
                     this.channels.pulse2.gain.gain.setValueAtTime(gain, beatTime);
-                    this.channels.pulse2.gain.gain.exponentialRampToValueAtTime(gain * 0.2, beatTime + this.beatDuration * 0.6);
+                    this.channels.pulse2.gain.gain.exponentialRampToValueAtTime(gain * 0.3, beatTime + this.beatDuration * 0.6);
                 }
             }
         }
-        
-        // Triangle - Bass (follows chord progression)
+          // Triangle - Bass (follows chord progression)
         if (this.channels.triangle && currentChord) {
             const usePattern = this.rhythmPatterns.bass[measureBeat % this.rhythmPatterns.bass.length];
             
@@ -1179,9 +1244,9 @@ class HollieAudio {
                 if (freq && isFinite(freq) && freq > 0) {
                     this.channels.triangle.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
                     
-                    const gain = isDownbeat ? 0.2 : 0.15;
+                    const gain = isDownbeat ? 0.35 : 0.25;
                     this.channels.triangle.gain.gain.setValueAtTime(gain, beatTime);
-                    this.channels.triangle.gain.gain.exponentialRampToValueAtTime(gain * 0.1, beatTime + this.beatDuration);
+                    this.channels.triangle.gain.gain.exponentialRampToValueAtTime(gain * 0.2, beatTime + this.beatDuration);
                 }
             }
         }
@@ -1190,9 +1255,8 @@ class HollieAudio {
         if (this.channels.noise) {
             const useKick = this.rhythmPatterns.kick[measureBeat % this.rhythmPatterns.kick.length];
             const useSnare = this.rhythmPatterns.snare[measureBeat % this.rhythmPatterns.snare.length];
-            
-            if (useKick || useSnare) {
-                const gain = useKick ? 0.06 : 0.04;
+              if (useKick || useSnare) {
+                const gain = useKick ? 0.12 : 0.08;
                 this.channels.noise.gain.gain.setValueAtTime(gain, beatTime);
                 this.channels.noise.gain.gain.exponentialRampToValueAtTime(0.001, beatTime + 0.1);
                 
@@ -1209,13 +1273,12 @@ class HollieAudio {
             if (usePattern) {
                 const arpTone = this.getChordTone(currentChord, this.arpeggioIndex % 4);
                 const freq = this.baseFreq * 3 * arpTone;
-                
-                if (freq && isFinite(freq) && freq > 0) {
+                  if (freq && isFinite(freq) && freq > 0) {
                     this.channels.arp.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
                     
-                    const gain = 0.05;
+                    const gain = 0.10;
                     this.channels.arp.gain.gain.setValueAtTime(gain, beatTime);
-                    this.channels.arp.gain.gain.exponentialRampToValueAtTime(gain * 0.1, beatTime + this.beatDuration * 0.5);
+                    this.channels.arp.gain.gain.exponentialRampToValueAtTime(gain * 0.2, beatTime + this.beatDuration * 0.5);
                 }
                 
                 this.arpeggioIndex++;
@@ -1251,19 +1314,18 @@ class HollieAudio {
         
         return intervals[quality] || intervals['major'];
     }
-    
-    getThemeVolumeMultiplier(character) {
+      getThemeVolumeMultiplier(character) {
         const multipliers = {
             'ascending': 1.1,
-            'descending': 0.9,
+            'descending': 1.0,  // Increased from 0.9
             'arpeggiated': 1.0,
-            'stepwise': 0.95,
+            'stepwise': 1.0,    // Increased from 0.95
             'angular': 1.2,
-            'flowing': 0.85,
+            'flowing': 1.0,     // Increased from 0.85
             'rhythmic': 1.3,
-            'lyrical': 0.8,
+            'lyrical': 1.0,     // Increased from 0.8
             'chromatic': 1.1,
-            'pentatonic': 0.9,
+            'pentatonic': 1.0,  // Increased from 0.9
             'modal': 1.0,
             'blues': 1.15
         };
@@ -1380,18 +1442,18 @@ class HollieAudio {
             const arpIndex = this.arpeggioIndex % this.arpeggioPattern.length;
             const scaleIndex = this.arpeggioPattern[arpIndex] % currentScale.length; // Ensure within bounds
             const freq = this.baseFreq * 3 * currentScale[scaleIndex];
-            
-            // Check if frequency is valid before using it
+              // Check if frequency is valid before using it
             if (freq && isFinite(freq) && freq > 0) {
                 this.channels.arp.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
-                this.channels.arp.gain.gain.setValueAtTime(0.03, beatTime);
-                this.channels.arp.gain.gain.exponentialRampToValueAtTime(0.001, beatTime + this.beatDuration * 0.25);
+                this.channels.arp.gain.gain.setValueAtTime(0.08, beatTime);
+                this.channels.arp.gain.gain.exponentialRampToValueAtTime(0.01, beatTime + this.beatDuration * 0.25);
             }
             
             this.arpeggioIndex++;
         }
     }
-      processMeasure() {
+    
+    processMeasure() {
         // Check if we need to move to next section (infinite system)
         if (this.sectionMeasure >= this.nextSectionLength) {
             this.currentSection++;
@@ -1454,12 +1516,11 @@ class HollieAudio {
                     osc.frequency.exponentialRampToValueAtTime(targetFreq, now + 2);
                 }
             }
-        });
-          // Master volume changes based on section length
-        const volumeMultiplier = this.nextSectionLength === 16 ? 1.1 : (this.nextSectionLength === 8 ? 0.95 : 0.85);
-        const targetVolume = 0.06 * volumeMultiplier; // Reduced overall volume for 8-bit mix
+        });        // Master volume changes based on section length - maintain audible levels
+        const volumeMultiplier = this.nextSectionLength === 16 ? 1.2 : (this.nextSectionLength === 8 ? 1.0 : 0.9);
+        const targetVolume = 0.6 * volumeMultiplier; // Keep master volume high
         this.masterGain.gain.exponentialRampToValueAtTime(
-            Math.max(targetVolume, 0.01), 
+            Math.max(targetVolume, 0.5), 
             now + 1
         );
     }
@@ -1579,11 +1640,28 @@ class HollieAudio {
         this.filters = [];
         this.harmonics = []; // Clear harmonic data as well
         this.melodyNotes = [];
-    }
-    
-    // Restart audio (used internally for persistence)
+    }    // Restart audio (used internally for persistence)
     restart() {
-        if (this.isInitialized && !this.isPlaying && this.shouldPersist) {
+        if (!this.isInitialized) return;
+        
+        // Prevent too frequent restart attempts
+        const now = Date.now();
+        if (this.lastRestart && (now - this.lastRestart) < 500) {
+            return; // Skip if less than 500ms since last restart
+        }
+        this.lastRestart = now;
+        
+        // Resume audio context if suspended
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            this.audioContext.resume().catch(console.warn);
+        }
+          // Restore master volume if it was lowered
+        if (this.masterGain && this.masterGain.gain.value < 0.5) {
+            this.masterGain.gain.exponentialRampToValueAtTime(0.6, this.audioContext.currentTime + 0.1);
+        }
+        
+        // Only restart if actually stopped and should persist
+        if (!this.isPlaying && this.shouldPersist) {
             this.start();
         }
     }

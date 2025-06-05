@@ -449,12 +449,11 @@
             fsElem.style.display = 'block';
             document.body.style.overflow = 'hidden';
             isFullscreenOpen = true;
-            
-            // Ensure audio continues playing across viz changes
+              // Ensure audio continues playing across viz changes
             if (window.HollieSound && window.HollieSound.getState().activated) {
                 setTimeout(() => {
                     window.HollieSound.restart();
-                }, 100);
+                }, 500);
             }
             
             // Setup multiple exit paths
@@ -468,12 +467,11 @@
             fsElem.style.display = 'none';
             frameElem.src = '';
             document.body.style.overflow = 'auto';
-            
-            // Ensure audio continues after closing visualizations
+              // Ensure audio continues after closing visualizations
             if (window.HollieSound && window.HollieSound.getState().activated) {
                 setTimeout(() => {
                     window.HollieSound.restart();
-                }, 100);
+                }, 300);
             }
             
             // remove all event listeners
@@ -573,12 +571,11 @@
         }        function random_viz() {
             const rand = vizs[Math.floor(Math.random() * vizs.length)];
             open_viz(rand);
-            
-            // Ensure audio stays active during random navigation
+              // Ensure audio stays active during random navigation
             if (window.HollieSound && window.HollieSound.getState().activated) {
                 setTimeout(() => {
                     window.HollieSound.restart();
-                }, 200);
+                }, 400);
             }
         }
 
@@ -588,10 +585,8 @@
             } else {
                 document.exitFullscreen?.();
             }
-        }
-
-        function about() {
-            alert('∞ ◉ ∞\n\n⟨ ☰∿☰ ⟩\n\n◦ ∫∂∇\n◦ ⧖→∞  \n◦ ◎js◎html5\n◦ ♪→∞ procedural\n\n⟨ ESC ◦ × ⟩');
+        }        function about() {
+            alert('∞ ◉ ∞\n\n⟨ ☰∿☰ ⟩\n\n◦ ∫∂∇\n◦ ⧖→∞  \n◦ ◎◎◎\n◦ ♪→∞\n\n⟨ ESC ◦ × ⟩');
         }
 
         function toggle_audio() {
@@ -620,18 +615,17 @@
                 }
             }
         }, 1000);
-        
-        // Global audio persistence - keep alive across all interactions
+          // Global audio persistence - keep alive across all interactions
         document.addEventListener('click', () => {
             if (window.HollieSound && window.HollieSound.getState().activated) {
-                setTimeout(() => window.HollieSound.restart(), 100);
+                setTimeout(() => window.HollieSound.restart(), 200);
             }
         }, { passive: true });
         
         // Ensure audio survives page focus changes
         window.addEventListener('focus', () => {
             if (window.HollieSound && window.HollieSound.getState().activated) {
-                setTimeout(() => window.HollieSound.restart(), 100);
+                setTimeout(() => window.HollieSound.restart(), 200);
             }
         });
 
