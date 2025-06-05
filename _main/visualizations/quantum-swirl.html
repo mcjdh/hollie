@@ -45,6 +45,8 @@
         .c2 { color: var(--cosmos-melon); text-shadow: 0 0 2px currentColor; }
         .c3 { color: var(--cosmos-orange); text-shadow: 0 0 3px currentColor; }
         .c4 { color: var(--cosmos-tiffany); text-shadow: 0 0 4px currentColor; }
+        .c5 { color: var(--cosmos-tiffany-bright); text-shadow: 0 0 4px currentColor; }
+        .c6 { color: var(--cosmos-melon-bright); text-shadow: 0 0 4px currentColor; }
           .info {
             position: fixed;
             top: 10px;
@@ -63,7 +65,7 @@
 </head>
 <body>    <div class="info">
         ∿ ⟲◎⟲ ∿<br>
-        ψ(r,θ,t) = sin(r·α-t)·cos(3θ+t)<br>
+        ψ(r,θ,t) = sin(0.15r-0.05t)+cos(4θ+0.03t)<br>
         t: <span id="timeDisplay">0</span><br>
         ⌫ ◦ ↩
     </div>
@@ -71,7 +73,9 @@
     <script>
         let W, H;
         let charWidth, charHeight;
-        let t = 0;        function updateDimensions() {
+        let t = 0;
+        const dt = 0.5;
+        function updateDimensions() {
             const test = document.createElement('div');
             test.style.position = 'absolute';
             test.style.visibility = 'hidden';
@@ -103,23 +107,23 @@
                     const a = Math.atan2(dy, dx);
                     
                     // ∮ quantum swirl
-                    const v = Math.sin(r * 0.2 - t * 0.05) + Math.cos(a * 3 + t * 0.03);
-                    const n = (Math.sin(r * 0.05 + t * 0.02) + 1) * 0.5;
-                    const quantum = Math.sin(r * 0.1 + a * 2 - t * 0.04) * 0.3;
-                    
-                    let val = v * n + quantum;
+                    const swirl = Math.sin(r * 0.15 - t * 0.05) + Math.cos(a * 4 + t * 0.03);
+                    const noise = (Math.sin(r * 0.04 + t * 0.015) + 1) * 0.5;
+                    const quantum = Math.sin(r * 0.08 + a * 2 - t * 0.04) * 0.35;
+
+                    let val = swirl * noise + quantum;
                     val = (val + 2) / 4;
                     val = Math.max(0, Math.min(1, val));
                     
                     const idx = Math.floor(val * (symbols.length - 1));
-                    const colorIdx = Math.floor(val * 4.999);
+                    const colorIdx = Math.floor(val * 6.999);
                     out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
                 }
                 out += '\n';
             }
             document.getElementById('canvas').innerHTML = out;
-            document.getElementById('timeDisplay').textContent = t;
-            t += 1;
+            document.getElementById('timeDisplay').textContent = t.toFixed(0);
+            t += dt;
             requestAnimationFrame(render);
         }
 
