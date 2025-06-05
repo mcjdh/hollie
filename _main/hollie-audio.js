@@ -15,21 +15,56 @@ class HollieAudio {
         this.reverb = null;
         this.delay = null;
         this.evolutionTimer = null;
-        
-        // Musical parameters - 8-bit inspired
+          // Musical parameters - 8-bit inspired
         this.baseFreq = 110; // A2
         this.scale = [1, 9/8, 5/4, 4/3, 3/2, 5/3, 15/8, 2]; // Just intonation
         this.pentatonic = [1, 9/8, 5/4, 3/2, 5/3]; // Classic 8-bit pentatonic
-        this.tempo = 140; // Faster, more chiptune-like
+        this.modes = {
+            ionian: [1, 9/8, 5/4, 4/3, 3/2, 5/3, 15/8, 2],
+            dorian: [1, 9/8, 6/5, 4/3, 3/2, 5/3, 9/5, 2],
+            phrygian: [1, 16/15, 6/5, 4/3, 3/2, 8/5, 9/5, 2],
+            lydian: [1, 9/8, 5/4, 45/32, 3/2, 5/3, 15/8, 2],
+            mixolydian: [1, 9/8, 5/4, 4/3, 3/2, 5/3, 16/9, 2],
+            aeolian: [1, 9/8, 6/5, 4/3, 3/2, 8/5, 16/9, 2],
+            locrian: [1, 16/15, 6/5, 4/3, 64/45, 8/5, 16/9, 2]        };
+        this.currentMode = 'ionian';
+        
+        // Standardized tempo system (72-111 BPM range)
+        this.minTempo = 72;
+        this.maxTempo = 111;
+        this.tempo = 90; // Start in middle of range
+        this.targetTempo = 90;
+        this.tempoTransitionSpeed = 0.1; // How fast tempo changes occur
+        this.lastTempoChange = 0; // Track when we last changed tempo
+        
         this.beatDuration = 60 / this.tempo; // seconds per beat
-        this.measureDuration = this.beatDuration * 4; // 4/4 time
+        this.timeSignature = [4, 4]; // Fixed 4/4 time signature
+        this.measureDuration = this.beatDuration * 4; // Always 4 beats per measure
         this.phase = 0;
         this.harmonics = [];
         this.currentMeasure = 0;
         this.currentBeat = 0;
-        this.measureStructure = [4, 4, 8, 16]; // Measures in each section
+        
+        // Infinite procedural structure
         this.currentSection = 0;
         this.sectionMeasure = 0;
+        this.nextSectionLength = this.generateSectionLength();
+        this.currentKey = 0; // Relative to base frequency
+        this.chordProgression = [];
+        this.currentChord = 0;
+        this.musicalThemes = [];
+        this.currentTheme = null;
+        this.developmentStage = 0; // How far we've developed the current theme
+        
+        // Procedural rhythm patterns
+        this.rhythmPatterns = {
+            kick: [],
+            snare: [],
+            hihat: [],
+            melody: [],
+            bass: []
+        };
+        this.currentRhythmSet = 0;
         
         // 8-bit specific parameters
         this.channels = {
@@ -310,17 +345,21 @@ class HollieAudio {
         if (!this.audioContext || this.isPlaying) return;
         
         console.log('🎵 Starting Hollie Audio System...');
-        
-        this.isPlaying = true;
+          this.isPlaying = true;
         this.currentMeasure = 0;
         this.currentBeat = 0;
         this.currentSection = 0;
         this.sectionMeasure = 0;
         this.arpeggioIndex = 0;
-        this.currentNote = 0;
+        this.currentNote = 0;        this.currentChord = 0;
+        this.developmentStage = 0;
+        this.lastTempoChange = 0;
         
-        // Generate melody sequence
-        this.generateMelody();
+        // Initialize procedural music system
+        this.initializeProceduralSystem();
+        
+        // Generate initial musical content
+        this.generateNewSection();
         
         // Create 8-bit style channels
         this.channels.pulse1 = this.createPulseWave(this.baseFreq * 2, 0.25); // Main melody
@@ -390,52 +429,652 @@ class HollieAudio {
         // Begin structured musical evolution
         this.scheduleNextBeat();
         
-        console.log('🎵 Audio system started, playing:', this.isPlaying);
+        console.log('🎵 Audio system started, playing:', this.isPlaying);    }
+    
+    // ========== INFINITE PROCEDURAL SYSTEM ==========
+    
+    initializeProceduralSystem() {
+        // Create initial musical themes
+        this.generateInitialThemes();
+        
+        // Generate first chord progression
+        this.generateChordProgression();
+        
+        // Generate initial rhythm patterns
+        this.generateRhythmPatterns();
+        
+        console.log('🎵 Procedural system initialized');
+        console.log('🎵 Initial themes:', this.musicalThemes.length);
+        console.log('🎵 Chord progression:', this.chordProgression);
     }
     
-    generateMelody() {
-        // Generate 8-bit style melody patterns
-        this.melodyNotes = [];
-        const currentScale = this.getCurrentScale();
+    generateInitialThemes() {
+        this.musicalThemes = [];
         
-        // Create different melody patterns based on section
-        const patterns = {
-            4: [0, 2, 1, 0], // Simple ascending/descending
-            8: [0, 2, 4, 2, 1, 3, 2, 0], // More complex phrase
-            16: this.generateComplexMelody(currentScale) // Procedural melody
+        // Create 3-5 base themes that can be developed
+        const themeCount = 3 + Math.floor(Math.random() * 3);
+        
+        for (let i = 0; i < themeCount; i++) {
+            const theme = this.createMusicalTheme();
+            this.musicalThemes.push(theme);
+        }
+        
+        // Select first theme
+        this.currentTheme = this.musicalThemes[0];
+        this.developmentStage = 0;
+    }
+    
+    createMusicalTheme() {
+        const currentScale = this.getCurrentScale();
+        const length = 4 + Math.floor(Math.random() * 5); // 4-8 note themes
+        
+        const theme = {
+            melody: [],
+            rhythm: [],
+            harmony: [],
+            character: this.generateThemeCharacter(),
+            variations: [],
+            developmentLevel: 0
         };
         
-        const sectionLength = this.measureStructure[this.currentSection];
-        const pattern = patterns[sectionLength] || patterns[4];
+        // Generate melodic contour
+        let currentNote = Math.floor(Math.random() * currentScale.length);
+        for (let i = 0; i < length; i++) {
+            theme.melody.push(currentNote);
+            theme.rhythm.push(this.generateRhythmicValue());
+            
+            // Melodic movement based on theme character
+            const movement = this.getThemeMovement(theme.character);
+            currentNote = this.applyMelodicMovement(currentNote, movement, currentScale.length);
+        }
         
-        // Extend pattern to fill measures
-        for (let measure = 0; measure < sectionLength; measure++) {
-            for (let beat = 0; beat < 4; beat++) {
-                const noteIndex = (measure * 4 + beat) % pattern.length;
-                this.melodyNotes.push(currentScale[pattern[noteIndex]]);
+        // Generate harmonic structure
+        theme.harmony = this.generateHarmonicStructure(theme.melody);
+        
+        return theme;
+    }
+    
+    generateThemeCharacter() {
+        const characters = [
+            'ascending', 'descending', 'arpeggiated', 'stepwise', 
+            'angular', 'flowing', 'rhythmic', 'lyrical',
+            'chromatic', 'pentatonic', 'modal', 'blues'
+        ];
+        
+        return characters[Math.floor(Math.random() * characters.length)];
+    }
+    
+    getThemeMovement(character) {
+        const movements = {
+            'ascending': () => Math.random() > 0.3 ? 1 : -1,
+            'descending': () => Math.random() > 0.3 ? -1 : 1,
+            'arpeggiated': () => Math.random() > 0.5 ? 2 : -2,
+            'stepwise': () => Math.random() > 0.5 ? 1 : -1,
+            'angular': () => Math.random() > 0.6 ? (Math.random() > 0.5 ? 3 : -3) : (Math.random() > 0.5 ? 1 : -1),
+            'flowing': () => Math.random() > 0.7 ? (Math.random() > 0.5 ? 2 : -2) : (Math.random() > 0.5 ? 1 : -1),
+            'rhythmic': () => Math.random() > 0.4 ? 0 : (Math.random() > 0.5 ? 1 : -1),
+            'lyrical': () => Math.random() > 0.6 ? (Math.random() > 0.5 ? 1 : -1) : 0
+        };
+        
+        return movements[character] || movements['stepwise'];
+    }
+    
+    applyMelodicMovement(currentNote, movementFunc, scaleLength) {
+        const movement = movementFunc();
+        let newNote = currentNote + movement;
+        
+        // Keep within scale bounds with wrapping
+        if (newNote >= scaleLength) {
+            newNote = newNote % scaleLength;
+        } else if (newNote < 0) {
+            newNote = scaleLength + (newNote % scaleLength);
+        }
+        
+        return newNote;
+    }
+    
+    generateRhythmicValue() {
+        const values = [1, 0.5, 0.25, 0.75, 1.5, 2]; // Various note lengths
+        const weights = [0.3, 0.25, 0.15, 0.1, 0.1, 0.1]; // Probability weights
+        
+        const rand = Math.random();
+        let cumulative = 0;
+        
+        for (let i = 0; i < values.length; i++) {
+            cumulative += weights[i];
+            if (rand <= cumulative) {
+                return values[i];
+            }
+        }
+        
+        return 1; // Default
+    }
+    
+    generateHarmonicStructure(melody) {
+        const harmony = [];
+        const chordTypes = ['major', 'minor', 'diminished', 'augmented', 'sus2', 'sus4'];
+        
+        for (let i = 0; i < melody.length; i++) {
+            const root = melody[i];
+            const chordType = chordTypes[Math.floor(Math.random() * chordTypes.length)];
+            harmony.push({ root, type: chordType });
+        }
+        
+        return harmony;
+    }
+    
+    generateChordProgression() {
+        const progressionLength = 4 + Math.floor(Math.random() * 5); // 4-8 chords
+        const currentScale = this.getCurrentScale();
+        this.chordProgression = [];
+        
+        // Common chord progression patterns in various keys
+        const progressionTemplates = [
+            [0, 3, 4, 0], // I-IV-V-I
+            [0, 5, 3, 4], // I-vi-IV-V
+            [0, 4, 5, 3], // I-V-vi-IV
+            [5, 3, 0, 4], // vi-IV-I-V
+            [0, 2, 3, 4], // I-iii-IV-V
+            [0, 6, 3, 4], // I-vii-IV-V (modal)
+        ];
+        
+        const template = progressionTemplates[Math.floor(Math.random() * progressionTemplates.length)];
+        
+        for (let i = 0; i < progressionLength; i++) {
+            const scaleIndex = template[i % template.length];
+            const chordQuality = this.determineChordQuality(scaleIndex);
+            
+            this.chordProgression.push({
+                root: scaleIndex,
+                quality: chordQuality,
+                extensions: this.generateChordExtensions()
+            });
+        }
+        
+        console.log('🎵 New chord progression generated:', this.chordProgression);
+    }
+    
+    determineChordQuality(scaleIndex) {
+        // Determine chord quality based on mode and scale degree
+        const qualities = {
+            ionian: ['major', 'minor', 'minor', 'major', 'major', 'minor', 'diminished'],
+            dorian: ['minor', 'minor', 'major', 'major', 'minor', 'diminished', 'major'],
+            phrygian: ['minor', 'major', 'major', 'minor', 'diminished', 'major', 'minor'],
+            lydian: ['major', 'major', 'minor', 'diminished', 'major', 'minor', 'minor'],
+            mixolydian: ['major', 'minor', 'diminished', 'major', 'minor', 'minor', 'major'],
+            aeolian: ['minor', 'diminished', 'major', 'minor', 'minor', 'major', 'major'],
+            locrian: ['diminished', 'major', 'minor', 'minor', 'major', 'major', 'minor']
+        };
+        
+        const modeQualities = qualities[this.currentMode] || qualities.ionian;
+        return modeQualities[scaleIndex % modeQualities.length];
+    }
+    
+    generateChordExtensions() {
+        const extensions = [];
+        
+        if (Math.random() > 0.7) extensions.push('7th');
+        if (Math.random() > 0.8) extensions.push('9th');
+        if (Math.random() > 0.9) extensions.push('11th');
+        
+        return extensions;
+    }
+    
+    generateRhythmPatterns() {
+        // Generate kick drum pattern
+        this.rhythmPatterns.kick = this.generateRhythmPattern(4, 0.6); // 4 beats, 60% chance
+        
+        // Generate snare pattern (usually on beats 2 and 4)
+        this.rhythmPatterns.snare = this.generateRhythmPattern(4, 0.3, [1, 3]); // Favor beats 2,4
+        
+        // Generate hihat pattern (more frequent)
+        this.rhythmPatterns.hihat = this.generateRhythmPattern(8, 0.7); // 8th notes
+        
+        // Generate melody rhythm
+        this.rhythmPatterns.melody = this.generateRhythmPattern(8, 0.5);
+        
+        // Generate bass rhythm
+        this.rhythmPatterns.bass = this.generateRhythmPattern(4, 0.4, [0, 2]); // Favor strong beats
+    }
+    
+    generateRhythmPattern(divisions, probability, favoredBeats = []) {
+        const pattern = [];
+        
+        for (let i = 0; i < divisions; i++) {
+            let chance = probability;
+            
+            // Increase probability for favored beats
+            if (favoredBeats.includes(i)) {
+                chance += 0.3;
+            }
+            
+            pattern.push(Math.random() < chance);
+        }
+        
+        return pattern;
+    }
+    
+    generateSectionLength() {
+        // Procedurally determine next section length
+        const possibleLengths = [2, 4, 6, 8, 12, 16, 32];
+        const weights = [0.05, 0.2, 0.15, 0.25, 0.15, 0.15, 0.05];
+        
+        const rand = Math.random();
+        let cumulative = 0;
+        
+        for (let i = 0; i < possibleLengths.length; i++) {
+            cumulative += weights[i];
+            if (rand <= cumulative) {
+                return possibleLengths[i];
+            }
+        }
+        
+        return 8; // Default
+    }
+    
+    generateNewSection() {
+        console.log(`🎵 Generating new section: ${this.nextSectionLength} measures`);
+        
+        // Evolve musical elements
+        this.evolveMusicalElements();
+        
+        // Generate new melody based on current theme
+        this.generateThemeBasedMelody();
+        
+        // Update rhythmic patterns
+        this.evolveRhythmPatterns();
+        
+        // Potentially change key or mode
+        this.considerMusicalChanges();
+        
+        // Generate next section length for the future
+        this.nextSectionLength = this.generateSectionLength();
+    }
+    
+    evolveMusicalElements() {
+        // Develop current theme
+        if (Math.random() > 0.3) {
+            this.developCurrentTheme();
+        }
+        
+        // Sometimes switch to a different theme
+        if (Math.random() > 0.7) {
+            this.switchToNewTheme();
+        }
+        
+        // Evolve chord progression
+        if (Math.random() > 0.5) {
+            this.evolveChordProgression();
+        }
+    }
+    
+    developCurrentTheme() {
+        if (!this.currentTheme) return;
+        
+        this.developmentStage++;
+        
+        // Create variation of current theme
+        const variation = this.createThemeVariation(this.currentTheme, this.developmentStage);
+        this.currentTheme.variations.push(variation);
+        this.currentTheme.developmentLevel = this.developmentStage;
+        
+        console.log(`🎵 Theme developed to stage ${this.developmentStage}`);
+    }
+    
+    createThemeVariation(theme, stage) {
+        const variation = {
+            melody: [...theme.melody],
+            rhythm: [...theme.rhythm],
+            harmony: [...theme.harmony],
+            transformations: []
+        };
+        
+        // Apply transformations based on development stage
+        const transformations = [
+            'inversion', 'retrograde', 'augmentation', 'diminution',
+            'sequence', 'fragmentation', 'extension', 'compression'
+        ];
+        
+        const numTransformations = Math.min(stage, 3);
+        
+        for (let i = 0; i < numTransformations; i++) {
+            const transform = transformations[Math.floor(Math.random() * transformations.length)];
+            this.applyTransformation(variation, transform);
+            variation.transformations.push(transform);
+        }
+        
+        return variation;
+    }
+    
+    applyTransformation(variation, transform) {
+        switch (transform) {
+            case 'inversion':
+                variation.melody = this.invertMelody(variation.melody);
+                break;
+            case 'retrograde':
+                variation.melody.reverse();
+                variation.rhythm.reverse();
+                break;
+            case 'augmentation':
+                variation.rhythm = variation.rhythm.map(r => r * 2);
+                break;
+            case 'diminution':
+                variation.rhythm = variation.rhythm.map(r => r * 0.5);
+                break;
+            case 'sequence':
+                variation.melody = this.sequenceMelody(variation.melody);
+                break;
+            case 'fragmentation':
+                variation = this.fragmentTheme(variation);
+                break;
+            case 'extension':
+                variation.melody = this.extendMelody(variation.melody);
+                break;
+            case 'compression':
+                variation.melody = this.compressMelody(variation.melody);
+                break;
+        }
+    }
+    
+    invertMelody(melody) {
+        if (melody.length === 0) return melody;
+        
+        const center = melody[0];
+        return melody.map(note => center - (note - center));
+    }
+    
+    sequenceMelody(melody) {
+        const sequenced = [...melody];
+        const interval = 1 + Math.floor(Math.random() * 3); // Sequence up by 1-3 steps
+        
+        for (let i = 0; i < melody.length; i++) {
+            sequenced.push(melody[i] + interval);
+        }
+        
+        return sequenced;
+    }
+    
+    fragmentTheme(variation) {
+        const fragmentLength = Math.max(1, Math.floor(variation.melody.length / 2));
+        variation.melody = variation.melody.slice(0, fragmentLength);
+        variation.rhythm = variation.rhythm.slice(0, fragmentLength);
+        return variation;
+    }
+    
+    extendMelody(melody) {
+        const extension = [];
+        const lastNote = melody[melody.length - 1];
+        const extensionLength = 2 + Math.floor(Math.random() * 4);
+        
+        for (let i = 0; i < extensionLength; i++) {
+            const movement = Math.random() > 0.5 ? 1 : -1;
+            extension.push(lastNote + movement * (i + 1));
+        }
+        
+        return [...melody, ...extension];
+    }
+    
+    compressMelody(melody) {
+        if (melody.length <= 2) return melody;
+        
+        const compressed = [];
+        for (let i = 0; i < melody.length; i += 2) {
+            compressed.push(melody[i]);
+        }
+        
+        return compressed;
+    }
+    
+    switchToNewTheme() {
+        const availableThemes = this.musicalThemes.filter(theme => theme !== this.currentTheme);
+        
+        if (availableThemes.length === 0) {
+            // Create a new theme
+            const newTheme = this.createMusicalTheme();
+            this.musicalThemes.push(newTheme);
+            this.currentTheme = newTheme;
+        } else {
+            this.currentTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
+        }
+        
+        this.developmentStage = 0;
+        console.log('🎵 Switched to new theme:', this.currentTheme.character);
+    }
+    
+    evolveChordProgression() {
+        // Randomly modify 1-2 chords in the progression
+        const numChanges = 1 + Math.floor(Math.random() * 2);
+        
+        for (let i = 0; i < numChanges; i++) {
+            const chordIndex = Math.floor(Math.random() * this.chordProgression.length);
+            const currentScale = this.getCurrentScale();
+            
+            // Change to a related chord
+            const originalRoot = this.chordProgression[chordIndex].root;
+            const newRoot = this.getRelatedChord(originalRoot, currentScale.length);
+            
+            this.chordProgression[chordIndex] = {
+                root: newRoot,
+                quality: this.determineChordQuality(newRoot),
+                extensions: this.generateChordExtensions()
+            };
+        }
+        
+        console.log('🎵 Chord progression evolved:', this.chordProgression);
+    }
+    
+    getRelatedChord(originalRoot, scaleLength) {
+        // Get chords that are harmonically related
+        const relationships = [-1, 1, -2, 2, -3, 3]; // Stepwise and third relationships
+        const relationship = relationships[Math.floor(Math.random() * relationships.length)];
+        
+        let newRoot = originalRoot + relationship;
+        
+        // Keep within scale bounds
+        if (newRoot >= scaleLength) {
+            newRoot = newRoot % scaleLength;
+        } else if (newRoot < 0) {
+            newRoot = scaleLength + (newRoot % scaleLength);
+        }
+        
+        return newRoot;
+    }
+    
+    evolveRhythmPatterns() {
+        // Evolve each rhythm pattern slightly
+        Object.keys(this.rhythmPatterns).forEach(patternType => {
+            this.rhythmPatterns[patternType] = this.evolvePattern(this.rhythmPatterns[patternType]);
+        });
+    }
+    
+    evolvePattern(pattern) {
+        const evolved = [...pattern];
+        const numChanges = Math.floor(Math.random() * Math.max(1, pattern.length / 4));
+        
+        for (let i = 0; i < numChanges; i++) {
+            const index = Math.floor(Math.random() * pattern.length);
+            evolved[index] = !evolved[index]; // Flip the beat
+        }
+        
+        return evolved;
+    }
+    
+    considerMusicalChanges() {
+        // Consider key changes
+        if (Math.random() > 0.85) {
+            this.changeKey();
+        }
+        
+        // Consider mode changes
+        if (Math.random() > 0.9) {
+            this.changeMode();
+        }
+        
+        // Consider tempo changes
+        if (Math.random() > 0.95) {
+            this.changeTempo();
+        }
+        
+        // Consider time signature changes
+        if (Math.random() > 0.98) {
+            this.changeTimeSignature();
+        }
+    }
+    
+    changeKey() {
+        const keyChanges = [-2, -1, 1, 2, 3, -3]; // Common key relationships
+        const change = keyChanges[Math.floor(Math.random() * keyChanges.length)];
+        
+        this.currentKey += change;
+        this.baseFreq = 110 * Math.pow(2, this.currentKey / 12); // Adjust base frequency
+        
+        console.log(`🎵 Key changed by ${change} semitones, new base frequency: ${this.baseFreq.toFixed(2)}Hz`);
+    }
+    
+    changeMode() {
+        const modes = Object.keys(this.modes);
+        const newMode = modes[Math.floor(Math.random() * modes.length)];
+        
+        if (newMode !== this.currentMode) {
+            this.currentMode = newMode;
+            console.log(`🎵 Mode changed to: ${this.currentMode}`);
+            
+            // Regenerate chord progression for new mode
+            this.generateChordProgression();
+        }
+    }
+      changeTempo() {
+        // Generate new target tempo within 72-111 BPM range
+        this.targetTempo = this.minTempo + Math.random() * (this.maxTempo - this.minTempo);
+        this.lastTempoChange = Date.now();
+        
+        console.log(`🎵 Target tempo set to: ${this.targetTempo.toFixed(1)} BPM`);
+    }
+      // Time signature is fixed at 4/4 - this method is deprecated but kept for compatibility
+    changeTimeSignature() {
+        // No-op: Time signature is now fixed at 4/4
+        console.log(`🎵 Time signature remains at 4/4 (standardized)`);
+    }
+    
+    generateThemeBasedMelody() {
+        this.melodyNotes = [];
+        
+        if (!this.currentTheme) {
+            // Fallback to simple melody generation
+            this.generateMelody();
+            return;
+        }
+        
+        // Use current theme and its variations
+        const themeToUse = this.currentTheme.variations.length > 0 ? 
+            this.currentTheme.variations[this.currentTheme.variations.length - 1] : 
+            this.currentTheme;
+        
+        const currentScale = this.getCurrentScale();
+        const measuresInSection = this.nextSectionLength;
+          // Repeat and develop the theme across the section
+        for (let measure = 0; measure < measuresInSection; measure++) {
+            for (let beat = 0; beat < 4; beat++) { // Fixed 4/4 time signature
+                const themeIndex = (measure * 4 + beat) % themeToUse.melody.length;
+                const scaleIndex = Math.max(0, Math.min(currentScale.length - 1, themeToUse.melody[themeIndex]));
+                this.melodyNotes.push(currentScale[scaleIndex]);
+            }
+        }
+        
+        console.log(`🎵 Generated theme-based melody with ${this.melodyNotes.length} notes`);
+    }
+    
+    // ========== END INFINITE PROCEDURAL SYSTEM ==========
+      generateMelody() {
+        // Legacy method - now delegates to theme-based generation
+        if (this.currentTheme) {
+            this.generateThemeBasedMelody();
+        } else {
+            // Fallback simple generation
+            this.melodyNotes = [];
+            const currentScale = this.getCurrentScale();
+            
+            for (let i = 0; i < 16; i++) {
+                const noteIndex = Math.floor(Math.random() * currentScale.length);
+                this.melodyNotes.push(currentScale[noteIndex]);
             }
         }
     }
     
     generateComplexMelody(scale) {
+        // Enhanced complex melody generation
         const pattern = [];
+        let lastNote = 0;
+        
         for (let i = 0; i < 16; i++) {
-            // Weighted random walk through scale
-            const lastNote = pattern[pattern.length - 1] || 0;
-            const direction = Math.random() > 0.5 ? 1 : -1;
-            const step = Math.random() > 0.7 ? 2 : 1; // Occasional jumps
-            let nextNote = lastNote + (direction * step);
+            // More sophisticated melodic movement
+            const movement = this.getComplexMelodicMovement(i, lastNote, scale.length);
+            let nextNote = lastNote + movement;
             
-            // Keep within scale bounds
-            nextNote = Math.max(0, Math.min(scale.length - 1, nextNote));
+            // Keep within bounds with more musical wrapping
+            nextNote = this.constrainToScale(nextNote, scale.length);
             pattern.push(nextNote);
+            lastNote = nextNote;
         }
         return pattern;
     }
     
-    getCurrentScale() {
-        const sectionLength = this.measureStructure[this.currentSection];
-        return sectionLength >= 8 ? this.scale : this.pentatonic;
+    getComplexMelodicMovement(position, lastNote, scaleLength) {
+        // Create more musical melodic movement
+        const phrase = Math.floor(position / 4); // Which 4-note phrase
+        const positionInPhrase = position % 4;
+        
+        // Different movement patterns for different phrase positions
+        const movementTypes = {
+            0: () => Math.random() > 0.4 ? this.getStepwiseMovement() : this.getLeapMovement(),
+            1: () => Math.random() > 0.6 ? this.getStepwiseMovement() : this.getSequentialMovement(phrase),
+            2: () => Math.random() > 0.5 ? this.getContrastingMovement(lastNote, scaleLength) : this.getStepwiseMovement(),
+            3: () => this.getCadentialMovement(lastNote, scaleLength)
+        };
+        
+        return movementTypes[positionInPhrase]();
+    }
+    
+    getStepwiseMovement() {
+        return Math.random() > 0.5 ? 1 : -1;
+    }
+    
+    getLeapMovement() {
+        const leaps = [-4, -3, -2, 2, 3, 4, 5];
+        return leaps[Math.floor(Math.random() * leaps.length)];
+    }
+    
+    getSequentialMovement(phrase) {
+        return phrase % 2 === 0 ? 1 : -1; // Alternating direction
+    }
+    
+    getContrastingMovement(lastNote, scaleLength) {
+        // Move away from extremes, toward extremes from middle
+        const middle = Math.floor(scaleLength / 2);
+        if (lastNote < middle) {
+            return Math.random() > 0.3 ? 2 : 1; // Tend upward
+        } else {
+            return Math.random() > 0.3 ? -2 : -1; // Tend downward
+        }
+    }
+    
+    getCadentialMovement(lastNote, scaleLength) {
+        // Tendency toward resolution
+        const target = Math.floor(scaleLength / 2); // Center of scale
+        return lastNote > target ? -1 : 1;
+    }
+    
+    constrainToScale(note, scaleLength) {
+        while (note >= scaleLength) {
+            note -= scaleLength;
+        }
+        while (note < 0) {
+            note += scaleLength;
+        }
+        return note;
+    }
+      getCurrentScale() {
+        return this.modes[this.currentMode] || this.scale;
     }
     
     scheduleNextBeat() {
@@ -445,11 +1084,9 @@ class HollieAudio {
         const nextBeatTime = now + 0.05; // Small scheduling ahead
         
         // Process current beat immediately
-        this.processBeat(nextBeatTime);
-        
-        // Advance timing
+        this.processBeat(nextBeatTime);        // Advance timing
         this.currentBeat++;
-        if (this.currentBeat >= 4) {
+        if (this.currentBeat >= 4) { // Fixed 4/4 time signature
             this.currentBeat = 0;
             this.currentMeasure++;
             this.sectionMeasure++;
@@ -458,18 +1095,183 @@ class HollieAudio {
         
         // Schedule next beat
         this.evolutionTimer = setTimeout(() => this.scheduleNextBeat(), this.beatDuration * 1000);
-    }
-    
-    processBeat(beatTime) {
-        // Beat-based musical events
+    }    processBeat(beatTime) {
+        // Update tempo transitions
+        this.updateTempo(beatTime);
+        
+        // Beat-based musical events (fixed 4/4 time)
         const beatInMeasure = this.currentBeat;
         const isDownbeat = beatInMeasure === 0;
-        const isUpbeat = beatInMeasure === 2;
+        const isUpbeat = beatInMeasure === 2; // Beat 3 in 4/4 time
         const totalBeats = this.currentMeasure * 4 + this.currentBeat;
         
-        // 8-bit Channel Updates
-        this.update8BitChannels(beatTime, isDownbeat, isUpbeat, totalBeats);
+        // 8-bit Channel Updates with procedural rhythm
+        this.update8BitChannelsWithRhythm(beatTime, isDownbeat, isUpbeat, totalBeats);
         
+        // Legacy harmonic updates for ambient layer
+        this.updateLegacyHarmonics(beatTime, isDownbeat, isUpbeat, totalBeats);
+        
+        this.phase += 0.1;
+    }
+    
+    update8BitChannelsWithRhythm(beatTime, isDownbeat, isUpbeat, totalBeats) {
+        const currentScale = this.getCurrentScale();
+        const currentChord = this.chordProgression[this.currentChord % this.chordProgression.length];
+        
+        // Validate inputs
+        if (!currentScale || currentScale.length === 0 || !isFinite(this.baseFreq) || this.baseFreq <= 0) {
+            return;
+        }
+        
+        // Use rhythm patterns for more sophisticated timing
+        const beatInPattern = totalBeats % 8;
+        const measureBeat = this.currentBeat;
+        
+        // Pulse 1 - Main Melody (uses melody rhythm pattern)
+        if (this.channels.pulse1 && this.melodyNotes.length > 0) {
+            const usePattern = this.rhythmPatterns.melody[beatInPattern % this.rhythmPatterns.melody.length];
+            
+            if (usePattern) {
+                const noteIndex = totalBeats % this.melodyNotes.length;
+                const freq = this.baseFreq * 2 * this.melodyNotes[noteIndex];
+                
+                if (freq && isFinite(freq) && freq > 0) {
+                    this.channels.pulse1.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
+                    
+                    // Dynamic volume based on theme character
+                    let gain = 0.12;
+                    if (this.currentTheme) {
+                        gain *= this.getThemeVolumeMultiplier(this.currentTheme.character);
+                    }
+                    
+                    this.channels.pulse1.gain.gain.setValueAtTime(gain, beatTime);
+                    this.channels.pulse1.gain.gain.exponentialRampToValueAtTime(gain * 0.3, beatTime + this.beatDuration * 0.8);
+                }
+            }
+        }
+        
+        // Pulse 2 - Harmony (based on current chord)
+        if (this.channels.pulse2 && currentChord) {
+            const usePattern = this.rhythmPatterns.melody[(beatInPattern + 2) % this.rhythmPatterns.melody.length];
+            
+            if (usePattern && !isDownbeat) {
+                const harmonyNote = this.getChordTone(currentChord, 1); // Third of chord
+                const freq = this.baseFreq * 1.5 * harmonyNote;
+                
+                if (freq && isFinite(freq) && freq > 0) {
+                    this.channels.pulse2.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
+                    
+                    const gain = isUpbeat ? 0.08 : 0.05;
+                    this.channels.pulse2.gain.gain.setValueAtTime(gain, beatTime);
+                    this.channels.pulse2.gain.gain.exponentialRampToValueAtTime(gain * 0.2, beatTime + this.beatDuration * 0.6);
+                }
+            }
+        }
+        
+        // Triangle - Bass (follows chord progression)
+        if (this.channels.triangle && currentChord) {
+            const usePattern = this.rhythmPatterns.bass[measureBeat % this.rhythmPatterns.bass.length];
+            
+            if (usePattern) {
+                const bassNote = this.getChordTone(currentChord, 0); // Root of chord
+                const freq = this.baseFreq * bassNote;
+                
+                if (freq && isFinite(freq) && freq > 0) {
+                    this.channels.triangle.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
+                    
+                    const gain = isDownbeat ? 0.2 : 0.15;
+                    this.channels.triangle.gain.gain.setValueAtTime(gain, beatTime);
+                    this.channels.triangle.gain.gain.exponentialRampToValueAtTime(gain * 0.1, beatTime + this.beatDuration);
+                }
+            }
+        }
+        
+        // Noise - Percussion (uses kick and snare patterns)
+        if (this.channels.noise) {
+            const useKick = this.rhythmPatterns.kick[measureBeat % this.rhythmPatterns.kick.length];
+            const useSnare = this.rhythmPatterns.snare[measureBeat % this.rhythmPatterns.snare.length];
+            
+            if (useKick || useSnare) {
+                const gain = useKick ? 0.06 : 0.04;
+                this.channels.noise.gain.gain.setValueAtTime(gain, beatTime);
+                this.channels.noise.gain.gain.exponentialRampToValueAtTime(0.001, beatTime + 0.1);
+                
+                // Different filter settings for kick vs snare
+                const cutoff = useKick ? 200 : 4000;
+                this.channels.noise.filter.frequency.setValueAtTime(cutoff, beatTime);
+            }
+        }
+        
+        // Arpeggio - Arpeggiated chord tones
+        if (this.channels.arp && currentChord) {
+            const usePattern = this.rhythmPatterns.hihat[beatInPattern % this.rhythmPatterns.hihat.length];
+            
+            if (usePattern) {
+                const arpTone = this.getChordTone(currentChord, this.arpeggioIndex % 4);
+                const freq = this.baseFreq * 3 * arpTone;
+                
+                if (freq && isFinite(freq) && freq > 0) {
+                    this.channels.arp.osc.frequency.exponentialRampToValueAtTime(freq, beatTime);
+                    
+                    const gain = 0.05;
+                    this.channels.arp.gain.gain.setValueAtTime(gain, beatTime);
+                    this.channels.arp.gain.gain.exponentialRampToValueAtTime(gain * 0.1, beatTime + this.beatDuration * 0.5);
+                }
+                
+                this.arpeggioIndex++;
+            }
+        }
+        
+        // Advance chord progression
+        if (isDownbeat && this.currentMeasure % 2 === 0) {
+            this.currentChord = (this.currentChord + 1) % this.chordProgression.length;
+        }
+    }
+    
+    getChordTone(chord, index) {
+        const currentScale = this.getCurrentScale();
+        const root = currentScale[chord.root % currentScale.length];
+        
+        // Generate chord tones based on chord quality
+        const intervals = this.getChordIntervals(chord.quality);
+        const toneIndex = index % intervals.length;
+        
+        return root * intervals[toneIndex];
+    }
+    
+    getChordIntervals(quality) {
+        const intervals = {
+            'major': [1, 5/4, 3/2, 2],
+            'minor': [1, 6/5, 3/2, 2],
+            'diminished': [1, 6/5, 64/45, 2],
+            'augmented': [1, 5/4, 8/5, 2],
+            'sus2': [1, 9/8, 3/2, 2],
+            'sus4': [1, 4/3, 3/2, 2]
+        };
+        
+        return intervals[quality] || intervals['major'];
+    }
+    
+    getThemeVolumeMultiplier(character) {
+        const multipliers = {
+            'ascending': 1.1,
+            'descending': 0.9,
+            'arpeggiated': 1.0,
+            'stepwise': 0.95,
+            'angular': 1.2,
+            'flowing': 0.85,
+            'rhythmic': 1.3,
+            'lyrical': 0.8,
+            'chromatic': 1.1,
+            'pentatonic': 0.9,
+            'modal': 1.0,
+            'blues': 1.15
+        };
+        
+        return multipliers[character] || 1.0;
+    }
+    
+    updateLegacyHarmonics(beatTime, isDownbeat, isUpbeat, totalBeats) {
         // Legacy harmonic updates for ambient layer
         this.oscillators.forEach((osc, i) => {
             const harmonicGain = this.getHarmonicGain(i);
@@ -504,8 +1306,6 @@ class HollieAudio {
                 );
             }
         });
-        
-        this.phase += 0.1;
     }
     
     update8BitChannels(beatTime, isDownbeat, isUpbeat, totalBeats) {
@@ -591,13 +1391,10 @@ class HollieAudio {
             this.arpeggioIndex++;
         }
     }
-    
-    processMeasure() {
-        const measuresInCurrentSection = this.measureStructure[this.currentSection];
-        
-        // Check if we need to move to next section
-        if (this.sectionMeasure >= measuresInCurrentSection) {
-            this.currentSection = (this.currentSection + 1) % this.measureStructure.length;
+      processMeasure() {
+        // Check if we need to move to next section (infinite system)
+        if (this.sectionMeasure >= this.nextSectionLength) {
+            this.currentSection++;
             this.sectionMeasure = 0;
             this.processSection();
         }
@@ -609,13 +1406,11 @@ class HollieAudio {
     
     processSection() {
         const now = this.audioContext.currentTime;
-        const sectionType = this.measureStructure[this.currentSection];
         
-        console.log(`🎵 New 8-bit section: ${sectionType} measures`);
+        console.log(`🎵 New infinite section ${this.currentSection}: ${this.nextSectionLength} measures`);
         
-        // Regenerate melody for new section
-        this.generateMelody();
-        this.currentNote = 0;
+        // Generate completely new section
+        this.generateNewSection();
         
         // Update arpeggio pattern based on section
         switch (sectionType) {
@@ -687,19 +1482,25 @@ class HollieAudio {
             }
         });
     }
-    
-    getCurrentScaleIndex(harmonicIndex) {
-        const sectionType = this.measureStructure[this.currentSection];
+      getCurrentScaleIndex(harmonicIndex) {
+        const sectionLength = this.nextSectionLength;
+        const currentScale = this.getCurrentScale();
         
-        switch (sectionType) {
-            case 4:
+        // Dynamic scale index based on current theme and development
+        if (this.currentTheme && this.currentTheme.harmony.length > 0) {
+            const harmonyIndex = harmonicIndex % this.currentTheme.harmony.length;
+            return this.currentTheme.harmony[harmonyIndex].root % currentScale.length;
+        }
+        
+        // Fallback patterns based on section length
+        switch (true) {
+            case sectionLength <= 4:
                 return [0, 4, 2, 0, 1][harmonicIndex] || 0;
-            case 8:
-                return [0, 2, 4, 0, 6][harmonicIndex] || 0;
-            case 16:
-                return Math.floor(Math.sin(this.phase + harmonicIndex) * 3.5 + 3.5) % this.scale.length;
+            case sectionLength <= 8:
+                return [0, 2, 4, 0, 6][harmonicIndex] || 0;            case sectionLength >= 16:
+                return Math.floor(Math.sin(this.phase + harmonicIndex) * 3.5 + 3.5) % currentScale.length;
             default:
-                return harmonicIndex % this.scale.length;
+                return harmonicIndex % currentScale.length;
         }
     }
     
@@ -796,8 +1597,7 @@ class HollieAudio {
             this.start();
         }
     }
-    
-    getState() {
+      getState() {
         return {
             initialized: this.isInitialized,
             playing: this.isPlaying,
@@ -808,7 +1608,17 @@ class HollieAudio {
             currentBeat: this.currentBeat,
             currentSection: this.currentSection,
             sectionMeasure: this.sectionMeasure,
-            tempo: this.tempo
+            nextSectionLength: this.nextSectionLength,
+            tempo: this.tempo,
+            timeSignature: this.timeSignature,
+            currentMode: this.currentMode,
+            currentKey: this.currentKey,
+            currentTheme: this.currentTheme ? this.currentTheme.character : null,
+            developmentStage: this.developmentStage,
+            chordProgression: this.chordProgression,
+            currentChord: this.currentChord,
+            musicalThemes: this.musicalThemes,
+            rhythmPatterns: Object.keys(this.rhythmPatterns)
         };
     }
     
@@ -873,6 +1683,93 @@ class HollieAudio {
         
         console.log('🎵 Immediate sound triggered');
     }
+    
+    // ========== PROCEDURAL TEMPO SYSTEM ==========
+    
+    updateTempo(currentTime) {
+        // Gradually transition to target tempo
+        if (Math.abs(this.tempo - this.targetTempo) > 0.1) {
+            const tempoDirection = this.targetTempo > this.tempo ? 1 : -1;
+            this.tempo += tempoDirection * this.tempoTransitionSpeed;
+            
+            // Update beat duration
+            this.beatDuration = 60 / this.tempo;
+            this.measureDuration = this.beatDuration * 4; // Always 4/4
+            
+            console.log(`🎵 Tempo transitioning: ${this.tempo.toFixed(1)} → ${this.targetTempo} BPM`);
+        }
+    }
+    
+    generateNewTempo() {
+        // Generate a new target tempo within the 72-111 BPM range
+        // Use musical tempo relationships for smooth transitions
+        const currentTempo = this.targetTempo;
+        const tempoOptions = this.getMusicalTempoOptions(currentTempo);
+        
+        this.targetTempo = tempoOptions[Math.floor(Math.random() * tempoOptions.length)];
+        this.lastTempoChange = this.currentMeasure;
+        
+        console.log(`🎵 New target tempo: ${this.targetTempo} BPM (from ${currentTempo})`);
+    }
+    
+    getMusicalTempoOptions(currentTempo) {
+        // Generate musically related tempo options
+        const options = [];
+        
+        // Small changes (±5-10 BPM)
+        options.push(this.constrainTempo(currentTempo + 5));
+        options.push(this.constrainTempo(currentTempo + 8));
+        options.push(this.constrainTempo(currentTempo - 5));
+        options.push(this.constrainTempo(currentTempo - 8));
+        
+        // Medium changes (±12-20 BPM)
+        options.push(this.constrainTempo(currentTempo + 12));
+        options.push(this.constrainTempo(currentTempo + 16));
+        options.push(this.constrainTempo(currentTempo - 12));
+        options.push(this.constrainTempo(currentTempo - 16));
+        
+        // Larger changes (±25-35 BPM) - less frequent
+        if (Math.random() > 0.7) {
+            options.push(this.constrainTempo(currentTempo + 25));
+            options.push(this.constrainTempo(currentTempo - 25));
+        }
+        
+        // Musical tempo markings as targets
+        const musicalTempos = [72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 111];
+        options.push(...musicalTempos.filter(tempo => Math.abs(tempo - currentTempo) >= 8));
+        
+        // Remove duplicates and return
+        return [...new Set(options)];
+    }
+    
+    constrainTempo(tempo) {
+        return Math.max(this.minTempo, Math.min(this.maxTempo, Math.round(tempo)));
+    }
+    
+    shouldChangeTempoNow() {
+        // Change tempo every 8-32 measures, with some randomness
+        const measuresSinceLastChange = this.currentMeasure - this.lastTempoChange;
+        const minMeasures = 8;
+        const maxMeasures = 32;
+        
+        if (measuresSinceLastChange < minMeasures) return false;
+        if (measuresSinceLastChange >= maxMeasures) return true;
+        
+        // Probabilistic change between min and max
+        const probability = (measuresSinceLastChange - minMeasures) / (maxMeasures - minMeasures);
+        return Math.random() < probability * 0.1; // 10% max chance per measure
+    }
+    
+    getTempoBasedCharacter() {
+        // Return musical character based on current tempo range
+        if (this.tempo <= 80) return 'contemplative';
+        if (this.tempo <= 90) return 'relaxed';
+        if (this.tempo <= 100) return 'moderate';
+        if (this.tempo <= 108) return 'energetic';
+        return 'driving';
+    }
+    
+    // ========== END PROCEDURAL TEMPO SYSTEM ==========
 }
 
 // Global instance - auto-initializes on first interaction
@@ -886,7 +1783,7 @@ if (typeof module !== 'undefined' && module.exports) {
 // Global access
 window.HollieSound = HollieSound;
 
-// Debug function for console testing
+// Enhanced debug functions for infinite system
 window.testHollieAudio = function() {
     console.log('🎵 Manual audio test...');
     if (HollieSound.audioContext) {
@@ -896,5 +1793,47 @@ window.testHollieAudio = function() {
         }, 1000);
     } else {
         console.log('🎵 HollieSound not initialized');
+    }
+};
+
+window.debugHollieInfinite = function() {
+    const state = HollieSound.getState();
+    console.log('🎵 === HOLLIE INFINITE AUDIO DEBUG ===');
+    console.log('🎵 Current Section:', state.currentSection);
+    console.log('🎵 Section Progress:', `${state.sectionMeasure}/${state.nextSectionLength} measures`);
+    console.log('🎵 Current Theme:', state.currentTheme, '(stage', state.developmentStage + ')');
+    console.log('🎵 Mode:', state.currentMode);
+    console.log('🎵 Key Offset:', state.currentKey, 'semitones');
+    console.log('🎵 Time Signature:', `${state.timeSignature[0]}/${state.timeSignature[1]}`);
+    console.log('🎵 Tempo:', state.tempo, 'BPM');
+    console.log('🎵 Chord Progression:', state.chordProgression);
+    console.log('🎵 Current Chord:', state.currentChord);
+    console.log('🎵 Musical Themes:', state.musicalThemes);
+    console.log('🎵 Rhythm Patterns:', state.rhythmPatterns);
+    console.log('🎵 === END DEBUG ===');
+    
+    return state;
+};
+
+window.forceHollieEvolution = function() {
+    if (HollieSound.isPlaying) {
+        console.log('🎵 Forcing musical evolution...');
+        HollieSound.generateNewSection();
+        console.log('🎵 Evolution complete!');
+        return HollieSound.getState();
+    } else {
+        console.log('🎵 Hollie audio not currently playing');
+    }
+};
+
+window.changeHollieMode = function(modeName) {
+    if (HollieSound.modes[modeName]) {
+        HollieSound.currentMode = modeName;
+        HollieSound.generateChordProgression();
+        HollieSound.generateThemeBasedMelody();
+        console.log(`🎵 Changed to ${modeName} mode`);
+        return HollieSound.getState();
+    } else {
+        console.log('🎵 Available modes:', Object.keys(HollieSound.modes));
     }
 };
