@@ -62,6 +62,7 @@
     <div id="display"></div>
 
     <script>
+        const display = document.getElementById('display');
         // Dynamic viewport sizing
         let W, H;
         let charWidth, charHeight;
@@ -94,7 +95,6 @@
             W = Math.max(60, W);
             H = Math.max(30, H);
             
-            const display = document.getElementById('display');
             display.style.fontSize = '6px';
             display.style.lineHeight = '6px';
         }
@@ -271,7 +271,7 @@
                 output += '\n';
             }
             
-            document.getElementById('display').innerHTML = output;
+            display.innerHTML = output;
         }
         
         function loop() {

@@ -51,7 +51,9 @@
         ◎+∿+∆<br>
         ⌫ ◦ ↩
     </div>
-    <div id="display"></div>    <script>
+    <div id="display"></div>
+    <script>
+        const display = document.getElementById('display');
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
@@ -91,7 +93,6 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            const display = document.getElementById('display');
             if (display) {
                 display.style.fontSize = Math.max(fontSize, 6) + 'px';
                 display.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
@@ -361,7 +362,6 @@
                 if (y < renderH - 1) output += '\n';
             }
             
-            const display = document.getElementById('display');
             if (display) {
                 display.innerHTML = output;
             }

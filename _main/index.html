@@ -420,7 +420,9 @@
         'quantum-swirl.html',
         'spiral-gateway.html',
         'vortex-gateway.html'
-        ];        const fsElem = document.getElementById('fs');
+        ];
+        const vizCount = vizs.length;
+        const fsElem = document.getElementById('fs');
         const frameElem = document.getElementById('frame');
         const exitOverlay = document.getElementById('exitOverlay');
         
@@ -539,7 +541,7 @@
             exitListeners.forEach(cleanup => cleanup());
             exitListeners = [];
         }        function random_viz() {
-            const rand = vizs[Math.floor(Math.random() * vizs.length)];
+            const rand = vizs[Math.floor(Math.random() * vizCount)];
             open_viz(rand);
         }
 
