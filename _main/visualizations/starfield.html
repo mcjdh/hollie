@@ -13,8 +13,7 @@
             width: 100vw; 
             height: 100vh; 
             font-family: 'Courier New', monospace;
-        }
-        #display { 
+        }        #display { 
             font-family: 'Courier New', monospace; 
             color: var(--cosmos-tiffany); 
             white-space: pre; 
@@ -28,8 +27,19 @@
             left: 0;
             line-height: 1.0;
             overflow: hidden;
-            font-size: 8px;
+            font-size: 10px;
+            text-shadow: 0 0 2px currentColor;
         }
+        
+        /* Enhanced color effects for starfield */
+        .v { text-shadow: 0 0 4px var(--cosmos-tiffany), 0 0 8px var(--cosmos-tiffany-dim); }
+        .u { text-shadow: 0 0 4px var(--cosmos-coral), 0 0 8px var(--cosmos-coral-dim); }
+        .s { text-shadow: 0 0 4px var(--cosmos-orange), 0 0 8px var(--cosmos-orange-dim); }
+        .e { text-shadow: 0 0 4px var(--cosmos-melon), 0 0 8px var(--cosmos-melon-dim); }
+        .g { text-shadow: 0 0 6px var(--cosmos-coral-bright), 0 0 12px var(--cosmos-coral-bright); }
+        .p { text-shadow: 0 0 6px var(--cosmos-tiffany-bright), 0 0 12px var(--cosmos-tiffany-bright); }
+        .y { text-shadow: 0 0 6px var(--cosmos-orange-bright), 0 0 12px var(--cosmos-orange-bright); }
+        .b { text-shadow: 0 0 6px var(--cosmos-melon-bright), 0 0 12px var(--cosmos-melon-bright); }
         
         .info {
             position: fixed;
@@ -64,36 +74,41 @@
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
 
-            // Character measurement at baseline
-            const testDiv = document.createElement('div');
-            testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '8px';
-            testDiv.style.position = 'absolute';
-            testDiv.style.visibility = 'hidden';
-            testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1.0';
-            testDiv.textContent = '⋆'.repeat(10) + '\n'.repeat(10);
-            document.body.appendChild(testDiv);
+            // Performance-oriented grid sizing
+            // Cap maximum grid dimensions to prevent lag on high-res screens
+            const maxW = 160; // Max width in characters
+            const maxH = 80;  // Max height in characters
+            const minW = 40;  // Min width
+            const minH = 20;  // Min height
 
-            const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);
+            // Base font size - larger for better performance
+            let baseFontSize = 12;
+            
+            // Adjust base font size based on screen size
+            if (viewportWidth > 2560) baseFontSize = 16; // 4K+ screens
+            else if (viewportWidth > 1920) baseFontSize = 14; // 2K screens
+            else if (viewportWidth < 800) baseFontSize = 10;  // Mobile
 
-            // Grid size estimate
-            W = Math.ceil(viewportWidth / charWidth) + 2;
-            H = Math.ceil(viewportHeight / charHeight) + 2;
+            // Calculate grid dimensions based on font size
+            const estimatedCharWidth = baseFontSize * 0.6; // Monospace approximation
+            const estimatedCharHeight = baseFontSize;
 
-            W = Math.max(40, W);
-            H = Math.max(20, H);
+            W = Math.min(maxW, Math.max(minW, Math.floor(viewportWidth / estimatedCharWidth)));
+            H = Math.min(maxH, Math.max(minH, Math.floor(viewportHeight / estimatedCharHeight)));
 
-            // Scale font to fill viewport
-            const fontSize = Math.min(viewportWidth / W, viewportHeight / H);
+            // Calculate final font size to fill viewport efficiently
+            const fontSize = Math.min(
+                viewportWidth / W * 0.95,  // Leave some margin
+                viewportHeight / H * 0.95
+            );
+
             display.style.fontSize = fontSize + 'px';
             display.style.lineHeight = fontSize + 'px';
 
-            charWidth = fontSize;
+            charWidth = fontSize * 0.6;
             charHeight = fontSize;
+
+            console.log(`Grid: ${W}x${H} (${W*H} chars), Font: ${fontSize.toFixed(1)}px, Screen: ${viewportWidth}x${viewportHeight}`);
         }
         
         // Stellar field arrays
@@ -106,84 +121,96 @@
             density = new Float32Array(size);      // Star density
             luminosity = new Float32Array(size);   // Brightness field
             
-            // Initialize with quantum noise
+            // Initialize with enhanced quantum noise for better visibility
             for (let i = 0; i < size; i++) {
-                field[i] = (Math.random() - 0.5) * 0.1;
-                velocity[i] = (Math.random() - 0.5) * 0.05;
-                density[i] = Math.random() * 0.3;
-                luminosity[i] = Math.random();
+                field[i] = (Math.random() - 0.5) * 0.3;
+                velocity[i] = (Math.random() - 0.5) * 0.15;
+                density[i] = Math.random() * 0.8;  // Increased base density
+                luminosity[i] = Math.random() * 1.2; // Enhanced luminosity range
             }
         }
-        
-        // Stellar symbols - mathematical progression
+          // Enhanced stellar symbols with cosmic variety
         const starSymbols = [
-            '·', '∘', '○', '●', '⋆', '★', '✦', '✧', '✩', '✪', '✫', '⭐',
-            '∗', '∙', '⁂', '※', '⊙', '⊚', '⊛', '⊜', '⊝',
-            '∞', '∅', '∩', '∪', '⊕', '⊗'
+            '·', '∘', '∙', '⋄', '◦', '○', '●', '⋆', '✦', '✧', '✩', '★', '✪', '✫', '⭐',
+            '∗', '⁂', '※', '⊙', '⊚', '⊛', '⊜', '⊝', '⊗', '⊕',
+            '∞', '∅', '∩', '∪', '∇', '△', '▽', '◇', '◈', '⬟', '⬢',
+            '☾', '☽', '⟐', '⟑', '⟒', '𓇽', '🜂', '🜄', '⧗', '∴'
         ];
 
+        // Enhanced color mapping with cosmic theme
         const colorClasses = [
-            'v','u','s','e','m','t','q','d','w','c',
-            'g','y','r','p','b','o','a','f','n','l'
+            'v','u','s','e','m','t','q','d','w','c',    // Base palette
+            'g','y','r','p','b','o','a','f','n','l',    // Extended palette
+            'v','u','g','p','y','b'                      // Repeat bright colors for emphasis
         ];
 
         const starCount = starSymbols.length;
         const colorCount = colorClasses.length;
-        
-        // Stellar field equations tuned for smoother distribution
+          // Stellar field equations tuned for enhanced visibility
         function stellarField(x, y, time) {
             const xi = (x - W/2) / (W/4);
             const yi = (y - H/2) / (H/4);
             const r = Math.sqrt(xi * xi + yi * yi);
             const angle = Math.atan2(yi, xi);
 
-            // Radial falloff approximates galactic density
-            const base = Math.exp(-r * 1.5);
+            // Enhanced radial falloff with multiple layers
+            const base = Math.exp(-r * 0.8) + Math.exp(-r * 2.5) * 0.3; // Dual-layer galaxy
 
-            // Spiral arms
-            const arms = Math.sin(angle * 5 + r * 2 - time) * 0.2;
+            // Multiple spiral arms with different frequencies
+            const arms1 = Math.sin(angle * 3 + r * 1.5 - time * 0.8) * 0.4;
+            const arms2 = Math.sin(angle * 5 + r * 2.2 - time * 1.2) * 0.3;
+            const arms3 = Math.cos(angle * 7 + r * 1.8 - time * 0.6) * 0.2;
 
-            // Subtle local swirl
-            const swirl = Math.sin(angle + time * 0.5) * 0.05;
+            // Enhanced swirl with time variation
+            const swirl = Math.sin(angle + time * 0.7) * Math.cos(r + time * 0.3) * 0.15;
+            
+            // Cosmic dust lanes
+            const dust = Math.sin(angle * 2 + time * 0.4) * Math.exp(-r * 1.2) * 0.25;
 
-            // Final stellar density
-            const dens = base + arms * 0.3 + swirl;
+            // Final stellar density with enhanced brightness
+            const dens = Math.max(0, base + (arms1 + arms2 + arms3) * 0.6 + swirl + dust + 0.1);
 
-            // Apparent velocity for color shift
-            const vel = arms * 0.5;
+            // Enhanced velocity for better color dynamics
+            const vel = (arms1 * 0.8 + arms2 * 0.6) + swirl * 2.0;
 
             return { density: dens, velocity: vel, phase: angle, r };
-        }
-        
-        function update() {
-            t += 0.02;
+        }        function update() {
+            t += 0.03; // Slightly faster animation
             
-            // Update stellar field
+            // Performance optimization: Skip some updates on large grids
+            const totalCells = W * H;
+            const updateInterval = totalCells > 8000 ? 2 : 1; // Skip every other frame for large grids
+            const shouldUpdate = Math.floor(t * 30) % updateInterval === 0;
+            
+            if (!shouldUpdate && totalCells > 8000) return;
+            
+            // Update stellar field with enhanced dynamics
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
                     const idx = y * W + x;
                     const stellar = stellarField(x, y, t);
                     
-                    // Field evolution with memory
-                    field[idx] = field[idx] * 0.95 + stellar.density * 0.05;
-                    velocity[idx] = velocity[idx] * 0.98 + stellar.velocity * 0.02;
+                    // Enhanced field evolution with stronger coupling
+                    field[idx] = field[idx] * 0.92 + stellar.density * 0.08;
+                    velocity[idx] = velocity[idx] * 0.95 + stellar.velocity * 0.05;
                     
-                    // Non-linear coupling
-                    const coupling = Math.sin(stellar.phase) * field[idx];
-                    density[idx] = Math.max(0, Math.min(1, 
-                        density[idx] * 0.97 + coupling * 0.03
+                    // Stronger non-linear coupling for more dynamics
+                    const coupling = Math.sin(stellar.phase + t * 0.5) * field[idx] * 1.5;
+                    density[idx] = Math.max(0, Math.min(1.2, 
+                        density[idx] * 0.94 + coupling * 0.06
                     ));
                     
-                    // Luminosity with distance falloff and twinkling
-                    const twinkle = Math.sin(t * 5 + x * 0.1 + y * 0.07) * 0.2 + 0.8;
-                    const distanceFactor = Math.exp(-stellar.r * 0.6);
-                    const baseLum = Math.pow(density[idx], 1.3);
-                    luminosity[idx] = baseLum * twinkle * distanceFactor;
+                    // Enhanced luminosity with multiple twinkling patterns
+                    const twinkle1 = Math.sin(t * 4 + x * 0.15 + y * 0.12) * 0.3 + 0.7;
+                    const twinkle2 = Math.cos(t * 7 + x * 0.08 + y * 0.19) * 0.2 + 0.8;
+                    const twinkle3 = Math.sin(t * 2.5 + stellar.phase) * 0.25 + 0.75;
+                    const distanceFactor = Math.exp(-stellar.r * 0.4) + 0.2; // Less aggressive falloff
+                    const baseLum = Math.pow(density[idx], 0.9); // Less harsh power curve
+                    luminosity[idx] = baseLum * twinkle1 * twinkle2 * twinkle3 * distanceFactor;
                 }
             }
         }
-        
-        function render() {
+          function render() {
             let output = '';
             
             for (let y = 0; y < H; y++) {
@@ -193,29 +220,41 @@
                     const motion = velocity[idx];
                     const dist = Math.sqrt(((x - W/2)/(W/2))**2 + ((y - H/2)/(H/2))**2);
                     
-                    if (intensity > 0.7) {
-                        // Bright stars - complex symbols
-                        const symbolIdx = Math.floor(intensity * starCount * 0.8) +
-                                        Math.floor(starCount * 0.2);
-                        const colorIdx = Math.floor((intensity * 0.6 + (1 - dist) * 0.4 + motion * 0.3) * colorCount);
+                    // Enhanced visibility with lower thresholds
+                    if (intensity > 0.45) {
+                        // Bright stars - complex symbols with enhanced color mapping
+                        const symbolIdx = Math.floor(intensity * starCount * 0.9) +
+                                        Math.floor(starCount * 0.1);
+                        const colorIdx = Math.floor((intensity * 0.7 + (1 - dist) * 0.2 + Math.abs(motion) * 0.4) * colorCount);
                         const symbol = starSymbols[Math.min(symbolIdx, starCount - 1)];
                         const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorCount - 1)];
                         output += `<span class="${colorClass}">${symbol}</span>`;
-                    } else if (intensity > 0.4) {
-                        // Medium stars
-                        const symbolIdx = Math.floor(intensity * starCount * 0.5);
-                        const colorIdx = Math.floor((intensity * 0.6 + (1 - dist) * 0.4) * colorCount * 0.9);
+                    } else if (intensity > 0.25) {
+                        // Medium stars with better color variety
+                        const symbolIdx = Math.floor(intensity * starCount * 0.7);
+                        const colorIdx = Math.floor((intensity * 0.8 + (1 - dist) * 0.3 + Math.abs(motion) * 0.2) * colorCount * 0.85);
                         const symbol = starSymbols[Math.min(symbolIdx, starCount - 1)];
                         const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorCount - 1)];
                         output += `<span class="${colorClass}">${symbol}</span>`;
-                    } else if (intensity > 0.2) {
-                        // Dim stars
-                        const symbol = starSymbols[Math.floor(intensity * 5)];
+                    } else if (intensity > 0.12) {
+                        // Dim stars with motion-based coloring
+                        const symbol = starSymbols[Math.floor(intensity * 8)];
+                        const motionColor = Math.abs(motion) > 0.1 ? 'u' : 'q'; // Coral for moving, dim tiffany for static
+                        output += `<span class="${motionColor}">${symbol}</span>`;
+                    } else if (intensity > 0.05) {
+                        // Very dim background stars
+                        const symbol = Math.random() < 0.7 ? '·' : '∘';
                         output += `<span class="l">${symbol}</span>`;
                     } else {
-                        // Empty space with occasional cosmic background
-                        if (Math.random() < 0.001) {
-                            output += '<span class="l">∘</span>';
+                        // Cosmic background with nebular dust
+                        const dustChance = Math.max(0, intensity * 0.8 - 0.02);
+                        if (Math.random() < dustChance) {
+                            const dustSymbol = Math.random() < 0.6 ? '∘' : '·';
+                            const dustColor = Math.random() < 0.4 ? 'w' : 'c'; // Orange-dim or melon-dim
+                            output += `<span class="${dustColor}">${dustSymbol}</span>`;
+                        } else if (Math.random() < 0.002) {
+                            // Rare cosmic background
+                            output += '<span class="l">∙</span>';
                         } else {
                             output += ' ';
                         }
