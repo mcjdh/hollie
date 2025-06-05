@@ -208,10 +208,20 @@
                 grid.style.whiteSpace = 'pre';
                 grid.style.letterSpacing = '0';
                 grid.style.wordSpacing = '0';
-                
-                // Force immediate style application
+                  // Force immediate style application
                 grid.offsetHeight; // Trigger reflow
             }
+            
+            // Ensure the grid stays properly positioned and sized
+            grid.style.position = 'fixed';
+            grid.style.top = '20px';
+            grid.style.left = '20px';
+            grid.style.width = availableWidth + 'px';
+            grid.style.height = availableHeight + 'px';
+            grid.style.margin = '0';
+            grid.style.padding = '0';
+            grid.style.transform = 'none';
+            grid.style.overflow = 'visible'; // Allow text effects to extend beyond
             
             console.log(`◆ Grid: ${W}×${H} | Viewport: ${viewportWidth}×${viewportHeight} | Available: ${availableWidth}×${availableHeight} | Font: ${finalFontSize.toFixed(1)}px | LineHeight: ${lineHeight.toFixed(1)}px | Char: ${charWidth.toFixed(2)}×${charHeight.toFixed(2)} | Expected Coverage: ${(H * lineHeight).toFixed(0)}px of ${availableHeight}px`);        
             dimensionsInitialized = true; // Mark as initialized
@@ -221,7 +231,6 @@
         // Set default dimensions that will be updated in initializeEverything()
         W = 100; H = 50; // Temporary defaults
         
-        const phi = (1 + Math.sqrt(5)) / 2;
         let t = 0, generation = 0;
           // ∿ layered fields with quantum
         let cells = new Float32Array(W * H);           

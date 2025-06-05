@@ -386,22 +386,18 @@
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
         });          // quick init with dynamic size
         function initialize() {
-            console.log("∞ ⊕ ◎⊕◉ ∞...");
             updateDimensions();
             addDynamicChaos(); // Initial chaos injection
             
             // Ensure arrays are properly initialized before starting render
             if (cellular && fluid && fractal && synthesis && memory && W && H) {
-                console.log(`⬢ ◆: ${W}x${H}`);
                 render();
             } else {
-                console.log("⟲ ∞...");
                 setTimeout(initialize, 100);
             }
         }
         
         // start: size then run
-        document.addEventListener('DOMContentLoaded', initialize);
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initialize);
         } else {
