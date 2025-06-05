@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>φ-spiral matrix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            width: 100vw;
+        }
+        #grid {
+            white-space: pre;
+            line-height: 1.1;
+            font-size: clamp(6px, 1.2vmin, 12px);
+            padding: 10px;
+        }
+        .info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #64ffda;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100,255,218,0.3);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        φ-spiral hologram<br>
+        eigenvalue field<br>
+        ⌫ ◦ ↩
+    </div>
+    <pre id="grid"></pre>
+    <script>
+        const phi = (1 + Math.sqrt(5)) / 2;
+        const symbols = ' .:-=+*#%@';
+        const W = 64;
+        const H = 32;
+        const speed = 0.1;
+        let t = 0;
+        const gridEl = document.getElementById('grid');
+
+        function transform(vec, a) {
+            const c = Math.cos(a), s = Math.sin(a);
+            return [
+                phi * (vec[0] * c - vec[1] * s),
+                phi * (vec[0] * s + vec[1] * c),
+                phi * (vec[2] * c - vec[3] * s),
+                phi * (vec[2] * s + vec[3] * c),
+                phi * (vec[4] * c - vec[5] * s),
+                phi * (vec[4] * s + vec[5] * c)
+            ];
+        }
+
+        function norm(v) {
+            let n = 0;
+            for (let i = 0; i < v.length; i++) n += v[i] * v[i];
+            return Math.sqrt(n);
+        }
+
+        function update() {
+            let out = '';
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const seed = [
+                        x - W / 2,
+                        y - H / 2,
+                        Math.sin(t + x * 0.1),
+                        Math.cos(t + y * 0.1),
+                        Math.sin(t + x * 0.07),
+                        Math.cos(t + y * 0.07)
+                    ];
+                    const transformed = transform(seed, t * 0.1 + (x + y) * 0.02);
+                    const value = norm(transformed) / (norm(seed) || 1);
+                    const intensity = (Math.sin(value) + 1) / 2;
+                    const idx = Math.min(symbols.length - 1, Math.floor(intensity * symbols.length));
+                    const color = `hsl(${intensity * 360},100%,70%)`;
+                    out += `<span style="color:${color}">${symbols[idx]}</span>`;
+                }
+                out += '\n';
+            }
+            gridEl.innerHTML = out;
+            t += speed;
+        }
+
+        setInterval(update, 100);
+        update();
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && window.parent !== window) {
+                window.parent.postMessage('close', '*');
+            }
+        });
+    </script>
+</body>
+</html>
