@@ -386,16 +386,13 @@
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
         });          // quick init with dynamic size
         function initialize() {
-            console.log("∞ ⊕ ◎⊕◉ ∞...");
             updateDimensions();
             addDynamicChaos(); // Initial chaos injection
             
             // Ensure arrays are properly initialized before starting render
             if (cellular && fluid && fractal && synthesis && memory && W && H) {
-                console.log(`⬢ ◆: ${W}x${H}`);
                 render();
             } else {
-                console.log("⟲ ∞...");
                 setTimeout(initialize, 100);
             }
         }

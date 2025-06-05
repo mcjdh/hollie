@@ -59,7 +59,6 @@ body{background:linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);color:
             Υ=new Float32Array(l);Τ=new Float32Array(l);Ψ=new Float32Array(l);Ε=new Float32Array(l);
             χ=W/2;ψ=H/2;
             for(let i=0;i<l;i++)if(Math.random()<φ/15)Ψ[i]=Math.random()*0.3;
-            console.log(`∞ Nano: ${W}x${H}, Font: ${s.toFixed(1)}px`);
         }// ∴ CELLULAR
         function cel(){
             const n=new Float32Array(Ψ.length);
@@ -166,7 +165,6 @@ body{background:linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);color:
             if(τ%250===0){
                 const au=Υ.reduce((a,b)=>a+Math.abs(b),0)/Υ.length;
                 const at=Τ.reduce((a,b)=>a+b,0)/Τ.length;
-                console.log(`◆${(au*100).toFixed(0)}%∆${(at*100).toFixed(0)}%∞${ℏ.toFixed(1)}`);
             }τ++;
         }        // ⟡ AUTO-CYCLE
         function cyc(){
@@ -198,7 +196,7 @@ body{background:linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);color:
             }
 
             const sts=["○","●","◇","◆","△","∆","∞","◯","⬢","▣","⬟","⟐","⟡","⬠","⬡"];
-            console.log(sts[Math.min(ν-1,sts.length-1)]);        }        // ⚜ INIT
+        }        // ⚜ INIT
         window.addEventListener('resize',rsz);
         window.addEventListener('orientationchange',()=>setTimeout(rsz,100));
 
@@ -209,7 +207,5 @@ body{background:linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);color:
             requestAnimationFrame(frm);
         }
 
-        console.log("∞");
-        console.log("◆");
         rsz();frm();
         </script></body></html>

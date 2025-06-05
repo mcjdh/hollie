@@ -189,7 +189,6 @@
             W = Math.max(40, Math.min(150, W));
             H = Math.max(20, Math.min(80, H));
             
-            console.log(`⚡∇⊱◉⊰∇⚡ ⬢: ${W}x${H}, ◉: ${charWidth.toFixed(1)}x${charHeight.toFixed(1)}`);
         }// Consciousness states and their symbol sets - safer Unicode symbols
         const CONSCIOUSNESS_STATES = {
             VOID: { threshold: 0.0, symbols: [' ', '∅', '·', '⋅'], color: 'v' },
@@ -1444,7 +1443,6 @@
             try {
                 updateDimensions();
                 simulation = new ConsciousnessEmergenceMatrix();
-                console.log(`⬢ ◉⬢◉ ⚡∇⊱◉⊰∇⚡ ∞: ${W}x${H} ⬢`);
             } catch (error) {
                 console.error('Initialization error:', error);
                 // Fallback to minimal safe dimensions if there's an error
@@ -1452,7 +1450,6 @@
                 H = 30;
                 try {
                     simulation = new ConsciousnessEmergenceMatrix();
-                    console.log(`⬢ Fallback initialization: ${W}x${H} ⬢`);
                 } catch (e) {
                     console.error('Critical initialization failure:', e);
                 }

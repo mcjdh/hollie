@@ -198,7 +198,6 @@
                 }
             }
               initialized = true;
-            console.log(`∇ Entropic Grid: ${W}×${H} (${viewportWidth}×${viewportHeight}) fontSize: ${fontSize.toFixed(1)}px charSize: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
         }
           // ∿ evolution functions
         function evolveEntropy() {
@@ -342,7 +341,6 @@
                 console.error('Animation error:', error);
                 // Try to restart after a delay
                 setTimeout(() => {
-                    console.log('⟲ ∞...');
                     time = 0;
                     updateDimensions();
                     animate();
@@ -355,7 +353,6 @@
         function handleResize() {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                console.log('⧧ ⬢ ∞...');
                 updateDimensions();
             }, 250); // Debounce resize events
         }
