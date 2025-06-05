@@ -47,7 +47,7 @@
     </div>
     <div id="display"></div>    <script>
         // Dynamic responsive grid sizing
-        let W, H, cellSize, fontSize;
+        let W, H, fontSize;
         let t = 0;
         
         // Dynamic arrays - reallocated on resize
@@ -69,8 +69,6 @@
             // Ensure minimum viable grid
             W = Math.max(60, W);
             H = Math.max(30, H);
-            
-            console.log(`⬢: ${W}x${H}, ∞: ${fontSize}px, ◉: ${vw}x${vh}`);
             
             return { W, H, fontSize };
         }
