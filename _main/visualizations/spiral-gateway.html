@@ -2,14 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>∿◦∿ ⟲◉⟲ ∿◦∿</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>∿◦∿ ⟲◉⟲ ∿◦∿</title>
+    <link rel="stylesheet" href="palette.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            background: #000;
-            color: #0ff;
+        * { box-sizing: border-box; margin: 0; padding: 0; }        body {
+            background: var(--cosmos-dark);
+            color: var(--cosmos-tiffany);
             font-family: 'Courier New', monospace;
             overflow: hidden;
             height: 100vh;
@@ -25,21 +23,36 @@
             white-space: pre;
             text-align: center;
             filter: drop-shadow(0 0 2px currentColor);
-        }
-
-        .glyph {
+        }        .glyph {
             display: inline-block;
             width: 0.6em;
             transition: all 0.1s ease;
         }
 
-        .controls {
+        /* Cosmos palette color classes for spiral effects */
+        .cosmos-0 { color: var(--cosmos-dark); text-shadow: 0 0 1px currentColor; }
+        .cosmos-1 { color: var(--cosmos-melon-dim); text-shadow: 0 0 1px currentColor; }
+        .cosmos-2 { color: var(--cosmos-tiffany-dim); text-shadow: 0 0 2px currentColor; }
+        .cosmos-3 { color: var(--cosmos-rose); text-shadow: 0 0 2px currentColor; }
+        .cosmos-4 { color: var(--cosmos-coral); text-shadow: 0 0 3px currentColor; }
+        .cosmos-5 { color: var(--cosmos-tiffany); text-shadow: 0 0 3px currentColor; }
+        .cosmos-6 { color: var(--cosmos-orange); text-shadow: 0 0 4px currentColor; }
+        .cosmos-7 { color: var(--cosmos-melon); text-shadow: 0 0 4px currentColor; }
+        .cosmos-8 { color: var(--cosmos-coral-bright); text-shadow: 0 0 5px currentColor; }
+        .cosmos-9 { color: var(--cosmos-orange-bright); text-shadow: 0 0 5px currentColor; }
+        .cosmos-10 { color: var(--cosmos-tiffany-bright); text-shadow: 0 0 6px currentColor; }
+        .cosmos-11 { color: var(--cosmos-melon-bright); text-shadow: 0 0 6px currentColor; }
+        .cosmos-12 { color: var(--cosmos-cream); text-shadow: 0 0 8px currentColor; }.controls {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 11px;
-            color: #666;
+            color: var(--cosmos-melon-dim);
             z-index: 10;
+            background: rgba(69, 9, 32, 0.7);
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--cosmos-tiffany-dim);
         }
 
         @media (max-width: 600px) {
@@ -90,6 +103,18 @@
         
         const glyphs = [' ', '·', '•', '◦', '○', '◉', '⊙', '⬢', '✦', '✺', '✼', '※'];
         
+        // Cosmos color mapping function for spiral effects
+        function getCosmosColorClass(intensity, angle, radius, time) {
+            // Create dynamic color progression based on spiral properties
+            const anglePhase = (angle * 180 / Math.PI + time * 0.5) % 360;
+            const radiusPhase = (radius * 10 + time * 0.3) % 100;
+            const combined = (intensity * 100 + anglePhase * 0.5 + radiusPhase * 0.3) % 100;
+            
+            // Map to cosmos palette (0-12 range for 13 color classes)
+            const colorIndex = Math.floor((combined / 100) * 13);
+            return `cosmos-${colorIndex}`;
+        }
+        
         function render() {
             if (!paused) {
                 let output = '';
@@ -108,19 +133,16 @@
                         
                         const intensity = (spiral1 + spiral2 * 0.5 + spiral3 * 0.3 + 3) / 4;
                         const normalizedIntensity = Math.max(0, Math.min(1, intensity));
-                        
-                        const glyphIndex = Math.floor(normalizedIntensity * (glyphs.length - 1));
+                          const glyphIndex = Math.floor(normalizedIntensity * (glyphs.length - 1));
                         const glyph = glyphs[glyphIndex];
                         
-                        // Dynamic color based on position and time
-                        const hue = (angle * 180 / Math.PI + frame * 0.5 + r * 2) % 360;
-                        const saturation = 60 + 30 * normalizedIntensity;
-                        const lightness = 20 + 60 * normalizedIntensity;
+                        // Dynamic cosmos color based on spiral properties
+                        const colorClass = getCosmosColorClass(normalizedIntensity, angle, r, frame);
                         
                         if (glyph === ' ') {
                             output += '<span class="glyph"> </span>';
                         } else {
-                            output += `<span class="glyph" style="color:hsl(${hue},${saturation}%,${lightness}%)">${glyph}</span>`;
+                            output += `<span class="glyph ${colorClass}">${glyph}</span>`;
                         }
                     }
                     output += '\n';

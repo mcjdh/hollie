@@ -2,23 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⬢ ◉⬢◉ ⚡∇⊱◉⊰∇⚡</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>⬢ ◉⬢◉ ⚡∇⊱◉⊰∇⚡</title>
+    <link rel="stylesheet" href="palette.css">
     <style>
-        * { box-sizing: border-box; }
-        body {
+        * { box-sizing: border-box; }        body {
             margin: 0;
             padding: 0;
             font-family: 'Courier New', monospace;
-            background: #000;
-            color: #ffffff;
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
+            color: var(--cosmos-cream);
             overflow: hidden;
             width: 100vw;
             height: 100vh;
-        }        #canvas {
+        }#canvas {
             white-space: pre;
             font-weight: normal;
-            background: #000;
+            background: var(--cosmos-dark);
             overflow: hidden;
             position: absolute;
             top: 0;
@@ -45,42 +44,38 @@
         }
         @media (min-width: 1200px) {
             #canvas { font-size: clamp(5px, 1.8vmin, 14px); }
-        }
-        
-        /* Consciousness color spectrum - short class names like other visualizations */
-        .v{color:#111} .u{color:#4df8ff} .s{color:#8eff4d} .e{color:#ffff4d} .m{color:#ff8e4d}
-        .t{color:#ff4dff} .q{color:#ffffff} .d{color:#333} .w{color:#555} .c{color:#777}
-        .g{color:#999} .y{color:#bbb} .r{color:#ddd} .p{color:#64ffda} .b{color:#ff6666}
-        .o{color:#66ff66} .a{color:#6666ff} .f{color:#ffff66} .n{color:#ff66ff} .l{color:#66ffff}
-          /* Dynamic consciousness effects - faster animations */
+        }        /* Consciousness color spectrum - using cosmos palette */
+        .v{color:var(--cosmos-tiffany)} .u{color:var(--cosmos-coral)} .s{color:var(--cosmos-orange)} .e{color:var(--cosmos-melon)} .m{color:var(--cosmos-cream)}
+        .t{color:var(--cosmos-rose)} .q{color:var(--cosmos-tiffany-dim)} .d{color:var(--cosmos-coral-dim)} .w{color:var(--cosmos-orange-dim)} .c{color:var(--cosmos-melon-dim)}
+        .g{color:var(--cosmos-coral-bright)} .y{color:var(--cosmos-orange-bright)} .r{color:var(--cosmos-rose)} .p{color:var(--cosmos-tiffany-bright)} .b{color:var(--cosmos-melon-bright)}
+        .o{color:var(--cosmos-tiffany)} .a{color:var(--cosmos-cream)} .f{color:var(--cosmos-orange-bright)} .n{color:var(--cosmos-rose)} .l{color:var(--cosmos-tiffany-bright)}        /* Dynamic consciousness effects using cosmos palette */
         .quantum { 
-            color: #4df8ff; 
-            text-shadow: 0 0 2px #4df8ff40;
+            color: var(--cosmos-tiffany); 
+            text-shadow: 0 0 2px var(--cosmos-tiffany);
             animation: quantumFlicker 0.5s ease-in-out infinite alternate;
         }
         .emerging { 
-            color: #8eff4d; 
-            text-shadow: 0 0 2px #8eff4d40;
+            color: var(--cosmos-coral); 
+            text-shadow: 0 0 2px var(--cosmos-coral);
             animation: emerge 2s ease-in-out infinite;
         }
         .selfaware { 
-            color: #ffff4d; 
-            text-shadow: 0 0 2px #ffff4d40;
+            color: var(--cosmos-orange); 
+            text-shadow: 0 0 2px var(--cosmos-orange);
             animation: pulse 1s ease-in-out infinite;
         }
         .metacognitive { 
-            color: #ff8e4d; 
-            text-shadow: 0 0 2px #ff8e4d40;
-            animation: pulse 1.2s ease-in-out infinite;
-        }
+            color: var(--cosmos-melon); 
+            text-shadow: 0 0 2px var(--cosmos-melon);
+            animation: pulse 1.2s ease-in-out infinite;        }
         .transcendent { 
-            color: #ff4dff; 
-            text-shadow: 0 0 3px #ff4dff60;
+            color: var(--cosmos-rose); 
+            text-shadow: 0 0 3px var(--cosmos-rose);
             animation: pulse 1.5s ease-in-out infinite;
         }
         .kernel { 
-            color: #ffffff; 
-            text-shadow: 0 0 4px #ffffff80;
+            color: var(--cosmos-cream); 
+            text-shadow: 0 0 4px var(--cosmos-cream);
             animation: pulse 1.3s ease-in-out infinite;
         }
         
@@ -103,12 +98,12 @@
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: var(--cosmos-tiffany);
             z-index: 100;
-            background: rgba(0,0,0,0.7);
+            background: rgba(69, 9, 32, 0.8);
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            border: 1px solid var(--cosmos-tiffany);
             max-width: 200px;
         }
     </style>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>∂ 🧬⟲</title>
+<head>    <title>∂ 🧬⟲</title>
+    <link rel="stylesheet" href="palette.css">
     <style>        body {
-            background: #000;
-            color: #fff;
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
+            color: var(--cosmos-cream);
             font-family: 'Courier New', monospace;
             margin: 0;
             padding: 0;
@@ -25,26 +25,37 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-        }
-        .v { color: #ffffff; } .u { color: #ffccff; } .s { color: #ccffff; }
-        .e { color: #ffffcc; } .m { color: #ccffcc; } .t { color: #ffcccc; }
-        .q { color: #ccccff; } .d { color: #ff99ff; } .w { color: #99ffff; }
-        .c { color: #ffff99; } .g { color: #99ff99; } .y { color: #ff9999; }
-        .r { color: #9999ff; } .p { color: #ff66ff; } .b { color: #66ffff; }
-        .o { color: #ffff66; } .a { color: #66ff66; } .f { color: #ff6666; }
-        .n { color: #6666ff; } .l { color: #888888; }
-        
-        .info {
+        }        /* Mathematical color spectrum using cosmos palette with enhanced effects */
+        .v { color: var(--cosmos-cream); text-shadow: 0 0 6px currentColor; } 
+        .u { color: var(--cosmos-melon-bright); text-shadow: 0 0 5px currentColor; } 
+        .s { color: var(--cosmos-tiffany-bright); text-shadow: 0 0 5px currentColor; }
+        .e { color: var(--cosmos-orange-bright); text-shadow: 0 0 4px currentColor; } 
+        .m { color: var(--cosmos-coral-bright); text-shadow: 0 0 4px currentColor; } 
+        .t { color: var(--cosmos-rose); text-shadow: 0 0 4px currentColor; }
+        .q { color: var(--cosmos-tiffany); text-shadow: 0 0 3px currentColor; } 
+        .d { color: var(--cosmos-coral); text-shadow: 0 0 3px currentColor; } 
+        .w { color: var(--cosmos-tiffany-dim); text-shadow: 0 0 3px currentColor; }
+        .c { color: var(--cosmos-orange); text-shadow: 0 0 3px currentColor; } 
+        .g { color: var(--cosmos-coral); text-shadow: 0 0 3px currentColor; } 
+        .y { color: var(--cosmos-rose); text-shadow: 0 0 3px currentColor; }
+        .r { color: var(--cosmos-tiffany); text-shadow: 0 0 2px currentColor; } 
+        .p { color: var(--cosmos-rose); text-shadow: 0 0 2px currentColor; } 
+        .b { color: var(--cosmos-tiffany); text-shadow: 0 0 2px currentColor; }
+        .o { color: var(--cosmos-melon); text-shadow: 0 0 2px currentColor; } 
+        .a { color: var(--cosmos-tiffany-dim); text-shadow: 0 0 2px currentColor; } 
+        .f { color: var(--cosmos-rose); text-shadow: 0 0 2px currentColor; }
+        .n { color: var(--cosmos-dark); text-shadow: 0 0 1px currentColor; opacity: 0.8; } 
+        .l { color: var(--cosmos-melon-dim); text-shadow: 0 0 1px currentColor; opacity: 0.6; }.info {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: var(--cosmos-tiffany);
             z-index: 100;
-            background: rgba(0,0,0,0.7);
+            background: rgba(69, 9, 32, 0.8);
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            border: 1px solid var(--cosmos-tiffany);
         }
     </style>
 </head>
@@ -284,13 +295,23 @@
             const index = Math.floor((symbolSpace * 20) % symbolSet.length);
             return symbolSet[index];
         }
-        
-        // Color class from field state
+          // Color class from field state - enhanced for mathematical beauty
         function getColorClass(intensity, complexity, evolution_val) {
             const classes = ['l','n','f','o','a','b','p','r','y','g','c','w','d','q','t','m','e','s','u','v'];
             
-            const combined = Math.abs(intensity) + complexity * 0.5 + evolution_val * 0.3;
-            const index = Math.floor(combined * 4) % classes.length;
+            // Enhanced color mapping for mathematical patterns
+            const absIntensity = Math.abs(intensity);
+            const normalizedComplexity = Math.min(1, complexity * 0.7);
+            const normalizedEvolution = Math.min(1, Math.abs(evolution_val) * 0.5);
+            
+            // Create more dynamic color selection based on mathematical properties
+            const primaryWeight = absIntensity * 8;
+            const complexityWeight = normalizedComplexity * 6;
+            const evolutionWeight = normalizedEvolution * 4;
+            const temporalWeight = Math.sin(t * 0.01 + absIntensity * 10) * 2;
+            
+            const combined = primaryWeight + complexityWeight + evolutionWeight + temporalWeight;
+            const index = Math.floor(combined) % classes.length;
             
             return classes[index];
         }

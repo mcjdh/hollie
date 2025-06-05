@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>◊ ∞ ⟲ ∂ ◊</title>
-    <style>
-        body {
-            background: #000;
-            color: #fff;
+    <meta charset="UTF-8">    <title>◊ ∞ ⟲ ∂ ◊</title>
+    <link rel="stylesheet" href="palette.css">
+    <style>        body {
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
+            color: var(--cosmos-melon);
             font-family: 'Courier New', monospace;
             margin: 0;
             padding: 0;
             overflow: hidden;
             width: 100vw;
             height: 100vh;
-        }
-        #canvas {
+        }        #canvas {
             white-space: pre;
             font-feature-settings: 'kern' 0;
             width: 100vw;
@@ -27,25 +25,36 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-        }
-          /* ∂ ⟲ ∞ states */
-        .void { color: #111111; } .dust { color: #333333; } .spark { color: #555555; }
-        .seed { color: #777777; } .grow { color: #22aa22; } .bloom { color: #44cc44; }
-        .flow { color: #2288bb; } .dream { color: #6644aa; } .think { color: #aa4466; }
-        .love { color: #ffaa44; } .birth { color: #ff6666; } .death { color: #884444; }
-        .rebirth { color: #66ff88; } .wisdom { color: #ccccff; } .transcend { color: #ffffff; }
-        
-        .info {
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
+        }        /* ∂ ⟲ ∞ states using cohesive palette */
+        .void { color: var(--cosmos-dark); } 
+        .dust { color: var(--cosmos-rose-dim); } 
+        .spark { color: var(--cosmos-coral-dim); }
+        .seed { color: var(--cosmos-coral); } 
+        .grow { color: var(--cosmos-melon-dim); } 
+        .bloom { color: var(--cosmos-melon); }
+        .flow { color: var(--cosmos-tiffany-dim); } 
+        .dream { color: var(--cosmos-tiffany); } 
+        .think { color: var(--cosmos-orange-dim); }
+        .love { color: var(--cosmos-orange); } 
+        .birth { color: var(--cosmos-coral-bright); } 
+        .death { color: var(--cosmos-rose); }
+        .rebirth { color: var(--cosmos-melon-bright); } 
+        .wisdom { color: var(--cosmos-cream); } 
+        .transcend { color: var(--cosmos-tiffany-bright); }
+          .info {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: var(--cosmos-tiffany);
             z-index: 100;
-            background: rgba(0,0,0,0.7);
+            background: linear-gradient(135deg, var(--cosmos-dark-dim), var(--cosmos-rose-dim));
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            border: 2px solid var(--cosmos-tiffany);
+            box-shadow: 0 0 20px rgba(173, 235, 218, 0.3);
+            text-shadow: 0 0 8px var(--cosmos-tiffany);
         }
     </style>
 </head>

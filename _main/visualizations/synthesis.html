@@ -2,11 +2,12 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>⊕ ◎⊕◉</title>    <style>
+    <title>⊕ ◎⊕◉</title>    <link rel="stylesheet" href="palette.css">
+    <style>
         body { 
             margin: 0; 
             padding: 0; 
-            background: #000; 
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%); 
             overflow: hidden; 
             width: 100vw; 
             height: 100vh; 
@@ -14,34 +15,32 @@
         }
         #display { 
             font-family: 'Courier New', monospace; 
-            color: #0ff; 
+            color: var(--cosmos-coral); 
             white-space: pre; 
             padding: 0; 
             margin: 0;
             width: 100vw; 
             height: 100vh; 
-            background: #000;
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
             position: absolute;
             top: 0;
             left: 0;
             line-height: 1.0;
             overflow: hidden;
-        }        .v{color:#f0f} .u{color:#0ff} .s{color:#ff0} .e{color:#0f0} .m{color:#f80}
-        .t{color:#f44} .q{color:#c4a} .d{color:#a6f} .w{color:#fff} .c{color:#8ff}
-        .g{color:#4f4} .y{color:#ff4} .r{color:#f44} .p{color:#f8f} .b{color:#f94}
-        .o{color:#fa0} .a{color:#aaa} .f{color:#f88} .n{color:#8f8} .l{color:#4af}
-        
+        }        
         .info {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: var(--cosmos-tiffany);
             z-index: 100;
-            background: rgba(0,0,0,0.7);
+            background: linear-gradient(135deg, var(--cosmos-dark-dim), var(--cosmos-rose-dim));
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            border: 2px solid var(--cosmos-tiffany);
+            box-shadow: 0 0 20px rgba(173, 235, 218, 0.3);
+            text-shadow: 0 0 8px var(--cosmos-tiffany);
         }
     </style>
 </head>

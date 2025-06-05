@@ -2,14 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>∾◉∾ ⟲∿⟲ ∾◉∾</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>∾◉∾ ⟲∿⟲ ∾◉∾</title>
+    <link rel="stylesheet" href="palette.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            background: #000;
-            color: #0ff;
+        * { box-sizing: border-box; margin: 0; padding: 0; }        body {
+            background: var(--cosmos-dark);
+            color: var(--cosmos-tiffany);
             font-family: 'Courier New', monospace;
             overflow: hidden;
             height: 100vh;
@@ -25,21 +23,50 @@
             white-space: pre;
             text-align: center;
             filter: drop-shadow(0 0 3px currentColor);
-        }
-
-        .glyph {
+        }        .glyph {
             display: inline-block;
             width: 0.6em;
             transition: all 0.15s ease;
         }
 
-        .controls {
+        /* Cosmos palette color classes for vortex energy levels */
+        .vortex-0 { color: var(--cosmos-dark); text-shadow: 0 0 1px currentColor; }
+        .vortex-1 { color: var(--cosmos-melon-dim); text-shadow: 0 0 1px currentColor; }
+        .vortex-2 { color: var(--cosmos-tiffany-dim); text-shadow: 0 0 2px currentColor; }
+        .vortex-3 { color: var(--cosmos-rose); text-shadow: 0 0 2px currentColor; }
+        .vortex-4 { color: var(--cosmos-coral); text-shadow: 0 0 3px currentColor; }
+        .vortex-5 { color: var(--cosmos-tiffany); text-shadow: 0 0 3px currentColor; }
+        .vortex-6 { color: var(--cosmos-orange); text-shadow: 0 0 4px currentColor; }
+        .vortex-7 { color: var(--cosmos-melon); text-shadow: 0 0 4px currentColor; }
+        .vortex-8 { color: var(--cosmos-coral-bright); text-shadow: 0 0 5px currentColor; }
+        .vortex-9 { color: var(--cosmos-orange-bright); text-shadow: 0 0 6px currentColor; }
+        .vortex-10 { color: var(--cosmos-tiffany-bright); text-shadow: 0 0 7px currentColor; }
+        .vortex-11 { color: var(--cosmos-melon-bright); text-shadow: 0 0 8px currentColor; }
+        .vortex-12 { color: var(--cosmos-cream); text-shadow: 0 0 10px currentColor; }
+        
+        /* Pulsing effect for high-energy vortex centers */
+        .vortex-pulse {
+            animation: vortexPulse 0.3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes vortexPulse {
+            from { 
+                filter: brightness(1) drop-shadow(0 0 3px currentColor); 
+            }
+            to { 
+                filter: brightness(1.3) drop-shadow(0 0 8px currentColor); 
+            }
+        }.controls {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 11px;
-            color: #666;
+            color: var(--cosmos-melon-dim);
             z-index: 10;
+            background: rgba(69, 9, 32, 0.7);
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--cosmos-tiffany-dim);
         }
 
         @media (max-width: 600px) {
@@ -91,6 +118,26 @@
         
         const glyphs = [' ', '·', '•', '◦', '○', '●', '◉', '⊙', '⬢', '✶', '✷', '✹', '✺', '✼', '※', '@'];
         
+        // Cosmos color mapping for vortex energy
+        function getVortexCosmosClass(intensity, angle, radius, time, turbulence) {
+            // Create dynamic color progression based on vortex properties
+            const anglePhase = (angle * 180 / Math.PI + time * 2) % 360;
+            const radiusPhase = (radius * 5 + time * 0.5) % 100;
+            const turbulencePhase = turbulence * 50;
+            
+            // Combine all vortex properties for color selection
+            const combined = (intensity * 100 + anglePhase * 0.3 + radiusPhase * 0.4 + turbulencePhase) % 100;
+            
+            // Map to cosmos palette (0-12 range for 13 color classes)
+            const colorIndex = Math.floor((combined / 100) * 13);
+            
+            // Add pulsing effect for high-intensity areas
+            const isPulsing = intensity > 0.8 && Math.sin(time * 0.1 + radius * 0.3) > 0.5;
+            const pulseClass = isPulsing ? ' vortex-pulse' : '';
+            
+            return `vortex-${colorIndex}${pulseClass}`;
+        }
+        
         function render() {
             if (!paused) {
                 let output = '';
@@ -111,25 +158,16 @@
                         const combined = vortex1 + vortex2 + turbulence + spiral;
                         const normalizedValue = (combined + 3) / 6; // Normalize to 0-1
                         const clampedValue = Math.max(0, Math.min(1, normalizedValue));
-                        
-                        const glyphIndex = Math.floor(clampedValue * (glyphs.length - 1));
+                          const glyphIndex = Math.floor(clampedValue * (glyphs.length - 1));
                         const glyph = glyphs[glyphIndex];
                         
-                        // Dynamic color with vortex energy
-                        const baseHue = (angle * 180 / Math.PI + frame * 2) % 360;
-                        const energyShift = Math.sin(r * 0.1 + frame * 0.05) * 60;
-                        const hue = (baseHue + energyShift) % 360;
-                        const saturation = 60 + 30 * clampedValue;
-                        const lightness = 15 + 70 * clampedValue;
-                        
-                        // Add pulsing effect for high-energy glyphs
-                        const pulse = Math.sin(frame * 0.1 + r * 0.3) * 0.2 + 0.8;
-                        const finalLightness = clampedValue > 0.7 ? lightness * pulse : lightness;
+                        // Dynamic cosmos color with vortex energy
+                        const colorClass = getVortexCosmosClass(clampedValue, angle, r, frame, turbulence);
                         
                         if (glyph === ' ') {
                             output += '<span class="glyph"> </span>';
                         } else {
-                            output += `<span class="glyph" style="color:hsl(${hue},${saturation}%,${finalLightness}%)">${glyph}</span>`;
+                            output += `<span class="glyph ${colorClass}">${glyph}</span>`;
                         }
                     }
                     output += '\n';

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>∞ ◆φ◆</title><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover"><style>
+<html><head><meta charset="UTF-8"><title>∞ ◆φ◆</title><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<link rel="stylesheet" href="palette.css">
+<style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-body{background:#000;color:#fff;overflow:hidden;font-family:'Courier New',monospace;height:100vh;width:100vw;position:fixed}
-#∞{font-size:clamp(3px,1.8vmin,10px);line-height:1;white-space:pre;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;position:relative;height:100vh;width:100vw}
-#∞>div{text-align:center;filter:blur(0);transition:filter 0.2s ease}
-        /* Φ color classes */
-        .α{color:#ffdd00;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
-        .β{color:#00ddff;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
-        .γ{color:#dd00ff;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
-        .δ{color:#00ff44;text-shadow:0 0 4px currentColor,0 0 8px currentColor}
-        .ε{color:#fff;text-shadow:0 0 6px currentColor,0 0 12px currentColor;animation:ε 1.618s ease-in-out infinite alternate}
-        .ζ{color:#ffaa22;text-shadow:0 0 3px currentColor}.η{color:#6666ff;text-shadow:0 0 3px currentColor}
-        .θ{color:#22ff88;text-shadow:0 0 3px currentColor}.ι{color:#ff4444;text-shadow:0 0 3px currentColor}
-        .κ{color:#ff88dd;text-shadow:0 0 3px currentColor}.λ{color:#f33;text-shadow:0 0 10px currentColor;animation:λ 0.618s ease-in-out infinite alternate}
-        .μ{color:#ffd700;animation:μ 2.618s ease-in-out infinite}.ν{color:#444;opacity:0.6}.ξ{color:#222;opacity:0.4}.ο{color:#888}        @keyframes ε{0%{text-shadow:0 0 4px,0 0 8px}100%{text-shadow:0 0 8px,0 0 16px}}
+body{background:linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);color:var(--cosmos-cream);overflow:hidden;font-family:'Courier New',monospace;height:100vh;width:100vw;position:fixed}
+#∞{font-size:clamp(3px,1.8vmin,10px);line-height:1;white-space:pre;overflow:hidden;background:var(--cosmos-dark);display:flex;align-items:center;justify-content:center;position:relative;height:100vh;width:100vw}
+#∞>div{text-align:center;filter:blur(0);transition:filter 0.2s ease}        /* Φ color classes using cosmos palette */
+        .α{color:var(--cosmos-orange);text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+        .β{color:var(--cosmos-tiffany);text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+        .γ{color:var(--cosmos-rose);text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+        .δ{color:var(--cosmos-coral);text-shadow:0 0 4px currentColor,0 0 8px currentColor}
+        .ε{color:var(--cosmos-cream);text-shadow:0 0 6px currentColor,0 0 12px currentColor;animation:ε 1.618s ease-in-out infinite alternate}
+        .ζ{color:var(--cosmos-melon);text-shadow:0 0 3px currentColor}.η{color:var(--cosmos-tiffany-bright);text-shadow:0 0 3px currentColor}
+        .θ{color:var(--cosmos-tiffany-dim);text-shadow:0 0 3px currentColor}.ι{color:var(--cosmos-rose);text-shadow:0 0 3px currentColor}
+        .κ{color:var(--cosmos-coral);text-shadow:0 0 3px currentColor}.λ{color:var(--cosmos-orange-bright);text-shadow:0 0 10px currentColor;animation:λ 0.618s ease-in-out infinite alternate}
+        .μ{color:var(--cosmos-melon-bright);animation:μ 2.618s ease-in-out infinite}.ν{color:var(--cosmos-dark);opacity:0.6}.ξ{color:var(--cosmos-rose-dim);opacity:0.4}.ο{color:var(--cosmos-melon-dim)}@keyframes ε{0%{text-shadow:0 0 4px,0 0 8px}100%{text-shadow:0 0 8px,0 0 16px}}
         @keyframes λ{0%{text-shadow:0 0 6px,0 0 12px}100%{text-shadow:0 0 12px,0 0 24px}}
-        @keyframes μ{0%{color:#ffd700;text-shadow:0 0 3px}33%{color:#ff8800;text-shadow:0 0 8px}66%{color:#ff4400;text-shadow:0 0 12px}100%{color:#ffd700;text-shadow:0 0 3px}}
+        @keyframes μ{0%{color:var(--cosmos-melon-bright);text-shadow:0 0 3px}33%{color:var(--cosmos-orange);text-shadow:0 0 8px}66%{color:var(--cosmos-orange-bright);text-shadow:0 0 12px}100%{color:var(--cosmos-melon-bright);text-shadow:0 0 3px}}
         @media (max-width:600px){#∞{font-size:clamp(2px,1.5vmin,7px)}}
         @media (max-width:400px){#∞{font-size:clamp(2px,1.2vmin,6px)}}
         @media (orientation:landscape) and (max-height:400px){#∞{font-size:clamp(2px,1.1vmin,5px)}}

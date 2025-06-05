@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>∇ ⊙∇⊙ ◊⚬◊</title>
+    <meta charset="UTF-8">    <title>∇ ⊙∇⊙ ◊⚬◊</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="palette.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background: #000; 
-            color: #fff; 
+        * { box-sizing: border-box; margin: 0; padding: 0; }        body { 
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%); 
+            color: var(--cosmos-cream); 
             overflow: hidden; 
             width: 100vw; 
             height: 100vh; 
@@ -21,7 +20,7 @@
             margin: 0;
             width: 100vw; 
             height: 100vh; 
-            background: #000;
+            background: var(--cosmos-dark);
             position: absolute;
             top: 0;
             left: 0;
@@ -29,33 +28,29 @@
             overflow: hidden;
             font-size: 8px; /* Will be dynamically adjusted */
             box-sizing: border-box;
-        }
-        
-        /* Entropy color spectrum */
-        .v{color:#0080ff;text-shadow:0 0 2px currentColor} .u{color:#00ffff;text-shadow:0 0 2px currentColor} 
-        .s{color:#80ff00;text-shadow:0 0 2px currentColor} .e{color:#ffff00;text-shadow:0 0 2px currentColor} 
-        .m{color:#ff8000;text-shadow:0 0 2px currentColor} .t{color:#ff4040;text-shadow:0 0 2px currentColor}
-        .q{color:#ff00ff;text-shadow:0 0 3px currentColor} .d{color:#8080ff;text-shadow:0 0 2px currentColor} 
-        .w{color:#ffffff;text-shadow:0 0 4px currentColor} .c{color:#40ffff;text-shadow:0 0 2px currentColor}
-        .g{color:#40ff40;text-shadow:0 0 2px currentColor} .y{color:#ffff40;text-shadow:0 0 2px currentColor} 
-        .r{color:#ff4040;text-shadow:0 0 2px currentColor} .p{color:#ff40ff;text-shadow:0 0 2px currentColor} 
-        .b{color:#4040ff;text-shadow:0 0 2px currentColor} .o{color:#ff8040;text-shadow:0 0 2px currentColor}
-        .a{color:#808080;text-shadow:0 0 1px currentColor} .f{color:#404040;text-shadow:0 0 1px currentColor}
-        .n{color:#202020;opacity:0.6} .l{color:#101010;opacity:0.4}
-        
-        /* Dynamic entropy effects */
+        }        /* Entropy color spectrum using cosmos palette */
+        .v{color:var(--cosmos-tiffany);text-shadow:0 0 2px currentColor} .u{color:var(--cosmos-coral);text-shadow:0 0 2px currentColor} 
+        .s{color:var(--cosmos-orange);text-shadow:0 0 2px currentColor} .e{color:var(--cosmos-melon);text-shadow:0 0 2px currentColor} 
+        .m{color:var(--cosmos-cream);text-shadow:0 0 2px currentColor} .t{color:var(--cosmos-rose);text-shadow:0 0 2px currentColor}
+        .q{color:var(--cosmos-tiffany-dim);text-shadow:0 0 3px currentColor} .d{color:var(--cosmos-coral-dim);text-shadow:0 0 2px currentColor} 
+        .w{color:var(--cosmos-cream);text-shadow:0 0 4px currentColor} .c{color:var(--cosmos-tiffany-bright);text-shadow:0 0 2px currentColor}
+        .g{color:var(--cosmos-coral-bright);text-shadow:0 0 2px currentColor} .y{color:var(--cosmos-orange-bright);text-shadow:0 0 2px currentColor} 
+        .r{color:var(--cosmos-melon-bright);text-shadow:0 0 2px currentColor} .p{color:var(--cosmos-tiffany-bright);text-shadow:0 0 2px currentColor} 
+        .b{color:var(--cosmos-tiffany);text-shadow:0 0 2px currentColor} .o{color:var(--cosmos-orange-dim);text-shadow:0 0 2px currentColor}
+        .a{color:var(--cosmos-melon-dim);text-shadow:0 0 1px currentColor} .f{color:var(--cosmos-rose-dim);text-shadow:0 0 1px currentColor}
+        .n{color:var(--cosmos-dark);opacity:0.6} .l{color:var(--cosmos-dark);opacity:0.4}        /* Dynamic entropy effects using cosmos palette */
         .emergence { 
-            color: #00ffff; 
+            color: var(--cosmos-tiffany); 
             text-shadow: 0 0 4px currentColor, 0 0 8px currentColor;
             animation: emerge 2s ease-in-out infinite;
         }
         .decay { 
-            color: #ff4040; 
+            color: var(--cosmos-rose); 
             text-shadow: 0 0 3px currentColor;
             animation: fade 3s ease-in-out infinite;
         }
         .void { 
-            color: #404040; 
+            color: var(--cosmos-dark); 
             opacity: 0.3;
             animation: flicker 5s ease-in-out infinite;
         }
@@ -73,19 +68,17 @@
         @keyframes flicker {
             0%, 100% { opacity: 0.1; }
             50% { opacity: 0.5; }
-        }
-        
-        .info {
+        }        .info {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: var(--cosmos-tiffany);
             z-index: 100;
-            background: rgba(0,0,0,0.7);
+            background: rgba(69, 9, 32, 0.8);
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            border: 1px solid var(--cosmos-tiffany);
         }
     </style>
 </head>

@@ -2,29 +2,28 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>◆○●◇ ⚡∇⊱◉⊰∇⚡ ◇●○◆</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>◆○●◇ ⚡∇⊱◉⊰∇⚡ ◇●○◆</title>
+    <link rel="stylesheet" href="palette.css">
     <style>
         * { box-sizing: border-box; }        body { 
             margin: 0; 
             padding: 0; 
-            background: #000; 
+            background: var(--cosmos-dark); 
             overflow: hidden; 
             font-family: 'Courier New', monospace; 
             font-size: 8px; 
             line-height: 9px;
             height: 100vh;
             width: 100vw;
-        }        
-        #grid {
+        }        #grid {
             position: fixed;
             top: 0;
             left: 0;
             white-space: pre;
-            color: #333;
+            color: var(--cosmos-rose-dim);
             padding: 20px; /* Add padding to prevent clipping of text-shadow effects */
             margin: 0;
-            background: #000;
+            background: var(--cosmos-dark);
             overflow: visible; /* Allow text-shadow to extend beyond grid */
             word-spacing: 0;
             letter-spacing: 0;
@@ -34,13 +33,15 @@
             width: calc(100vw - 40px); /* Account for padding */
             height: calc(100vh - 40px); /* Account for padding */
             box-sizing: border-box;
-        }/* ∑ color spectrum for consciousness */
-        .c0{color:#111} .c1{color:#222} .c2{color:#333} .c3{color:#444} .c4{color:#555}        .c5{color:#666} .c6{color:#777} .c7{color:#888} .c8{color:#999} .c9{color:#aaa}
-        .c10{color:#889} .c11{color:#99a} .c12{color:#aab} .c13{color:#bbc} .c14{color:#ccd}
-        .c15{color:#cc2222} .c16{color:#dd3333} .c17{color:#ee4444} .c18{color:#ff5555} .c19{color:#ff6666}
-        .c20{color:#ff4444} .c21{color:#ff5555} .c22{color:#ff6666} .c23{color:#ff7777} .c24{color:#ff8888}
-        .c25{color:#aa1111} .c26{color:#bb2222} .c27{color:#cc3333} .c28{color:#dd4444} .c29{color:#fff}        /* High consciousness color variations */
-        .c30{color:#aa1111} .c31{color:#ff3030} .c32{color:#ff9999} .c33{color:#bb4444} .c34{color:#ffaaaa}
+        }/* ∑ color spectrum for consciousness using cosmos palette */
+        .c0{color:var(--cosmos-dark)} .c1{color:var(--cosmos-rose-dim)} .c2{color:var(--cosmos-rose)} .c3{color:var(--cosmos-coral-dim)} .c4{color:var(--cosmos-coral)}
+        .c5{color:var(--cosmos-coral-bright)} .c6{color:var(--cosmos-melon-dim)} .c7{color:var(--cosmos-melon)} .c8{color:var(--cosmos-melon-bright)} .c9{color:var(--cosmos-orange-dim)}
+        .c10{color:var(--cosmos-orange)} .c11{color:var(--cosmos-orange-bright)} .c12{color:var(--cosmos-cream-dim)} .c13{color:var(--cosmos-cream)} .c14{color:var(--cosmos-tiffany-dim)}
+        .c15{color:var(--cosmos-coral)} .c16{color:var(--cosmos-coral-bright)} .c17{color:var(--cosmos-melon)} .c18{color:var(--cosmos-melon-bright)} .c19{color:var(--cosmos-orange)}
+        .c20{color:var(--cosmos-orange-bright)} .c21{color:var(--cosmos-cream)} .c22{color:var(--cosmos-tiffany-dim)} .c23{color:var(--cosmos-tiffany)} .c24{color:var(--cosmos-tiffany-bright)}
+        .c25{color:var(--cosmos-rose)} .c26{color:var(--cosmos-coral)} .c27{color:var(--cosmos-coral-bright)} .c28{color:var(--cosmos-melon)} .c29{color:var(--cosmos-cream)}
+        /* High consciousness color variations */
+        .c30{color:var(--cosmos-rose)} .c31{color:var(--cosmos-coral-bright)} .c32{color:var(--cosmos-melon-bright)} .c33{color:var(--cosmos-orange-bright)} .c34{color:var(--cosmos-tiffany-bright)}
         
         /* Quantum consciousness states */
         .quantum { 
@@ -67,28 +68,28 @@
             66% { filter: hue-rotate(240deg) brightness(1.1); }
         }        /* Special transcendent effects */
         .transcend { 
-            color: #fff; 
-            text-shadow: 0 0 3px #555, 0 0 6px #555, 0 0 9px #333; 
+            color: var(--cosmos-cream); 
+            text-shadow: 0 0 3px var(--cosmos-tiffany), 0 0 6px var(--cosmos-tiffany), 0 0 9px var(--cosmos-tiffany-dim); 
             animation: pulse 2s ease-in-out infinite;
         }        
         .transcend-gold { 
-            color: #882222; 
-            text-shadow: 0 0 4px #661111, 0 0 8px #441111, 0 0 12px #221111; 
+            color: var(--cosmos-orange); 
+            text-shadow: 0 0 4px var(--cosmos-orange-bright), 0 0 8px var(--cosmos-orange-dim), 0 0 12px var(--cosmos-melon); 
             animation: pulse 1.8s ease-in-out infinite;
         }
         .transcend-crystal { 
-            color: #ffcccc; 
-            text-shadow: 0 0 4px #ff9999, 0 0 8px #ff6666, 0 0 12px #ff3333; 
+            color: var(--cosmos-tiffany-bright); 
+            text-shadow: 0 0 4px var(--cosmos-tiffany), 0 0 8px var(--cosmos-tiffany-bright), 0 0 12px var(--cosmos-tiffany-dim); 
             animation: pulse 2.2s ease-in-out infinite;
         }        
         .transcend-violet { 
-            color: #bb4444; 
-            text-shadow: 0 0 4px #993333, 0 0 8px #772222, 0 0 12px #551111; 
+            color: var(--cosmos-rose); 
+            text-shadow: 0 0 4px var(--cosmos-coral), 0 0 8px var(--cosmos-coral-dim), 0 0 12px var(--cosmos-dark); 
             animation: pulse 2.4s ease-in-out infinite;
         }
         .transcend-aqua { 
-            color: #ffaaaa; 
-            text-shadow: 0 0 4px #ff8888, 0 0 8px #ff6666, 0 0 12px #ff4444; 
+            color: var(--cosmos-tiffany); 
+            text-shadow: 0 0 4px var(--cosmos-tiffany-bright), 0 0 8px var(--cosmos-tiffany-dim), 0 0 12px var(--cosmos-melon); 
             animation: pulse 2.0s ease-in-out infinite;
         }
           @keyframes pulse {
@@ -96,34 +97,34 @@
             50% { opacity: 1; }
         }        /* extra effect styles */        
         .info-flow {
-            text-shadow: 0 0 10px #444, 0 0 15px #444, 0 0 20px #222;
+            text-shadow: 0 0 10px var(--cosmos-rose-dim), 0 0 15px var(--cosmos-rose-dim), 0 0 20px var(--cosmos-dark);
             animation: info-pulse 2s ease-in-out infinite;
         }
           
         .chaos {
-            text-shadow: 0 0 10px #ff3030, 0 0 15px #ff5555, 0 0 20px #ff3030;
+            text-shadow: 0 0 10px var(--cosmos-coral-bright), 0 0 15px var(--cosmos-coral), 0 0 20px var(--cosmos-coral-bright);
             animation: chaos-flicker 0.3s linear infinite;
         }
         
         .glow {
-            text-shadow: 0 0 12px white, 0 0 18px white, 0 0 24px white, 0 0 30px #ccc;
+            text-shadow: 0 0 12px var(--cosmos-cream), 0 0 18px var(--cosmos-cream), 0 0 24px var(--cosmos-cream), 0 0 30px var(--cosmos-tiffany);
         }        @keyframes info-pulse {
             0%, 100% { 
-                text-shadow: 0 0 10px #444, 0 0 15px #444, 0 0 20px #222;
+                text-shadow: 0 0 10px var(--cosmos-rose-dim), 0 0 15px var(--cosmos-rose-dim), 0 0 20px var(--cosmos-dark);
                 transform: scale(1);
             }
             50% { 
-                text-shadow: 0 0 15px #444, 0 0 22px #444, 0 0 30px #666, 0 0 35px #444;
+                text-shadow: 0 0 15px var(--cosmos-rose), 0 0 22px var(--cosmos-rose), 0 0 30px var(--cosmos-coral), 0 0 35px var(--cosmos-rose-dim);
                 transform: scale(1.05);
             }
         }
           
         @keyframes chaos-flicker {
-            0% { text-shadow: 0 0 10px #ff3030, 0 0 15px #ff5555, 0 0 20px #ff3030; }
-            25% { text-shadow: 0 0 12px #ff4444, 0 0 18px #ff6666, 0 0 22px #ff4444; }
-            50% { text-shadow: 0 0 15px #ff5555, 0 0 20px #ff3030, 0 0 25px #ff5555; }
-            75% { text-shadow: 0 0 11px #ff4444, 0 0 16px #ff3030, 0 0 21px #ff4444; }
-            100% { text-shadow: 0 0 10px #ff3030, 0 0 15px #ff5555, 0 0 20px #ff3030; }
+            0% { text-shadow: 0 0 10px var(--cosmos-coral-bright), 0 0 15px var(--cosmos-coral), 0 0 20px var(--cosmos-coral-bright); }
+            25% { text-shadow: 0 0 12px var(--cosmos-coral), 0 0 18px var(--cosmos-coral-bright), 0 0 22px var(--cosmos-coral); }
+            50% { text-shadow: 0 0 15px var(--cosmos-coral-bright), 0 0 20px var(--cosmos-coral), 0 0 25px var(--cosmos-coral-bright); }
+            75% { text-shadow: 0 0 11px var(--cosmos-coral), 0 0 16px var(--cosmos-coral-bright), 0 0 21px var(--cosmos-coral); }
+            100% { text-shadow: 0 0 10px var(--cosmos-coral-bright), 0 0 15px var(--cosmos-coral), 0 0 20px var(--cosmos-coral-bright); }
         }</style>
 </head>
 <body>

@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>∞ ∫∂∇</title>
+    <link rel="stylesheet" href="palette.css">
     <style>        body {
-            background: #000;
-            color: #fff;
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
+            color: var(--cosmos-melon);
             font-family: 'Courier New', monospace;
             margin: 0;
             padding: 0;
@@ -26,26 +27,22 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
         }
-        .v { color: #ffffff; } .u { color: #ffcccc; } .s { color: #ccffcc; }
-        .e { color: #ccccff; } .m { color: #ffffcc; } .t { color: #ffccff; }
-        .q { color: #ccffff; } .d { color: #ff9999; } .w { color: #99ff99; }
-        .c { color: #9999ff; } .g { color: #ff6666; } .y { color: #66ff66; }
-        .r { color: #6666ff; } .p { color: #ff3333; } .b { color: #33ff33; }
-        .o { color: #3333ff; } .a { color: #ff0000; } .f { color: #00ff00; }
-        .n { color: #0000ff; } .l { color: #888888; }
         
         .info {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: var(--cosmos-tiffany);
             z-index: 100;
-            background: rgba(0,0,0,0.7);
+            background: linear-gradient(135deg, var(--cosmos-dark-dim), var(--cosmos-rose-dim));
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            border: 2px solid var(--cosmos-tiffany);
+            box-shadow: 0 0 20px rgba(173, 235, 218, 0.3);
+            text-shadow: 0 0 8px var(--cosmos-tiffany);
         }
     </style>
 </head>

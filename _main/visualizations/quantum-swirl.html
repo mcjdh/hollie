@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>∿ ⟲◎⟲ ∿</title>
+    <meta charset="UTF-8">    <title>∿ ⟲◎⟲ ∿</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
+    <link rel="stylesheet" href="palette.css">
+    <style>        body {
             margin: 0;
             padding: 0;
-            background: #000;
-            color: #fff;
+            background: linear-gradient(135deg, var(--cosmos-dark) 0%, #000 100%);
+            color: var(--cosmos-melon);
             overflow: hidden;
             font-family: 'Courier New', monospace;
             width: 100vw;
             height: 100vh;
-        }        #canvas {
+        }#canvas {
             white-space: pre;
             line-height: 1.1;
             font-size: clamp(6px, 1.2vmin, 14px);
@@ -40,24 +39,25 @@
         }
         @media (min-width: 1200px) {
             #canvas { font-size: clamp(7px, 1.4vmin, 16px); }
-        }
-        .c0 { color: #0044ff; text-shadow: 0 0 2px currentColor; }
-        .c1 { color: #0088ff; text-shadow: 0 0 2px currentColor; }
-        .c2 { color: #00ccff; text-shadow: 0 0 2px currentColor; }
-        .c3 { color: #88ffff; text-shadow: 0 0 3px currentColor; }
-        .c4 { color: #ffffff; text-shadow: 0 0 4px currentColor; }
-        
-        .info {
+        }        /* Quantum swirl intensity using cohesive palette */
+        .c0 { color: var(--cosmos-rose); text-shadow: 0 0 2px currentColor; }
+        .c1 { color: var(--cosmos-coral); text-shadow: 0 0 2px currentColor; }
+        .c2 { color: var(--cosmos-melon); text-shadow: 0 0 2px currentColor; }
+        .c3 { color: var(--cosmos-orange); text-shadow: 0 0 3px currentColor; }
+        .c4 { color: var(--cosmos-tiffany); text-shadow: 0 0 4px currentColor; }
+          .info {
             position: fixed;
             top: 10px;
             left: 10px;
             font-size: 12px;
-            color: #64ffda;
+            color: var(--cosmos-tiffany);
             z-index: 100;
-            background: rgba(0,0,0,0.7);
+            background: linear-gradient(135deg, var(--cosmos-dark-dim), var(--cosmos-rose-dim));
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            border: 2px solid var(--cosmos-tiffany);
+            box-shadow: 0 0 20px rgba(173, 235, 218, 0.3);
+            text-shadow: 0 0 8px var(--cosmos-tiffany);
         }
     </style>
 </head>
