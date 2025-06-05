@@ -23,6 +23,13 @@
             position: absolute;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
+            text-shadow: 0 0 2px currentColor;
+            animation: cosmicPulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes cosmicPulse {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
         }
         
         .info {
@@ -38,7 +45,41 @@
             border: 2px solid var(--cosmos-tiffany);
             box-shadow: 0 0 20px rgba(173, 235, 218, 0.3);
             text-shadow: 0 0 8px var(--cosmos-tiffany);
+            transition: all 0.3s ease;
         }
+        
+        .info:hover {
+            box-shadow: 0 0 30px rgba(173, 235, 218, 0.5);
+            transform: scale(1.05);
+        }
+        
+        /* Color classes mapped to chocolate cosmos palette */
+        .a { color: var(--cosmos-dark); opacity: 0.3; }
+        .b { color: var(--cosmos-dark); opacity: 0.5; }
+        .c { color: var(--cosmos-dark); opacity: 0.7; }
+        .d { color: var(--cosmos-dark); }
+        .e { color: var(--cosmos-rose-dim); }
+        .f { color: var(--cosmos-rose); }
+        .g { color: var(--cosmos-rose); text-shadow: 0 0 3px currentColor; }
+        .h { color: var(--cosmos-coral-dim); }
+        .i { color: var(--cosmos-coral); }
+        .j { color: var(--cosmos-coral); text-shadow: 0 0 4px currentColor; }
+        .k { color: var(--cosmos-melon-dim); }
+        .l { color: var(--cosmos-melon); }
+        .m { color: var(--cosmos-melon); text-shadow: 0 0 4px currentColor; }
+        .n { color: var(--cosmos-orange-dim); }
+        .o { color: var(--cosmos-orange); }
+        .p { color: var(--cosmos-orange); text-shadow: 0 0 5px currentColor; }
+        .q { color: var(--cosmos-cream-dim); }
+        .r { color: var(--cosmos-cream); }
+        .s { color: var(--cosmos-tiffany-dim); }
+        .t { color: var(--cosmos-tiffany); }
+        .u { color: var(--cosmos-tiffany); text-shadow: 0 0 6px currentColor; }
+        .v { color: var(--cosmos-tiffany-bright); text-shadow: 0 0 8px currentColor; }
+        .w { color: var(--cosmos-coral-bright); text-shadow: 0 0 10px currentColor; }
+        .x { color: var(--cosmos-orange-bright); text-shadow: 0 0 10px currentColor; }
+        .y { color: var(--cosmos-melon-bright); text-shadow: 0 0 10px currentColor; }
+        .z { color: #fff; text-shadow: 0 0 12px var(--cosmos-tiffany); }
     </style>
 </head>
 <body>    <div class="info">
@@ -52,11 +93,15 @@
         // Dynamic responsive grid sizing
         let W, H, cellSize, fontSize;
         let t = 0;
-        const display = document.getElementById('display');
+        let frameCount = 0;
         
         // Dynamic arrays - reallocated on resize
         let awareness, complexity, information, structure, emergence, awakening;
-          function calculateDimensions() {
+        
+        // Performance optimization - cache DOM updates
+        let lastOutput = '';
+        
+        function calculateDimensions() {
             const vw = window.innerWidth;
             const vh = window.innerHeight;
             
@@ -74,6 +119,9 @@
             W = Math.max(60, W);
             H = Math.max(30, H);
             
+            // Cap maximum for performance
+            W = Math.min(200, W);
+            H = Math.min(100, H);
             
             return { W, H, fontSize };
         }
@@ -101,17 +149,30 @@
             '☆', '★', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✯'   // universal awakening
         ];
         
-        const colors = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
+        // Updated color progression following chocolate cosmos palette
+        const colors = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
         
         // Dynamic cosmic centers - scales with viewport
         function getCosmicCenters() {
-            return [
+            const centers = [
                 {x: W * 0.2, y: H * 0.2, type: 'void', power: 0.1, freq: 0.01},
                 {x: W * 0.8, y: H * 0.2, type: 'matter', power: 0.3, freq: 0.02},
                 {x: W * 0.5, y: H * 0.5, type: 'life', power: 0.6, freq: 0.03},
                 {x: W * 0.2, y: H * 0.8, type: 'mind', power: 0.9, freq: 0.04},
                 {x: W * 0.8, y: H * 0.8, type: 'cosmic', power: 1.2, freq: 0.05}
             ];
+            
+            // Add dynamic wandering center
+            const wanderT = t * 0.005;
+            centers.push({
+                x: W * (0.5 + Math.sin(wanderT) * 0.3),
+                y: H * (0.5 + Math.cos(wanderT * 0.7) * 0.3),
+                type: 'wanderer',
+                power: 0.8 + Math.sin(wanderT * 2) * 0.2,
+                freq: 0.06
+            });
+            
+            return centers;
         }
         
         // Mathematical constants for universal patterns
@@ -125,9 +186,15 @@
             // Anti-equilibrium chaos injection
             const chaosLevel = Math.sin(τ * 0.7) * 0.1 + Math.cos(τ * 1.3) * 0.05;
             
+            // Performance optimization - update only every few frames for distant cells
+            const updateAll = frameCount % 3 === 0;
+            
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
                     const i = y * W + x;
+                    
+                    // Skip some calculations for performance
+                    if (!updateAll && (x + y) % 3 !== frameCount % 3) continue;
                     
                     // Normalized coordinates for viewport-independent calculations
                     const nx = (x - W/2) / Math.max(W, H);
@@ -244,15 +311,39 @@
                     }
                     
                     const symIdx = Math.min(baseIdx + Math.floor(consciousness * 9), symbols.length - 1);
-                    const colorIdx = Math.floor(consciousness * colors.length) % colors.length;
+                    
+                    // Enhanced color selection based on consciousness level
+                    // Maps consciousness to the chocolate cosmos palette progression
+                    let colorIdx;
+                    if (consciousness < 0.1) {
+                        colorIdx = Math.floor(consciousness * 40); // Very dark (a-d)
+                    } else if (consciousness < 0.3) {
+                        colorIdx = 4 + Math.floor((consciousness - 0.1) * 20); // Rose tones (e-h)
+                    } else if (consciousness < 0.5) {
+                        colorIdx = 8 + Math.floor((consciousness - 0.3) * 20); // Coral tones (i-l)
+                    } else if (consciousness < 0.7) {
+                        colorIdx = 12 + Math.floor((consciousness - 0.5) * 20); // Melon/Orange (m-p)
+                    } else if (consciousness < 0.85) {
+                        colorIdx = 16 + Math.floor((consciousness - 0.7) * 26.67); // Cream/Tiffany (q-t)
+                    } else {
+                        colorIdx = 20 + Math.floor((consciousness - 0.85) * 40); // Bright accents (u-z)
+                    }
+                    
+                    colorIdx = Math.min(colorIdx, colors.length - 1);
                     
                     output += `<span class="${colors[colorIdx]}">${symbols[symIdx]}</span>`;
                 }
                 if (y < H - 1) output += '\n'; // Don't add newline after last row
             }
             
-            display.innerHTML = output;
+            // Only update DOM if content changed (performance optimization)
+            if (output !== lastOutput) {
+                display.innerHTML = output;
+                lastOutput = output;
+            }
+            
             t += 0.5;
+            frameCount++;
             requestAnimationFrame(render);
         }
         // Initialization and resize handling
@@ -263,7 +354,9 @@
         
         function handleResize() {
             calculateDimensions();
-            initializeArrays();        }
+            initializeArrays();
+            lastOutput = ''; // Force re-render on resize
+        }
         
         // Responsive handling
         window.addEventListener('resize', handleResize, { passive: true });

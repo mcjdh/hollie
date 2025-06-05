@@ -99,19 +99,17 @@
             const estimatedCharHeight = baseFontSize;
 
             W = Math.min(maxW, Math.max(minW, Math.floor(viewportWidth / estimatedCharWidth)));
-            H = Math.min(maxH, Math.max(minH, Math.floor(viewportHeight / estimatedCharHeight)));
-
-            // Calculate final font size to fill viewport efficiently
+            H = Math.min(maxH, Math.max(minH, Math.floor(viewportHeight / estimatedCharHeight)));            // Calculate final font size to fill viewport efficiently
             const fontSize = Math.min(
-                viewportWidth / W * 0.95,  // Leave some margin
-                viewportHeight / H * 0.95
+                viewportWidth / W * 1.8,   // More aggressive scaling for edge-to-edge
+                viewportHeight / H * 1.2
             );
 
-            display.style.fontSize = fontSize + 'px';
-            display.style.lineHeight = fontSize + 'px';
+            display.style.fontSize = Math.max(fontSize, 6) + 'px';
+            display.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
 
-            charWidth = fontSize * 0.6;
-            charHeight = fontSize;
+            charWidth = Math.max(fontSize, 6) * 0.6;
+            charHeight = Math.max(fontSize, 6);
 
             
             // Precompute values for performance optimization

@@ -165,13 +165,13 @@
             DREAM_STATE_PROB: 0.05              // Probability of entering dream-like states
         };        // Calculate optimal grid size based on viewport
         function updateDimensions() {
-            // Create accurate character measurement with current font size
+            // Create accurate character measurement with base font size
             const test = document.createElement('div');
             test.style.position = 'absolute';
             test.style.visibility = 'hidden';
             test.style.whiteSpace = 'pre';
             test.style.fontFamily = 'Courier New, monospace';
-            test.style.fontSize = getComputedStyle(document.getElementById('canvas')).fontSize;
+            test.style.fontSize = '8px';
             test.style.lineHeight = '1.0';
             test.textContent = '⬢'.repeat(10) + '\n'.repeat(10);
             document.body.appendChild(test);
@@ -181,13 +181,23 @@
             charHeight = rect.height / 10;
             document.body.removeChild(test);
             
-            // Calculate grid size to fill viewport
+            // Calculate grid size to fill viewport edge-to-edge
             W = Math.ceil(window.innerWidth / charWidth) + 1;
             H = Math.ceil(window.innerHeight / charHeight) + 1;
             
             // Ensure reasonable bounds for performance
             W = Math.max(40, Math.min(150, W));
             H = Math.max(20, Math.min(80, H));
+            
+            // Calculate font size for full viewport coverage
+            const optimalFontWidth = window.innerWidth / W;
+            const optimalFontHeight = window.innerHeight / H;
+            fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            
+            // Apply calculated font size
+            const canvas = document.getElementById('canvas');
+            canvas.style.fontSize = Math.max(fontSize, 4) + 'px';
+            canvas.style.lineHeight = (Math.max(fontSize, 4) * 1.0) + 'px';
             
         }// Consciousness states and their symbol sets - safer Unicode symbols
         const CONSCIOUSNESS_STATES = {

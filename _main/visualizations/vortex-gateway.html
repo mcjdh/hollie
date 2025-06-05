@@ -11,19 +11,26 @@
             font-family: 'Courier New', monospace;
             overflow: hidden;
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
             cursor: pointer;
         }
 
         #vortex {
-            font-size: clamp(8px, 2vw, 14px);
-            line-height: 1;
+            font-size: 10px;
+            line-height: 1.0;
             white-space: pre;
-            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             filter: drop-shadow(0 0 3px currentColor);
-        }        .glyph {
+        }.glyph {
             display: inline-block;
             width: 0.6em;
             transition: all 0.15s ease;
@@ -86,19 +93,18 @@
         let paused = false;
         
         const vortex = document.getElementById('vortex');
-        
-        function updateDimensions() {
+          function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
             // Calculate optimal character dimensions
             const testDiv = document.createElement('div');
             testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = getComputedStyle(vortex).fontSize;
+            testDiv.style.fontSize = '10px';
             testDiv.style.position = 'absolute';
             testDiv.style.visibility = 'hidden';
             testDiv.style.whiteSpace = 'pre';
-            testDiv.style.lineHeight = '1';
+            testDiv.style.lineHeight = '1.0';
             testDiv.textContent = '○'.repeat(10) + '\n'.repeat(10);
             document.body.appendChild(testDiv);
             
@@ -107,13 +113,21 @@
             const charHeight = rect.height / 10;
             document.body.removeChild(testDiv);
             
-            // Calculate dynamic grid size for optimal display
-            W = Math.floor(viewportWidth / charWidth);
-            H = Math.floor(viewportHeight / charHeight);
+            // Calculate dynamic grid size for full coverage
+            W = Math.ceil(viewportWidth / charWidth) + 1;
+            H = Math.ceil(viewportHeight / charHeight) + 1;
             
             // Ensure reasonable bounds
             W = Math.max(40, Math.min(120, W));
             H = Math.max(20, Math.min(80, H));
+            
+            // Calculate font size for full viewport coverage
+            const optimalFontWidth = viewportWidth / W;
+            const optimalFontHeight = viewportHeight / H;
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            
+            vortex.style.fontSize = Math.max(fontSize, 6) + 'px';
+            vortex.style.lineHeight = (Math.max(fontSize, 6) * 1.0) + 'px';
         }
         
         const glyphs = [' ', '·', '•', '◦', '○', '●', '◉', '⊙', '⬢', '✶', '✷', '✹', '✺', '✼', '※', '@'];
