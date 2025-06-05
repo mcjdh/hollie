@@ -142,6 +142,7 @@
         
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H, fontSize, charWidth, charHeight;        // Core simulation constants - optimized for higher speed
+        const canvas = document.getElementById('canvas');
         const CONFIG = {
             PHI: (1 + Math.sqrt(5)) / 2,        // Golden ratio
             PI: Math.PI,                         // Pi  
@@ -171,7 +172,7 @@
             test.style.visibility = 'hidden';
             test.style.whiteSpace = 'pre';
             test.style.fontFamily = 'Courier New, monospace';
-            test.style.fontSize = getComputedStyle(document.getElementById('canvas')).fontSize;
+            test.style.fontSize = getComputedStyle(canvas).fontSize;
             test.style.lineHeight = '1.0';
             test.textContent = '⬢'.repeat(10) + '\n'.repeat(10);
             document.body.appendChild(test);
@@ -1359,7 +1360,7 @@
                 }
                 
                 // Join array once at the end for better performance
-                document.getElementById('canvas').innerHTML = outputArray.join('');// Update personality info display with web-compatible symbolic glyphs
+                canvas.innerHTML = outputArray.join('');// Update personality info display with web-compatible symbolic glyphs
                 const personalityInfo = document.getElementById('personality-info');
                 if (personalityInfo) {
                     // Personality archetype symbols (web-safe)

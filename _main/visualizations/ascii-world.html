@@ -69,6 +69,7 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
+        const canvas = document.getElementById('canvas');
         
         // ◊ optimal grid dimensions
         function updateDimensions() {            const viewportWidth = window.innerWidth;
@@ -99,7 +100,6 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            const canvas = document.getElementById('canvas');
             canvas.style.fontSize = fontSize + 'px';
             canvas.style.lineHeight = (fontSize * 1.0) + 'px';
             
@@ -281,7 +281,7 @@
                 if (y < renderH - 1) output += '\n';
             }
             
-            document.getElementById('canvas').innerHTML = output;
+            canvas.innerHTML = output;
             t++;        }
         
         // ∞ evolution loop
