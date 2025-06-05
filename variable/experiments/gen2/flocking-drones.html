@@ -29,6 +29,7 @@
     <script>        let W, H;
         let charWidth, charHeight;
         const drones = [];
+        const canvas = document.getElementById('canvas');
         const NUM = 45;
         
         // Flocking parameters for more accurate simulation
@@ -59,7 +60,6 @@
             W = Math.ceil(window.innerWidth / charWidth) + 1;
             H = Math.ceil(window.innerHeight / charHeight) + 1;
 
-            const canvas = document.getElementById('canvas');
             canvas.style.fontSize = '10px';
             canvas.style.lineHeight = '10px';
         }        function init() {
@@ -268,7 +268,7 @@
                 }
                 out += '\n';
             }
-            document.getElementById('canvas').innerHTML = out;
+            canvas.innerHTML = out;
             requestAnimationFrame(render);
         }
 

@@ -36,6 +36,7 @@
         let W, H;
         let charWidth, charHeight;
         let time = 0;
+        const canvas = document.getElementById('canvas');
 
         // Multi-dimensional temporal fields
         let crystallineField, temporalFlow, memoryDecay, futureEcho;
@@ -88,7 +89,6 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
 
-            const canvas = document.getElementById('canvas');
             canvas.style.fontSize = fontSize + 'px';
             canvas.style.lineHeight = (fontSize * 1.0) + 'px';
 
@@ -235,7 +235,7 @@
                 output += '\n';
             }
             
-            document.getElementById('canvas').textContent = output;
+            canvas.textContent = output;
             time++;
         }
         
