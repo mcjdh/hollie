@@ -50,6 +50,7 @@
         // Dynamic responsive grid sizing
         let W, H, cellSize, fontSize;
         let t = 0;
+        const display = document.getElementById('display');
         
         // Dynamic arrays - reallocated on resize
         let awareness, complexity, information, structure, emergence, awakening;
@@ -193,7 +194,6 @@
             updateFields();
             
             // Update display with responsive font size
-            const display = document.getElementById('display');
             display.style.fontSize = fontSize + 'px';
             display.style.lineHeight = (fontSize * 1.2) + 'px';
             
