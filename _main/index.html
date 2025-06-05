@@ -173,6 +173,14 @@
         .ctrl-btn:active {
             background: linear-gradient(135deg, rgba(173,235,218,0.3), rgba(255,238,227,0.15));
             transform: scale(0.95) translateY(0);
+        }
+
+        #audioBtn {
+            transition: all 0.3s ease, color 0.5s ease;
+        }
+
+        #audioBtn:hover {
+            text-shadow: 0 0 15px currentColor;
         }        .fullscreen {
             position: fixed;
             top: 0;
@@ -400,12 +408,16 @@
     <div class="controls">
         <button class="ctrl-btn" onclick="toggle_fs()">⛶</button>
         <button class="ctrl-btn" onclick="random_viz()">◉</button>
+        <button class="ctrl-btn" onclick="toggle_audio()" id="audioBtn">♪</button>
         <button class="ctrl-btn" onclick="about()">?</button>
     </div>    <div class="fullscreen" id="fs">        <div class="close-x" onclick="close_viz_force();">×</div>
         <div class="exit-overlay" id="exitOverlay"></div>
         <iframe class="frame" id="frame" loading="lazy"></iframe>
     </div>
 
+    <!-- Hollie Audio System -->
+    <script src="hollie-audio.js"></script>
+    
     <script>        const vizs = [
             'mathematical-singularity.html',
             'self-writing-math.html', 
@@ -437,6 +449,14 @@
             fsElem.style.display = 'block';
             document.body.style.overflow = 'hidden';
             isFullscreenOpen = true;
+            
+            // Ensure audio continues playing across viz changes
+            if (window.HollieSound && window.HollieSound.getState().activated) {
+                setTimeout(() => {
+                    window.HollieSound.restart();
+                }, 100);
+            }
+            
             // Setup multiple exit paths
             setupExitMechanisms();
         }
@@ -448,6 +468,13 @@
             fsElem.style.display = 'none';
             frameElem.src = '';
             document.body.style.overflow = 'auto';
+            
+            // Ensure audio continues after closing visualizations
+            if (window.HollieSound && window.HollieSound.getState().activated) {
+                setTimeout(() => {
+                    window.HollieSound.restart();
+                }, 100);
+            }
             
             // remove all event listeners
             cleanupExitMechanisms();
@@ -546,6 +573,13 @@
         }        function random_viz() {
             const rand = vizs[Math.floor(Math.random() * vizs.length)];
             open_viz(rand);
+            
+            // Ensure audio stays active during random navigation
+            if (window.HollieSound && window.HollieSound.getState().activated) {
+                setTimeout(() => {
+                    window.HollieSound.restart();
+                }, 200);
+            }
         }
 
         function toggle_fs() {
@@ -557,11 +591,57 @@
         }
 
         function about() {
-            alert('∞ ◉ ∞\n\n⟨ ☰∿☰ ⟩\n\n◦ ∫∂∇\n◦ ⧖→∞  \n◦ ◎js◎html5\n\n⟨ ESC ◦ × ⟩');
+            alert('∞ ◉ ∞\n\n⟨ ☰∿☰ ⟩\n\n◦ ∫∂∇\n◦ ⧖→∞  \n◦ ◎js◎html5\n◦ ♪→∞ procedural\n\n⟨ ESC ◦ × ⟩');
         }
 
+        function toggle_audio() {
+            const btn = document.getElementById('audioBtn');
+            if (window.HollieSound) {
+                window.HollieSound.toggle();
+                const state = window.HollieSound.getState();
+                btn.textContent = state.playing ? '♫' : '♪';
+                btn.style.color = state.playing ? '#ADEBDA' : '#F08080';
+            }
+        }
+
+        // Update audio button state periodically
+        setInterval(() => {
+            const btn = document.getElementById('audioBtn');
+            if (window.HollieSound && btn) {
+                const state = window.HollieSound.getState();
+                if (state.initialized) {
+                    btn.textContent = state.playing ? '♫' : '♪';
+                    btn.style.color = state.playing ? '#ADEBDA' : '#F08080';
+                    
+                    // Auto-restart if audio should be persistent but stopped
+                    if (state.activated && state.persistent && !state.playing) {
+                        setTimeout(() => window.HollieSound.restart(), 500);
+                    }
+                }
+            }
+        }, 1000);
+        
+        // Global audio persistence - keep alive across all interactions
+        document.addEventListener('click', () => {
+            if (window.HollieSound && window.HollieSound.getState().activated) {
+                setTimeout(() => window.HollieSound.restart(), 100);
+            }
+        }, { passive: true });
+        
+        // Ensure audio survives page focus changes
+        window.addEventListener('focus', () => {
+            if (window.HollieSound && window.HollieSound.getState().activated) {
+                setTimeout(() => window.HollieSound.restart(), 100);
+            }
+        });
+
         // Legacy keyboard support (backup)
-        const keyActions = { r: random_viz, f: toggle_fs };
+        const keyActions = { 
+            r: random_viz, 
+            f: toggle_fs,
+            a: toggle_audio,
+            m: toggle_audio // alternative key
+        };
         document.addEventListener('keydown', (e) => {
             if (!isFullscreenOpen) {
                 const action = keyActions[e.key.toLowerCase()];
