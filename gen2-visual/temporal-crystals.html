@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>temporal crystals</title>
@@ -252,6 +252,11 @@
             updateDimensions();
             evolve();
         }, 50);
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && window.parent!==window){
+    window.parent.postMessage('close','*');
+  }
+});
     </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>∞◆○●◇△</title><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover"><style>
+<html lang="en"><head><meta charset="UTF-8"><title>∞◆○●◇△</title><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover"><style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
 body{background:#000;color:#fff;overflow:hidden;font-family:'Courier New',monospace;height:100vh;width:100vw;position:fixed;display:grid;grid-template-rows:1fr auto}
 #∞{font-size:clamp(3px,1.8vmin,10px);line-height:1;white-space:pre;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;position:relative}
@@ -225,4 +225,4 @@ function frm(){ren();requestAnimationFrame(frm);}
 console.log("∞");
 console.log("◆");
 rsz();frm();
-</script></body></html>
+document.addEventListener("keydown",e=>{if(e.key=="Escape"&&window.parent!==window)window.parent.postMessage("close","*");});</script></body></html>
