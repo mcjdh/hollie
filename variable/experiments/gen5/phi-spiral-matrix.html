@@ -49,6 +49,7 @@
         const H = 32;
         const speed = 0.1;
         let t = 0;
+        let last = 0;
         const gridEl = document.getElementById('grid');
 
         function transform(vec, a) {
@@ -91,11 +92,18 @@
                 out += '\n';
             }
             gridEl.innerHTML = out;
-            t += speed;
         }
 
-        setInterval(update, 100);
-        update();
+        function loop(ts) {
+            if (ts - last > 100) {
+                t += speed;
+                update();
+                last = ts;
+            }
+            requestAnimationFrame(loop);
+        }
+
+        requestAnimationFrame(loop);
 
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && window.parent !== window) {

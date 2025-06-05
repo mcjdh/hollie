@@ -68,6 +68,10 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
+        const MAX_COLS = 160;
+        const MAX_ROWS = 80;
+        const FPS = 30;
+        let lastFrame = 0;
         
         // Calculate optimal grid size based on viewport
         function updateDimensions() {
@@ -87,9 +91,7 @@
             // Adjust base font size based on screen size
             if (viewportWidth > 2560) baseFontSize = 16; // 4K+ screens
             else if (viewportWidth > 1920) baseFontSize = 14; // 2K screens
-            else if (viewportWidth < 800) baseFontSize = 10;  // Mobile
-
-            // Calculate grid dimensions based on font size
+            else if (viewportWidth < 800) baseFontSize = 10;  // Mobile            // Calculate grid dimensions based on font size
             const estimatedCharWidth = baseFontSize * 0.6; // Monospace approximation
             const estimatedCharHeight = baseFontSize;
 
@@ -109,10 +111,28 @@
             charHeight = fontSize;
 
             console.log(`Grid: ${W}x${H} (${W*H} chars), Font: ${fontSize.toFixed(1)}px, Screen: ${viewportWidth}x${viewportHeight}`);
-        }
-        
-        // Stellar field arrays
+            
+            // Precompute values for performance optimization
+            preR = new Float32Array(W * H);
+            preAngle = new Float32Array(W * H);
+            preDist = new Float32Array(W * H);
+            const w2 = W / 2;
+            const h2 = H / 2;
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const i = y * W + x;
+                    const xi = (x - w2) / (W / 4);
+                    const yi = (y - h2) / (H / 4);
+                    preR[i] = Math.sqrt(xi * xi + yi * yi);
+                    preAngle[i] = Math.atan2(yi, xi);
+                    const ndx = (x - w2) / w2;
+                    const ndy = (y - h2) / h2;
+                    preDist[i] = Math.sqrt(ndx * ndx + ndy * ndy);
+                }
+            }
+        }        // Stellar field arrays
         let field, velocity, density, luminosity;
+        let preR, preAngle, preDist; // Precomputed values for performance
         
         function initializeFields() {
             const size = W * H;
@@ -144,14 +164,12 @@
             'v','u','g','p','y','b'                      // Repeat bright colors for emphasis
         ];
 
-        const starCount = starSymbols.length;
-        const colorCount = colorClasses.length;
-          // Stellar field equations tuned for enhanced visibility
-        function stellarField(x, y, time) {
-            const xi = (x - W/2) / (W/4);
-            const yi = (y - H/2) / (H/4);
-            const r = Math.sqrt(xi * xi + yi * yi);
-            const angle = Math.atan2(yi, xi);
+        const starCount = starSymbols.length;        const colorCount = colorClasses.length;
+        
+        // Stellar field equations tuned for enhanced visibility (optimized with precomputed values)
+        function stellarField(idx, time) {
+            const r = preR[idx];
+            const angle = preAngle[idx];
 
             // Enhanced radial falloff with multiple layers
             const base = Math.exp(-r * 0.8) + Math.exp(-r * 2.5) * 0.3; // Dual-layer galaxy
@@ -174,7 +192,9 @@
             const vel = (arms1 * 0.8 + arms2 * 0.6) + swirl * 2.0;
 
             return { density: dens, velocity: vel, phase: angle, r };
-        }        function update() {
+        }
+        
+        function update() {
             t += 0.03; // Slightly faster animation
             
             // Performance optimization: Skip some updates on large grids
@@ -188,7 +208,7 @@
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
                     const idx = y * W + x;
-                    const stellar = stellarField(x, y, t);
+                    const stellar = stellarField(idx, t);
                     
                     // Enhanced field evolution with stronger coupling
                     field[idx] = field[idx] * 0.92 + stellar.density * 0.08;
@@ -208,9 +228,9 @@
                     const baseLum = Math.pow(density[idx], 0.9); // Less harsh power curve
                     luminosity[idx] = baseLum * twinkle1 * twinkle2 * twinkle3 * distanceFactor;
                 }
-            }
-        }
-          function render() {
+            }        }
+        
+        function render() {
             let output = '';
             
             for (let y = 0; y < H; y++) {
@@ -218,7 +238,7 @@
                     const idx = y * W + x;
                     const intensity = luminosity[idx];
                     const motion = velocity[idx];
-                    const dist = Math.sqrt(((x - W/2)/(W/2))**2 + ((y - H/2)/(H/2))**2);
+                    const dist = preDist[idx];
                     
                     // Enhanced visibility with lower thresholds
                     if (intensity > 0.45) {
@@ -266,7 +286,9 @@
             display.innerHTML = output;
         }
         
-        function loop() {
+        function loop(now) {
+            if (now - lastFrame < 1000/FPS) { requestAnimationFrame(loop); return; }
+            lastFrame = now;
             update();
             render();
             requestAnimationFrame(loop);
@@ -293,7 +315,7 @@
 
         updateDimensions();
         initializeFields();
-        loop();
+        requestAnimationFrame(loop);
     </script>
 </body>
 </html>
