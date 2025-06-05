@@ -109,6 +109,7 @@
         let W = 80, H = 40; // Target grid dimensions
         let time = 0;
         let informationField, entropyField, emergenceField, flowField;
+        let nextInfo, nextEntropy, nextEmergence;
         let centerX, centerY;
         let initialized = false;
         let fontSize = 12;
@@ -171,6 +172,9 @@
             entropyField = new Float32Array(size);
             emergenceField = new Float32Array(size);
             flowField = new Float32Array(size);
+            nextInfo = new Float32Array(size);
+            nextEntropy = new Float32Array(size);
+            nextEmergence = new Float32Array(size);
             
             // on resize, carry over old data
             if (oldInfo && initialized) {
@@ -204,9 +208,9 @@
             // Only update every few frames for performance
             if (time % 2 !== 0) return;
             
-            const newInfo = new Float32Array(informationField.length);
-            const newEntropy = new Float32Array(entropyField.length);
-            const newEmergence = new Float32Array(emergenceField.length);
+            nextInfo.fill(0);
+            nextEntropy.fill(0);
+            nextEmergence.fill(0);
             
             // Simplified evolution - only process inner cells
             for (let y = 1; y < H - 1; y++) {
@@ -250,15 +254,15 @@
                     // Simple flow field
                     flowField[i] = Math.sin(time * 0.02 + x * 0.1 + y * 0.1);
                     
-                    newInfo[i] = Math.max(0, Math.min(1, info));
-                    newEntropy[i] = Math.max(0, Math.min(1, entropy));
-                    newEmergence[i] = Math.max(0, Math.min(1, emergence));
+                    nextInfo[i] = Math.max(0, Math.min(1, info));
+                    nextEntropy[i] = Math.max(0, Math.min(1, entropy));
+                    nextEmergence[i] = Math.max(0, Math.min(1, emergence));
                 }
             }
             
-            informationField.set(newInfo);
-            entropyField.set(newEntropy);
-            emergenceField.set(newEmergence);
+            informationField.set(nextInfo);
+            entropyField.set(nextEntropy);
+            emergenceField.set(nextEmergence);
         }        // ◈ choose symbols for variety
         function getSymbol(x, y) {
             const i = y * W + x;
