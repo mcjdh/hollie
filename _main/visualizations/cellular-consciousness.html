@@ -876,8 +876,9 @@
             systemEntropy = 0;
             globalEmergence = 0;
             temporal = false;
-            
-            generation = 0;        }
+
+            generation = 0;
+        }
         
         // Evolution loop
         let lastFrame = 0;
@@ -887,7 +888,9 @@
                 lastFrame = now;
             }
             requestAnimationFrame(evolve);
-        }        // Initialize with enhanced seeding
+        }
+
+        // Initialize with enhanced seeding
         let initializationComplete = false;
         function initializeEverything() {
             if (initializationComplete) {

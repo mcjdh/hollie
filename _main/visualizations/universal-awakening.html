@@ -189,7 +189,9 @@
                     }
                 }
             }
-        }          function render(now) {
+        }
+
+        function render(now) {
             if (now - lastFrame < 33) {
                 requestAnimationFrame(render);
                 return;
