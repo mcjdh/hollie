@@ -122,8 +122,14 @@
             '∗', '∙', '⁂', '※', '⊙', '⊚', '⊛', '⊜', '⊝',
             '∞', '∅', '∩', '∪', '⊕', '⊗', '⊙', '⊛'
         ];
-        
-        const colorClasses = ['v','u','s','e','m','t','q','d','w','c','g','y','r','p','b','o','a','f','n','l'];
+
+        const colorClasses = [
+            'v','u','s','e','m','t','q','d','w','c',
+            'g','y','r','p','b','o','a','f','n','l'
+        ];
+
+        const starCount = starSymbols.length;
+        const colorCount = colorClasses.length;
         
         // Stellar field equations with orbital swirl
         function stellarField(x, y, time) {
@@ -189,18 +195,18 @@
                     
                     if (intensity > 0.7) {
                         // Bright stars - complex symbols
-                        const symbolIdx = Math.floor(intensity * starSymbols.length * 0.8) + 
-                                        Math.floor(starSymbols.length * 0.2);
-                        const colorIdx = Math.floor((intensity + motion * 0.5) * colorClasses.length);
-                        const symbol = starSymbols[Math.min(symbolIdx, starSymbols.length - 1)];
-                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorClasses.length - 1)];
+                        const symbolIdx = Math.floor(intensity * starCount * 0.8) +
+                                        Math.floor(starCount * 0.2);
+                        const colorIdx = Math.floor((intensity + motion * 0.5) * colorCount);
+                        const symbol = starSymbols[Math.min(symbolIdx, starCount - 1)];
+                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorCount - 1)];
                         output += `<span class="${colorClass}">${symbol}</span>`;
                     } else if (intensity > 0.4) {
                         // Medium stars
-                        const symbolIdx = Math.floor(intensity * starSymbols.length * 0.5);
-                        const colorIdx = Math.floor(intensity * colorClasses.length * 0.7);
-                        const symbol = starSymbols[Math.min(symbolIdx, starSymbols.length - 1)];
-                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorClasses.length - 1)];
+                        const symbolIdx = Math.floor(intensity * starCount * 0.5);
+                        const colorIdx = Math.floor(intensity * colorCount * 0.7);
+                        const symbol = starSymbols[Math.min(symbolIdx, starCount - 1)];
+                        const colorClass = colorClasses[Math.min(Math.max(0, colorIdx), colorCount - 1)];
                         output += `<span class="${colorClass}">${symbol}</span>`;
                     } else if (intensity > 0.2) {
                         // Dim stars
@@ -231,6 +237,13 @@
         window.addEventListener('resize', () => {
             updateDimensions();
             initializeFields();
+        });
+
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                updateDimensions();
+                initializeFields();
+            }, 100);
         });
 
         document.addEventListener('keydown', (e) => {
