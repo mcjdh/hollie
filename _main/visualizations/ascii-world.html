@@ -65,19 +65,16 @@
         0=1 → ∞=0 → ⟲<br>
         ⌫ ◦ ↩
     </div>
-    <div id="canvas"></div>
-
-    <script>
-        const canvas = document.getElementById('canvas');
+    <div id="canvas"></div>    <script>
         // ∂ viewport ∞ world parameters
         let W, H;
         let charWidth, charHeight;
         let t = 0;
+        const canvasElem = document.getElementById('canvas');
         const MAX_COLS = 160;
         const MAX_ROWS = 80;
         const FPS = 30;
         let lastFrame = 0;
-        const canvas = document.getElementById('canvas');
         
         // ◊ optimal grid dimensions
         function updateDimensions() {            const viewportWidth = window.innerWidth;
@@ -105,13 +102,12 @@
             H = Math.max(30, H);
             W = Math.min(MAX_COLS, W);
             H = Math.min(MAX_ROWS, H);
-            
-            const optimalFontWidth = viewportWidth / W;
+              const optimalFontWidth = viewportWidth / W;
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            canvas.style.fontSize = fontSize + 'px';
-            canvas.style.lineHeight = (fontSize * 1.0) + 'px';
+            canvasElem.style.fontSize = fontSize + 'px';
+            canvasElem.style.lineHeight = (fontSize * 1.0) + 'px';
             
             reallocateLife();        }
         
@@ -290,10 +286,9 @@
                     
                     output += `<span class="${color}">${symbol}</span>`;
                 }
-                if (y < renderH - 1) output += '\n';
-            }
+                if (y < renderH - 1) output += '\n';            }
             
-            canvas.innerHTML = output;
+            canvasElem.innerHTML = output;
             t++;        }
         
         // ∞ evolution loop

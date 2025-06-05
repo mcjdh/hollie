@@ -129,12 +129,11 @@
 <body>    <div id="grid"></div><script>        // Dynamic viewport sizing - proper character measurement        let W, H;
         let charWidth, charHeight;
         let dimensionsInitialized = false; // Flag to prevent redundant updates
-        
-        function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
+          function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
+                // console.log removed for performance
                 return;
             }
-
-            const stack = new Error().stack;
+            
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;            // Account for zero margin - use full viewport
             const availableWidth = viewportWidth;
@@ -215,10 +214,10 @@
             grid.style.left = '20px';
             grid.style.width = availableWidth + 'px';
             grid.style.height = availableHeight + 'px';            grid.style.margin = '0';
-            grid.style.padding = '0';
-            grid.style.transform = 'none';
+            grid.style.padding = '0';            grid.style.transform = 'none';
             grid.style.overflow = 'visible'; // Allow text effects to extend beyond
             
+            // log removed for performance
             dimensionsInitialized = true; // Mark as initialized
         }
 
@@ -879,12 +878,11 @@
             render();
             requestAnimationFrame(evolve);
         }        // Initialize with enhanced seeding
-        let initializationComplete = false;
-        function initializeEverything() {
+        let initializationComplete = false;        function initializeEverything() {
             if (initializationComplete) {
                 return;
             }
-            
+
             updateDimensions();
             initializeSimulation();
               // Add some classic Game of Life patterns after initialization
@@ -901,9 +899,9 @@
                             consciousness[i] = 0.7;
                             quantum[i] = 0.6;
                             energy[i] = 0.8;
-                        }
-                    }
+                        }                    }
                 }
+                // pattern added
             }, 1000);
             
             evolve();
@@ -1014,11 +1012,9 @@
                                 cells[newIdx] = data.cell;
                                 consciousness[newIdx] = data.consciousness;
                                 quantum[newIdx] = data.quantum;
-                                collective[newIdx] = data.collective;
-                            }
+                                collective[newIdx] = data.collective;                            }
                         }
-                    });                  } else {
-                    // Minor resize, dimensions unchanged
+                    });                
                 }
             }, 150);
         }, { passive: true });
