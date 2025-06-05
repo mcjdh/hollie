@@ -59,14 +59,15 @@
         ∂φ/∂t = D∇²φ + f(φ)<br>
         ⌫ ◦ ↩
     </div>
-    <div id="display"></div>
-
-    <script>
+    <div id="display"></div>    <script>
         const display = document.getElementById('display');
         // Dynamic viewport sizing
         let W, H;
-        let charWidth, charHeight;        let t = 0;
-
+        let charWidth, charHeight;
+        let t = 0;
+        const displayElem = document.getElementById('display');
+        let running = true;
+        
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -85,12 +86,13 @@
             const rect = testDiv.getBoundingClientRect();
             charWidth = rect.width / 10;
             charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);
-            
+            document.body.removeChild(testDiv);            
             // Calculate grid size
             W = Math.ceil(viewportWidth / charWidth) + 2;
             H = Math.ceil(viewportHeight / charHeight) + 2;
-              W = Math.max(60, W);            H = Math.max(30, H);
+            
+            W = Math.max(60, W);
+            H = Math.max(30, H);
             
             display.style.fontSize = '6px';
             display.style.lineHeight = '6px';
@@ -262,14 +264,16 @@
                             output += '<span class="l">∘</span>';
                         } else {
                             output += ' ';
-                        }
-                    }
-                }                output += '\n';            }
+                        }                    }
+                }
+                output += '\n';
+            }
             
             display.innerHTML = output;
         }
         
         function loop() {
+            if (!running) return;
             update();
             render();
             requestAnimationFrame(loop);
@@ -278,10 +282,14 @@
         // Initialize
         window.addEventListener('resize', () => {
             updateDimensions();
-            initializeFields();
-        }, { passive: true });
-          updateDimensions();
+            initializeFields();        }, { passive: true });
+        
+        updateDimensions();
         initializeFields();
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(loop);
+        });
         loop();
     </script>
 </body>

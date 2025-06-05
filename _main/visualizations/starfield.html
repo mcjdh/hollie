@@ -74,6 +74,7 @@
         const FPS = 30;
         const fpsInterval = 1000 / FPS;
         let lastFrame = 0;
+        let running = true;
         
         // Calculate optimal grid size based on viewport
         function updateDimensions() {
@@ -286,9 +287,9 @@
             
             display.innerHTML = output;
         }
-        
-        function loop(now) {
-            if (now - lastFrame < fpsInterval) { requestAnimationFrame(loop); return; }
+          function loop(now) {
+            if (!running) return;
+            if (now - lastFrame < 1000/FPS) { requestAnimationFrame(loop); return; }
             lastFrame = now;
             update();
             render();
@@ -312,6 +313,11 @@
             if (e.key === 'Escape' && window.parent !== window) {
                 window.parent.postMessage('close', '*');
             }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(loop);
         });
 
         updateDimensions();

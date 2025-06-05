@@ -86,16 +86,18 @@
         ∇ ⊙∇⊙ ◊⚬◊<br>
         ∂S/∂t = -k∇²I + Ψ<br>
         η: <span id="timeDisplay">0</span><br>
-        ⌫ ◦ ↩
-    </div>
+        ⌫ ◦ ↩    </div>
     <div id="display"></div>
+    
     <script>
-        const display = document.getElementById('display');
         // ∇ Mathematical constants
         const φ = (1 + Math.sqrt(5)) / 2; // Golden ratio
         const e = 2.718281828459045;
         const π = Math.PI;
         const k = 1.380649e-23; // Boltzmann constant (scaled)
+        const displayElem = document.getElementById('display');
+        const timeElem = document.getElementById('timeDisplay');
+        let running = true;
         
         // ⊙ Entropy symbols
         const entropySymbols = {
@@ -152,15 +154,14 @@
             const optimalFontHeight = viewportHeight / H * 1.2;
             fontSize = Math.min(optimalFontWidth, optimalFontHeight);
             fontSize = Math.max(6, Math.min(18, fontSize));
-            
-            // Apply calculated styles to display
-            display.style.fontSize = fontSize + 'px';
-            display.style.lineHeight = (fontSize * 1.1) + 'px';
-            display.style.position = 'absolute';
-            display.style.top = '0';
-            display.style.left = '0';
-            display.style.margin = '0';
-            display.style.padding = '0';
+              // Apply calculated styles to display
+            displayElem.style.fontSize = fontSize + 'px';
+            displayElem.style.lineHeight = (fontSize * 1.1) + 'px';
+            displayElem.style.position = 'absolute';
+            displayElem.style.top = '0';
+            displayElem.style.left = '0';
+            displayElem.style.margin = '0';
+            displayElem.style.padding = '0';
             
             centerX = W / 2;
             centerY = H / 2;
@@ -307,9 +308,10 @@
             if (totalIntensity > 0.3) return 'v'; // Blue for medium
             if (totalIntensity > 0.15) return 'd'; // Dim blue for low-medium
             if (totalIntensity > 0.05) return 'a'; // Gray for low
-            if (totalIntensity > 0.01) return 'f'; // Dark gray for very low
-            return 'n'; // Very dim for near-void
-        }// ◐ render frame scales like canvas
+            if (totalIntensity > 0.01) return 'f'; // Dark gray for very low            return 'n'; // Very dim for near-void
+        }
+        
+        // ◐ render frame scales like canvas
         function render() {
             if (!initialized) return;
             
@@ -321,18 +323,18 @@
                     const colorClass = getColorClass(symbol, x, y);
                     output += `<span class="${colorClass}">${symbol}</span>`;
                 }
-                if (y < H - 1) output += '\n';
-            }
+                if (y < H - 1) output += '\n';            }
             
             // Update DOM less frequently for better performance
             if (time % 3 === 0) {
-                display.innerHTML = output;
+                displayElem.innerHTML = output;
             }
-            timeDisplay.textContent = `${time} (${W}×${H})`;
+            timeElem.textContent = `${time} (${W}×${H})`;
         }
         
         // ∞ animation loop
         function animate() {
+            if (!running) return;
             try {
                 time++;
                 evolveEntropy();
@@ -380,7 +382,12 @@
                 }
             }
         });
-        
+
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(animate);
+        });
+
         updateDimensions();
         if (initialized) {
             animate();

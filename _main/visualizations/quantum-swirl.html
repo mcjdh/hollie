@@ -76,9 +76,10 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
-        const dt = 0.5;
-        const canvas = document.getElementById('canvas');
-        const timeDisplay = document.getElementById('timeDisplay');
+        const canvasElem = document.getElementById('canvas');
+        const timeElem = document.getElementById('timeDisplay');        const dt = 0.5;
+        let running = true;
+        
         function updateDimensions() {
             const test = document.createElement('div');
             test.style.position = 'absolute';
@@ -102,6 +103,7 @@
         const symbols = [' ', '·', ':', '∘', '○', '◦', '◉', '●', '⬢', '⊙'];
         
         function render() {
+            if (!running) return;
             let out = '';
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
@@ -123,8 +125,7 @@
                     const colorIdx = Math.floor(val * 6.999);
                     out += `<span class="c${colorIdx}">${symbols[idx]}</span>`;
                 }
-                out += '\n';
-            }
+                out += '\n';            }
             canvas.innerHTML = out;
             timeDisplay.textContent = t.toFixed(0);
             t += dt;
@@ -142,7 +143,12 @@
                 }
             }
         });
-        
+
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(render);
+        });
+
         updateDimensions();
         render();
     </script>

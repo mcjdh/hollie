@@ -74,8 +74,7 @@
         const canvasElem = document.getElementById('canvas');
         const MAX_COLS = 160;
         const MAX_ROWS = 80;
-        const FPS = 30;
-        let lastFrame = 0;
+        const FPS = 30;        let lastFrame = 0;
         const canvas = document.getElementById('canvas');
         const measureDiv = document.createElement('div');
         measureDiv.style.fontFamily = 'Courier New, monospace';
@@ -83,6 +82,7 @@
         measureDiv.style.visibility = 'hidden';
         measureDiv.style.whiteSpace = 'pre';
         measureDiv.style.lineHeight = '1.0';
+        let running = true;
         
         // ◊ optimal grid dimensions
         function updateDimensions() {
@@ -104,9 +104,9 @@
             W = Math.max(60, W);
             H = Math.max(30, H);
             W = Math.min(MAX_COLS, W);
-            H = Math.min(MAX_ROWS, H);
-              const optimalFontWidth = viewportWidth / W;
-            const optimalFontHeight = viewportHeight / H;            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
+            H = Math.min(MAX_ROWS, H);            const optimalFontWidth = viewportWidth / W;
+            const optimalFontHeight = viewportHeight / H;
+            const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
             canvas.style.fontSize = fontSize + 'px';
             canvas.style.lineHeight = (fontSize * 1.0) + 'px';
@@ -294,6 +294,7 @@
         
         // ∞ evolution loop
         function evolve(now) {
+            if (!running) return;
             if (now - lastFrame < 1000/FPS) { requestAnimationFrame(evolve); return; }
             lastFrame = now;
             render();
@@ -322,6 +323,11 @@
             if (e.key === 'Escape' && window.parent !== window) {
                 window.parent.postMessage('close', '*');
             }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(evolve);
         });
     </script>
 </body>
