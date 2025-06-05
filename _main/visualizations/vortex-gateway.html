@@ -217,7 +217,7 @@
         
         // Initialize dimensions and start animation
         updateDimensions();
-        window.addEventListener('resize', updateDimensions);
+        window.addEventListener('resize', updateDimensions, { passive: true });
         render();
     </script>
 </body>

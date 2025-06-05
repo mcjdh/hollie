@@ -734,7 +734,7 @@
                 this.currentState = 'VOID';
                 
                 // Handle window resize
-                window.addEventListener('resize', () => this.handleResize());
+                window.addEventListener('resize', () => this.handleResize(), { passive: true });
             }
               initializeArrays() {
                 const totalCells = W * H;
@@ -1485,7 +1485,7 @@
             if (simulation) {
                 simulation.handleResize();
             }
-        });
+        }, { passive: true });
         
         window.addEventListener('orientationchange', () => {
             setTimeout(() => {
@@ -1493,7 +1493,8 @@
                 if (simulation) {
                     simulation.handleResize();
                 }
-            }, 100);        });
+            }, 100);
+        }, { passive: true });
     </script>
 </body>
 </html>

@@ -386,7 +386,7 @@
         // resize → updateDimensions
         window.addEventListener('resize', () => {
             setTimeout(updateDimensions, 100); // Slight delay for accurate measurements
-        });          // quick init with dynamic size
+        }, { passive: true });          // quick init with dynamic size
         function initialize() {
             updateDimensions();
             addDynamicChaos(); // Initial chaos injection

@@ -362,7 +362,7 @@
         }
         
         // ◯ start with dynamic scaling
-        window.addEventListener('resize', handleResize);
+        window.addEventListener('resize', handleResize, { passive: true });
         
         // Add error handling
         window.addEventListener('error', (e) => {

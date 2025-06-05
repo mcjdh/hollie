@@ -539,7 +539,7 @@
             exitListeners.forEach(cleanup => cleanup());
             exitListeners = [];
         }        function random_viz() {
-            const rand = vizs[Math.floor(Math.random() * vizs.length)];
+            const rand = vizs[(Math.random() * vizs.length) | 0];
             open_viz(rand);
         }
 
@@ -572,7 +572,7 @@
                 e.preventDefault();
             }
             lastTouchEnd = now;
-        }, false);
+        }, { passive: false });
     </script>
 </body>
 </html>
