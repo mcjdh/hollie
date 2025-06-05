@@ -69,6 +69,10 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
+        const MAX_COLS = 160;
+        const MAX_ROWS = 80;
+        const FPS = 30;
+        let lastFrame = 0;
         
         // ◊ optimal grid dimensions
         function updateDimensions() {            const viewportWidth = window.innerWidth;
@@ -94,6 +98,8 @@
             H = Math.ceil(viewportHeight / charHeight) + 2;
             W = Math.max(60, W);
             H = Math.max(30, H);
+            W = Math.min(MAX_COLS, W);
+            H = Math.min(MAX_ROWS, H);
             
             const optimalFontWidth = viewportWidth / W;
             const optimalFontHeight = viewportHeight / H;
@@ -285,7 +291,9 @@
             t++;        }
         
         // ∞ evolution loop
-        function evolve() {
+        function evolve(now) {
+            if (now - lastFrame < 1000/FPS) { requestAnimationFrame(evolve); return; }
+            lastFrame = now;
             render();
             
             // ∂ inject random paradox seeds ∞ prevent stagnation
@@ -305,7 +313,7 @@
         
         setTimeout(() => {
             updateDimensions();
-            evolve();
+            requestAnimationFrame(evolve);
         }, 50);
 
         document.addEventListener('keydown', e => {
