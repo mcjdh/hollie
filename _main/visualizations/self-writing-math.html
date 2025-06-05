@@ -68,6 +68,7 @@
         ⌫ ◦ ↩
     </div>
     <div id="canvas"></div>    <script>
+        const canvas = document.getElementById('canvas');
         // Dynamic viewport sizing - responsive to window dimensions
         let W, H;
         let charWidth, charHeight;
@@ -108,7 +109,6 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            const canvas = document.getElementById('canvas');
             canvas.style.fontSize = fontSize + 'px';
             canvas.style.lineHeight = (fontSize * 1.0) + 'px';
             
@@ -389,7 +389,7 @@
                 if (y < renderH - 1) output += '\n';
             }
             
-            document.getElementById('canvas').innerHTML = output;
+            canvas.innerHTML = output;
             t++;
         }
         

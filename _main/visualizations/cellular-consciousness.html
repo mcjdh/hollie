@@ -126,18 +126,17 @@
             100% { text-shadow: 0 0 10px var(--cosmos-coral-bright), 0 0 15px var(--cosmos-coral), 0 0 20px var(--cosmos-coral-bright); }
         }</style>
 </head>
-<body>    <div id="grid"></div><script>        // Dynamic viewport sizing - proper character measurement        let W, H;
+<body>    <div id="grid"></div><script>
+        const grid = document.getElementById('grid');
+        // Dynamic viewport sizing - proper character measurement        let W, H;
         let charWidth, charHeight;
         let dimensionsInitialized = false; // Flag to prevent redundant updates
         
         function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
-                console.log('◆ Dimensions already initialized, skipping');
                 return;
             }
             
             const stack = new Error().stack;
-            console.log(`◆ updateDimensions called from:`, stack.split('\n')[1]);
-            console.log(`◆ updateDimensions called, initialized: ${dimensionsInitialized}, force: ${force}`);
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;            // Account for zero margin - use full viewport
             const availableWidth = viewportWidth;
@@ -191,7 +190,6 @@
               // Update actual character dimensions - use line height for vertical spacing
             charWidth = actualCharWidth;
             charHeight = lineHeight; // Use line height instead of measured height for accurate spacing// Update grid element styling for maximum viewport coverage
-            const grid = document.getElementById('grid');
             if (grid) {
                 grid.style.fontSize = finalFontSize + 'px';
                 grid.style.lineHeight = lineHeight + 'px';
@@ -223,7 +221,6 @@
             grid.style.transform = 'none';
             grid.style.overflow = 'visible'; // Allow text effects to extend beyond
             
-            console.log(`◆ Grid: ${W}×${H} | Viewport: ${viewportWidth}×${viewportHeight} | Available: ${availableWidth}×${availableHeight} | Font: ${finalFontSize.toFixed(1)}px | LineHeight: ${lineHeight.toFixed(1)}px | Char: ${charWidth.toFixed(2)}×${charHeight.toFixed(2)} | Expected Coverage: ${(H * lineHeight).toFixed(0)}px of ${availableHeight}px`);        
             dimensionsInitialized = true; // Mark as initialized
         }
 
@@ -728,7 +725,7 @@
                 output += '\n';
             }
             
-            document.getElementById('grid').innerHTML = output;
+            grid.innerHTML = output;
             t++;
         }        function seedRandom() {
             // Reduce density significantly for less visual noise
@@ -887,15 +884,11 @@
         let initializationComplete = false;
         function initializeEverything() {
             if (initializationComplete) {
-                console.log('◆ Initialization already complete, skipping');
                 return;
             }
             
-            console.log('◆ Initializing everything...');
             updateDimensions();
-            console.log(`◆ After updateDimensions: ${W}×${H}`);
             initializeSimulation();
-            console.log('◆ Simulation initialized, starting evolution');
               // Add some classic Game of Life patterns after initialization
             setTimeout(() => {
                 // R-pentomino at a random location
@@ -913,7 +906,6 @@
                         }
                     }
                 }
-                console.log('◆ R-pentomino pattern added');
             }, 1000);
             
             evolve();
@@ -969,10 +961,8 @@
             }        }, 12000); // Less frequent        // Handle window resize with proper debouncing and state preservation
         let resizeTimeout;
         window.addEventListener('resize', () => {
-            console.log(`◆ Resize event triggered - dimensions: ${window.innerWidth}×${window.innerHeight}`);
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                console.log(`◆ Resize handler executing after debounce`);
                 const oldW = W, oldH = H;
                 
                 // Always force dimension update on resize
@@ -980,7 +970,6 @@
 
                 // Only reinitialize if dimensions changed significantly
                 if (Math.abs(W - oldW) > 3 || Math.abs(H - oldH) > 3) {
-                    console.log(`◆ Resizing from ${oldW}×${oldH} to ${W}×${H} - reinitializing simulation`);
                     
                     // Preserve center area when resizing
                     const centerPreservationRadius = Math.min(Math.floor(oldW / 4), Math.floor(oldH / 4));
@@ -1032,7 +1021,6 @@
                         }
                     });                
                 } else {
-                    console.log(`◆ Minor resize, dimensions unchanged (${W}×${H})`);
                 }
             }, 150);
         });

@@ -519,13 +519,13 @@
                 }
             };
             
-            document.addEventListener('click', failsafeHandler, { capture: true });
-            document.addEventListener('touchstart', failsafeHandler, { capture: true });
+            document.addEventListener('click', failsafeHandler, { capture: true, passive: true });
+            document.addEventListener('touchstart', failsafeHandler, { capture: true, passive: true });
             document.addEventListener('keydown', failsafeHandler, { capture: true });
             
             exitListeners.push(() => {
-                document.removeEventListener('click', failsafeHandler, { capture: true });
-                document.removeEventListener('touchstart', failsafeHandler, { capture: true });
+                document.removeEventListener('click', failsafeHandler, { capture: true, passive: true });
+                document.removeEventListener('touchstart', failsafeHandler, { capture: true, passive: true });
                 document.removeEventListener('keydown', failsafeHandler, { capture: true });
             });
             
