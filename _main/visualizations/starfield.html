@@ -100,10 +100,29 @@
 
             charWidth = fontSize;
             charHeight = fontSize;
+
+            preR = new Float32Array(W * H);
+            preAngle = new Float32Array(W * H);
+            preDist = new Float32Array(W * H);
+            const w2 = W / 2;
+            const h2 = H / 2;
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const i = y * W + x;
+                    const xi = (x - w2) / (W / 4);
+                    const yi = (y - h2) / (H / 4);
+                    preR[i] = Math.sqrt(xi * xi + yi * yi);
+                    preAngle[i] = Math.atan2(yi, xi);
+                    const ndx = (x - w2) / w2;
+                    const ndy = (y - h2) / h2;
+                    preDist[i] = Math.sqrt(ndx * ndx + ndy * ndy);
+                }
+            }
         }
         
         // Stellar field arrays
         let field, velocity, density, luminosity;
+        let preR, preAngle, preDist;
         
         function initializeFields() {
             const size = W * H;
@@ -137,11 +156,9 @@
         const colorCount = colorClasses.length;
         
         // Stellar field equations tuned for smoother distribution
-        function stellarField(x, y, time) {
-            const xi = (x - W/2) / (W/4);
-            const yi = (y - H/2) / (H/4);
-            const r = Math.sqrt(xi * xi + yi * yi);
-            const angle = Math.atan2(yi, xi);
+        function stellarField(idx, time) {
+            const r = preR[idx];
+            const angle = preAngle[idx];
 
             // Radial falloff approximates galactic density
             const base = Math.exp(-r * 1.5);
@@ -168,7 +185,7 @@
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
                     const idx = y * W + x;
-                    const stellar = stellarField(x, y, t);
+                    const stellar = stellarField(idx, t);
                     
                     // Field evolution with memory
                     field[idx] = field[idx] * 0.95 + stellar.density * 0.05;
@@ -197,7 +214,7 @@
                     const idx = y * W + x;
                     const intensity = luminosity[idx];
                     const motion = velocity[idx];
-                    const dist = Math.sqrt(((x - W/2)/(W/2))**2 + ((y - H/2)/(H/2))**2);
+                    const dist = preDist[idx];
                     
                     if (intensity > 0.7) {
                         // Bright stars - complex symbols
