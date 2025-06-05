@@ -66,6 +66,8 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
+        const displayElem = document.getElementById('display');
+        let running = true;
         
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
@@ -94,9 +96,8 @@
             W = Math.max(60, W);
             H = Math.max(30, H);
             
-            const display = document.getElementById('display');
-            display.style.fontSize = '6px';
-            display.style.lineHeight = '6px';
+            displayElem.style.fontSize = '6px';
+            displayElem.style.lineHeight = '6px';
         }
         
         // Mathematical constant
@@ -271,10 +272,11 @@
                 output += '\n';
             }
             
-            document.getElementById('display').innerHTML = output;
+            displayElem.innerHTML = output;
         }
         
         function loop() {
+            if (!running) return;
             update();
             render();
             requestAnimationFrame(loop);
@@ -287,6 +289,10 @@
         });
           updateDimensions();
         initializeFields();
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(loop);
+        });
         loop();
     </script>
 </body>

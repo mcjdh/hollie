@@ -89,11 +89,14 @@
         ⌫ ◦ ↩
     </div>
     <div id="display"></div>    <script>
-        // ∇ Mathematical constants 
+        // ∇ Mathematical constants
         const φ = (1 + Math.sqrt(5)) / 2; // Golden ratio
         const e = 2.718281828459045;
         const π = Math.PI;
         const k = 1.380649e-23; // Boltzmann constant (scaled)
+        const displayElem = document.getElementById('display');
+        const timeElem = document.getElementById('timeDisplay');
+        let running = true;
         
         // ⊙ Entropy symbols
         const entropySymbols = {
@@ -150,14 +153,13 @@
             fontSize = Math.max(6, Math.min(18, fontSize));
             
             // Apply calculated styles to display
-            const display = document.getElementById('display');
-            display.style.fontSize = fontSize + 'px';
-            display.style.lineHeight = (fontSize * 1.1) + 'px';
-            display.style.position = 'absolute';
-            display.style.top = '0';
-            display.style.left = '0';
-            display.style.margin = '0';
-            display.style.padding = '0';
+            displayElem.style.fontSize = fontSize + 'px';
+            displayElem.style.lineHeight = (fontSize * 1.1) + 'px';
+            displayElem.style.position = 'absolute';
+            displayElem.style.top = '0';
+            displayElem.style.left = '0';
+            displayElem.style.margin = '0';
+            displayElem.style.padding = '0';
             
             centerX = W / 2;
             centerY = H / 2;
@@ -323,13 +325,14 @@
             
             // Update DOM less frequently for better performance
             if (time % 3 === 0) {
-                document.getElementById('display').innerHTML = output;
+                displayElem.innerHTML = output;
             }
-            document.getElementById('timeDisplay').textContent = `${time} (${W}×${H})`;
+            timeElem.textContent = `${time} (${W}×${H})`;
         }
         
         // ∞ animation loop
         function animate() {
+            if (!running) return;
             try {
                 time++;
                 evolveEntropy();
@@ -377,7 +380,12 @@
                 }
             }
         });
-        
+
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(animate);
+        });
+
         updateDimensions();
         if (initialized) {
             animate();

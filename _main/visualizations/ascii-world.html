@@ -71,10 +71,12 @@
         let W, H;
         let charWidth, charHeight;
         let t = 0;
+        const canvasElem = document.getElementById('canvas');
         const MAX_COLS = 160;
         const MAX_ROWS = 80;
         const FPS = 30;
         let lastFrame = 0;
+        let running = true;
         
         // ◊ optimal grid dimensions
         function updateDimensions() {            const viewportWidth = window.innerWidth;
@@ -107,9 +109,8 @@
             const optimalFontHeight = viewportHeight / H;
             const fontSize = Math.min(optimalFontWidth * 1.8, optimalFontHeight * 1.2);
             
-            const canvas = document.getElementById('canvas');
-            canvas.style.fontSize = fontSize + 'px';
-            canvas.style.lineHeight = (fontSize * 1.0) + 'px';
+            canvasElem.style.fontSize = fontSize + 'px';
+            canvasElem.style.lineHeight = (fontSize * 1.0) + 'px';
             
             reallocateLife();        }
         
@@ -289,11 +290,12 @@
                 if (y < renderH - 1) output += '\n';
             }
             
-            document.getElementById('canvas').innerHTML = output;
+            canvasElem.innerHTML = output;
             t++;        }
         
         // ∞ evolution loop
         function evolve(now) {
+            if (!running) return;
             if (now - lastFrame < 1000/FPS) { requestAnimationFrame(evolve); return; }
             lastFrame = now;
             render();
@@ -322,6 +324,11 @@
             if (e.key === 'Escape' && window.parent !== window) {
                 window.parent.postMessage('close', '*');
             }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            running = !document.hidden;
+            if (running) requestAnimationFrame(evolve);
         });
     </script>
 </body>
