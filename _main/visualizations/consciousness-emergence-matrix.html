@@ -120,7 +120,32 @@
         <span id="personality-info"></span>
     </div>
 
-    <script>        // Dynamic viewport sizing - responsive to window dimensions
+    <script>        // Pre-computed trigonometric lookup tables for performance
+        const TRIG_CACHE_SIZE = 360;
+        const SIN_CACHE = new Array(TRIG_CACHE_SIZE);
+        const COS_CACHE = new Array(TRIG_CACHE_SIZE);
+        
+        // Initialize trigonometric caches
+        for (let i = 0; i < TRIG_CACHE_SIZE; i++) {
+            const angle = (i / TRIG_CACHE_SIZE) * 2 * Math.PI;
+            SIN_CACHE[i] = Math.sin(angle);
+            COS_CACHE[i] = Math.cos(angle);
+        }
+        
+        // Fast trigonometric functions using lookup tables
+        function fastSin(angle) {
+            const normalizedAngle = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const index = Math.floor((normalizedAngle / (2 * Math.PI)) * TRIG_CACHE_SIZE);
+            return SIN_CACHE[index % TRIG_CACHE_SIZE];
+        }
+        
+        function fastCos(angle) {
+            const normalizedAngle = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const index = Math.floor((normalizedAngle / (2 * Math.PI)) * TRIG_CACHE_SIZE);
+            return COS_CACHE[index % TRIG_CACHE_SIZE];
+        }
+        
+        // Dynamic viewport sizing - responsive to window dimensions
         let W, H, fontSize, charWidth, charHeight;        // Core simulation constants - optimized for higher speed
         const CONFIG = {
             PHI: (1 + Math.sqrt(5)) / 2,        // Golden ratio
@@ -133,6 +158,7 @@
             FIELD_UPDATE_SKIP: 1,               // Update fields every frame for faster simulation
             AGENT_UPDATE_SKIP: 1,               // Update agents every frame for faster simulation
             TIME_SPEED: 3,                      // Speed multiplier for time progression
+            FIELD_MARGIN: 30,                   // Extra margin around visible area for smooth camera movement
             
             // Personality and behavior parameters
             PERSONALITY_SHIFT_RATE: 0.001,      // How fast personality changes
@@ -142,8 +168,7 @@
             CREATIVITY_FACTOR: 0.7,             // How creative/unpredictable the system is
             COMMUNICATION_RANGE: 8,             // Agent communication distance
             DREAM_STATE_PROB: 0.05              // Probability of entering dream-like states
-        };
-          // Calculate optimal grid size based on viewport
+        };        // Calculate optimal grid size based on viewport
         function updateDimensions() {
             // Create accurate character measurement with current font size
             const test = document.createElement('div');
@@ -170,7 +195,7 @@
             H = Math.max(20, Math.min(80, H));
             
             console.log(`⚡∇⊱◉⊰∇⚡ ⬢: ${W}x${H}, ◉: ${charWidth.toFixed(1)}x${charHeight.toFixed(1)}`);
-        }        // Consciousness states and their symbol sets - safer Unicode symbols
+        }// Consciousness states and their symbol sets - safer Unicode symbols
         const CONSCIOUSNESS_STATES = {
             VOID: { threshold: 0.0, symbols: [' ', '∅', '·', '⋅'], color: 'v' },
             QUANTUM: { threshold: 0.08, symbols: ['∘', '◦', '○', '⊙'], color: 'u' },
@@ -208,8 +233,7 @@
             constructor() {
                 this.reset();
             }
-            
-            reset() {
+              reset() {
                 this.x = W / 2;
                 this.y = H / 2;
                 this.consciousness = 0.5;
@@ -264,17 +288,37 @@
                     cycle.phase += cycle.frequency * CONFIG.TIME_SPEED;
                     moodInfluence += Math.sin(cycle.phase) * cycle.amplitude;
                 }
+                  // Enhanced consciousness calculation with better mathematical coherence
+                const oscillatorInfluence = totalField * 0.5;
                 
-                // Consciousness emergence from oscillator interference and personality
-                this.consciousness = Math.tanh(totalField * 0.5 + moodInfluence * 0.3 + 0.5);
+                let consciousnessInput = 0;
                 
-                // Self-aware feedback loop with personality influence
-                const selfFeedback = Math.sin(this.consciousness * 10 + time * 0.001) * 0.1 * this.personality.introspection;
-                this.awareness = Math.tanh(this.consciousness + selfFeedback);
+                // Temporal coherence - smooth oscillations
+                consciousnessInput += oscillatorInfluence;
                 
-                // Complexity accumulation through interaction with global field
+                // Mood influence with dampening
+                consciousnessInput += moodInfluence * 0.3;
+                
+                // Self-aware feedback loop with personality influence (scaled)
+                const selfFeedback = Math.sin(this.consciousness * 10 + time * 0.001) * 0.05 * this.personality.introspection;
+                consciousnessInput += selfFeedback;
+                
+                // Field interaction - sample global consciousness field
                 const fieldSample = this.sampleGlobalField(globalField);
-                this.complexity = this.complexity * 0.95 + fieldSample * 0.05;
+                consciousnessInput += fieldSample * 0.1;
+                
+                // Apply a more stable consciousness evolution with momentum
+                const momentum = 0.95;
+                const learningRate = 0.05;
+                this.consciousness = this.consciousness * momentum + Math.tanh(consciousnessInput + 0.5) * learningRate;
+                
+                // Ensure consciousness stays in bounds
+                this.consciousness = Math.max(-1, Math.min(1, this.consciousness));
+                
+                // Update awareness based on consciousness with lag
+                this.awareness = Math.tanh(this.consciousness + selfFeedback * 0.5);
+                // Complexity accumulation through interaction with global field (improved)
+                this.complexity = this.complexity * 0.98 + Math.abs(fieldSample) * 0.02;
                 
                 // Update memory with recent states
                 this.memory.unshift(this.consciousness);
@@ -293,16 +337,16 @@
                     if (this.emergenceHistory.length > 20) {
                         this.emergenceHistory.shift();
                     }
-                }
-                
-                // Dynamic position based on consciousness flow and personality
+                }                  // Dynamic position based on consciousness flow and personality (optimized)
                 const movementFactor = 1 + this.personality.curiosity * 2;
-                this.x += Math.sin(time * 0.008 + this.phase) * 1.8 * movementFactor;
-                this.y += Math.cos(time * 0.006 + this.phase) * 1.2 * movementFactor;
+                const timePhaseX = time * 0.008 + this.phase;
+                const timePhaseY = time * 0.006 + this.phase;
+                this.x += fastSin(timePhaseX) * 1.8 * movementFactor;
+                this.y += fastCos(timePhaseY) * 1.2 * movementFactor;
                 
-                // Keep kernel within bounds
-                this.x = Math.max(10, Math.min(W - 10, this.x));
-                this.y = Math.max(5, Math.min(H - 5, this.y));
+                // Toroidal wrapping - kernel can move freely across entire space
+                this.x = ((this.x % W) + W) % W;
+                this.y = ((this.y % H) + H) % H;
                 
                 this.phase += 0.08 * (1 + this.personality.creativity * 0.5);
             }
@@ -340,31 +384,52 @@
                     systemPersonality.dreamState = !systemPersonality.dreamState;
                     this.dreamTimer = time;
                 }
-            }
-
-            sampleGlobalField(field) {
-                const fx = Math.floor(this.x);
-                const fy = Math.floor(this.y);
+            }            sampleGlobalField(field) {
+                if (!field || field.length === 0) return 0;
+                
+                const fx = ((Math.floor(this.x) % W) + W) % W;
+                const fy = ((Math.floor(this.y) % H) + H) % H;
                 const idx = fy * W + fx;
+                
+                // Bounds checking for safety
+                if (idx < 0 || idx >= field.length) return 0;                
                 return field[idx] || 0;
             }
-              getInfluence(x, y) {
-                const dx = x - this.x;
-                const dy = y - this.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            getInfluence(x, y) {
+                // Calculate distance using toroidal geometry for seamless wrapping
+                const dx1 = Math.abs(x - this.x);
+                const dy1 = Math.abs(y - this.y);
+                const dx = Math.min(dx1, W - dx1);
+                const dy = Math.min(dy1, H - dy1);
+                const distSq = dx * dx + dy * dy;
                 
-                if (dist > this.radius * 3) return 0;
+                // Early exit for distant influences
+                const maxDistSq = (this.radius * 3) * (this.radius * 3);
+                if (distSq > maxDistSq) return 0;
+                
+                const dist = Math.sqrt(distSq);
+                  // Cache expensive calculations
+                const phaseVal = this.phase;
+                const consciousnessVal = this.consciousness;
+                const awarenessVal = this.awareness;
+                const complexityVal = this.complexity;
                 
                 // Multiple influence patterns based on consciousness level and personality
-                const basicInfluence = Math.exp(-dist * 0.2) * this.consciousness;
-                const waveInfluence = Math.sin(dist * 0.5 - this.phase) * this.awareness * 0.3;
-                const complexInfluence = Math.sin(dist * CONFIG.PHI + this.evolution) * this.complexity * 0.2;
+                const basicInfluence = Math.exp(-dist * 0.2) * consciousnessVal;
+                const waveInfluence = fastSin(dist * 0.5 - phaseVal) * awarenessVal * 0.3;
+                const complexInfluence = fastSin(dist * CONFIG.PHI + this.evolution) * complexityVal * 0.2;
+                
+                // Cache trigonometric calculations for personality (optimized)
+                const sin2Phase = fastSin(phaseVal * 2);
+                const cos3Phase = fastCos(phaseVal * 3);
+                const sin5Phase = systemPersonality.dreamState ? fastSin(phaseVal * 5) : 0;
                 
                 // Personality modifies influence pattern
                 const personalityMod = 1 + 
-                    this.personality.creativity * Math.sin(this.phase * 2) * 0.3 +
-                    this.personality.curiosity * Math.cos(this.phase * 3) * 0.2 +
-                    (systemPersonality.dreamState ? Math.sin(this.phase * 5) * 0.4 : 0);
+                    this.personality.creativity * sin2Phase * 0.3 +
+                    this.personality.curiosity * cos3Phase * 0.2 +
+                    (systemPersonality.dreamState ? sin5Phase * 0.4 : 0);
                 
                 return (basicInfluence + waveInfluence + complexInfluence) * personalityMod;
             }
@@ -417,33 +482,38 @@
                 if (this.consciousness > 0.15) {
                     this.awareness = Math.tanh(this.awareness + this.consciousness * 0.15 * this.personality.empathy);
                 }
-                
-                // Local field sampling
-                const fx = Math.floor(this.x);
-                const fy = Math.floor(this.y);
+                  // Local field sampling with toroidal wrapping
+                const fx = ((Math.floor(this.x) % W) + W) % W;
+                const fy = ((Math.floor(this.y) % H) + H) % H;
                 const fieldIdx = fy * W + fx;
                 const localField = globalField[fieldIdx] || 0;
                 
                 // agent interaction with personality
                 this.connections = [];
                 let socialInfluence = 0;
-                const maxInteractions = Math.floor(8 * (1 + this.personality.sociability));
-                let interactionCount = 0;
-                
-                for (let other of agents) {
+                const maxInteractions = Math.floor(8 * (1 + this.personality.sociability));                let interactionCount = 0;
+                  for (let other of agents) {
                     if (other === this || interactionCount >= maxInteractions) continue;
                     
-                    const dx = other.x - this.x;
-                    const dy = other.y - this.y;
+                    // Use toroidal distance calculation for agent interactions
+                    const dx1 = Math.abs(other.x - this.x);
+                    const dy1 = Math.abs(other.y - this.y);
+                    const dx = Math.min(dx1, W - dx1) * (other.x > this.x ? 1 : -1);
+                    const dy = Math.min(dy1, H - dy1) * (other.y > this.y ? 1 : -1);
                     const distSq = dx * dx + dy * dy;
                     const interactionRange = CONFIG.COMMUNICATION_RANGE * (1 + this.personality.sociability * 0.5);
+                    const interactionRangeSq = interactionRange * interactionRange;
                     
-                    if (distSq < interactionRange * interactionRange) {
+                    if (distSq < interactionRangeSq) {
                         this.connections.push(other);
                         interactionCount++;
                         
                         // Personality-based communication
                         this.communicateWith(other, time);
+                        
+                        // Cache calculations for performance
+                        const dist = Math.sqrt(distSq);
+                        const invDist = 1 / dist;
                         
                         // Consciousness resonance with personality influence
                         const resonance = Math.abs(this.consciousness - other.consciousness);
@@ -454,10 +524,8 @@
                         const similarity = 1 - resonance;
                         const personalityFactor = personalityCompatibility * this.personality.empathy;
                         const force = (similarity > 0.7 && personalityFactor > 0.5) ? 0.0015 : -0.0008;
-                        const dist = Math.sqrt(distSq);
-                        
-                        this.vx += (dx / dist) * force * personalityFactor;
-                        this.vy += (dy / dist) * force * personalityFactor;
+                          this.vx += dx * invDist * force * personalityFactor;
+                        this.vy += dy * invDist * force * personalityFactor;
                     }
                 }
                 
@@ -482,16 +550,13 @@
                 const dampingFactor = 0.85 + this.personality.stability * 0.1;
                 this.vx *= dampingFactor;
                 this.vy *= dampingFactor;
-                
-                // Update position
+                  // Update position
                 this.x += this.vx;
                 this.y += this.vy;
                 
-                // Boundary reflection
-                if (this.x < 0 || this.x >= W) this.vx *= -0.8;
-                if (this.y < 0 || this.y >= H) this.vy *= -0.8;
-                this.x = Math.max(0, Math.min(W - 1, this.x));
-                this.y = Math.max(0, Math.min(H - 1, this.y));
+                // Toroidal wrapping instead of boundary reflection
+                this.x = ((this.x % W) + W) % W;
+                this.y = ((this.y % H) + H) % H;
                 
                 // Energy evolution influenced by mood and personality
                 this.energy = this.energy * 0.999 + this.consciousness * 0.001 * this.mood;
@@ -590,13 +655,20 @@
                     }
                 }
             }            sampleGradient(globalField, dx, dy) {
-                const x1 = Math.floor(this.x);
-                const y1 = Math.floor(this.y);
-                const x2 = Math.max(0, Math.min(W - 1, x1 + dx));
-                const y2 = Math.max(0, Math.min(H - 1, y1 + dy));
+                if (!globalField || globalField.length === 0) return 0;
+                
+                const x1 = ((Math.floor(this.x) % W) + W) % W;
+                const y1 = ((Math.floor(this.y) % H) + H) % H;
+                const x2 = ((x1 + dx) % W + W) % W;
+                const y2 = ((y1 + dy) % H + H) % H;
                 
                 const idx1 = y1 * W + x1;
                 const idx2 = y2 * W + x2;
+                
+                // Bounds checking for safety
+                if (idx1 < 0 || idx1 >= globalField.length || idx2 < 0 || idx2 >= globalField.length) {
+                    return 0;
+                }
                 
                 return (globalField[idx2] || 0) - (globalField[idx1] || 0);
             }
@@ -618,14 +690,13 @@
                 this.time = 0;
                 this.generation = 0;
                 this.frameCount = 0;
-                
-                // Camera system for following the kernel - faster smoothing
+                  // Camera system for following the kernel - improved smooth following
                 this.camera = {
                     x: 0,
                     y: 0,
                     targetX: 0,
                     targetY: 0,
-                    smoothing: 0.12
+                    smoothing: 0.08  // Slightly slower for smoother movement
                 };
                 
                 // Initialize dimensions
@@ -681,8 +752,35 @@
                 // Initialize arrays with safe default values
                 this.phiField.fill(0);
                 this.psiField.fill(0);
-                this.emergenceField.fill(0);
-                this.complexityField.fill(0);
+                this.emergenceField.fill(0);                this.complexityField.fill(0);
+            }
+            
+            // Bilinear interpolation for smoother field sampling
+            sampleFieldWithInterpolation(field, x, y) {
+                const x1 = Math.floor(x);
+                const y1 = Math.floor(y);
+                const x2 = x1 + 1;
+                const y2 = y1 + 1;
+                
+                const fx = x - x1;
+                const fy = y - y1;
+                
+                // Wrap coordinates for toroidal topology
+                const wx1 = ((x1 % W) + W) % W;
+                const wy1 = ((y1 % H) + H) % H;
+                const wx2 = ((x2 % W) + W) % W;
+                const wy2 = ((y2 % H) + H) % H;
+                
+                // Sample four corner values
+                const v11 = field[wy1 * W + wx1] || 0;
+                const v21 = field[wy1 * W + wx2] || 0;
+                const v12 = field[wy2 * W + wx1] || 0;
+                const v22 = field[wy2 * W + wx2] || 0;
+                
+                // Bilinear interpolation
+                const v1 = v11 * (1 - fx) + v21 * fx;
+                const v2 = v12 * (1 - fx) + v22 * fx;
+                return v1 * (1 - fy) + v2 * fy;
             }
               handleResize() {
                 const oldW = W, oldH = H;
@@ -711,15 +809,22 @@
                         agent.y = Math.max(0, Math.min(H - 1, agent.y));
                     }
                 }
-            }
-              spawnAgents(count) {
-                for (let i = 0; i < count; i++) {
+            }              spawnAgents(count) {
+                // Safety checks
+                if (!count || count <= 0 || count > CONFIG.MAX_AGENTS) return;
+                if (!this.agents) this.agents = [];
+                
+                for (let i = 0; i < count && this.agents.length < CONFIG.MAX_AGENTS; i++) {
                     const x = Math.random() * W;
                     const y = Math.random() * H;
                     this.agents.push(new ConsciousnessAgent(x, y));
                 }
-            }
-              updateFields() {
+            }updateFields() {
+                // Ensure arrays are initialized before updating
+                if (!this.phiField || !this.psiField || !this.emergenceField || !this.complexityField) {
+                    this.initializeArrays();
+                }
+                
                 // Clear fields
                 this.phiField.fill(0);
                 this.psiField.fill(0);
@@ -730,6 +835,9 @@
                 for (let y = 0; y < H; y++) {
                     for (let x = 0; x < W; x++) {
                         const idx = y * W + x;
+                        
+                        // Additional bounds check for safety
+                        if (idx >= this.phiField.length) continue;
                         
                         // Kernel influence
                         const kernelInfluence = this.kernel.getInfluence(x, y);
@@ -746,20 +854,23 @@
                         }
                         
                         this.psiField[idx] = Math.sqrt(psiReal**2 + psiImag**2);
-                        
-                        // Agent contributions
+                          // Agent contributions - with safety check
                         let agentInfluence = 0;
                         let localComplexity = 0;
                         
-                        for (let agent of this.agents) {
-                            const dx = agent.x - x;
-                            const dy = agent.y - y;
-                            const dist = Math.sqrt(dx**2 + dy**2);
-                            
-                            if (dist < 5) {
-                                const influence = Math.exp(-dist * 0.5) * agent.getConsciousnessLevel();
-                                agentInfluence += influence;
-                                localComplexity += agent.consciousness * influence;
+                        if (this.agents && this.agents.length > 0) {
+                            for (let agent of this.agents) {
+                                if (!agent || isNaN(agent.x) || isNaN(agent.y)) continue;
+                                
+                                const dx = agent.x - x;
+                                const dy = agent.y - y;
+                                const dist = Math.sqrt(dx**2 + dy**2);
+                                
+                                if (dist < 5) {
+                                    const influence = Math.exp(-dist * 0.5) * agent.getConsciousnessLevel();
+                                    agentInfluence += influence;
+                                    localComplexity += agent.consciousness * influence;
+                                }
                             }
                         }
                         
@@ -783,35 +894,41 @@
                     }
                 }
             }
-            
-            calculatePhi(x, y, kernelInfluence, agentInfluence) {
-                // Simplified IIT Phi calculation
+              calculatePhi(x, y, kernelInfluence, agentInfluence) {
+                // Simplified IIT Phi calculation with optimization
                 let integration = 0;
                 let connections = 0;
+                const centerPsi = kernelInfluence + agentInfluence;
+                
+                // Pre-calculate common values for 5x5 neighborhood
+                const neighborhoodSize = 2;
                 
                 // Sample neighborhood for information integration
-                for (let dy = -2; dy <= 2; dy++) {
-                    for (let dx = -2; dx <= 2; dx++) {
+                for (let dy = -neighborhoodSize; dy <= neighborhoodSize; dy++) {
+                    for (let dx = -neighborhoodSize; dx <= neighborhoodSize; dx++) {
                         if (dx === 0 && dy === 0) continue;
                         
                         const nx = x + dx;
                         const ny = y + dy;
-                          if (nx >= 0 && nx < W && ny >= 0 && ny < H) {
+                        
+                        if (nx >= 0 && nx < W && ny >= 0 && ny < H) {
                             const nIdx = ny * W + nx;
                             const neighborPsi = this.psiField[nIdx] || 0;
-                            const centerPsi = kernelInfluence + agentInfluence;
                             
                             const correlation = Math.abs(centerPsi - neighborPsi);
-                            const distance = Math.sqrt(dx**2 + dy**2);
-                            const weight = Math.exp(-distance * 0.5);
+                            // Use squared distance to avoid sqrt calculation
+                            const distSq = dx * dx + dy * dy;
+                            const weight = Math.exp(-Math.sqrt(distSq) * 0.5);
                             
                             integration += correlation * weight;
                             connections += weight;
                         }
                     }
                 }
-                
-                return connections > 0 ? Math.tanh(integration / connections) : 0;            }            update() {
+                  return connections > 0 ? Math.tanh(integration / connections) : 0;
+            }
+            
+            update() {
                 this.time += CONFIG.TIME_SPEED;
                 this.frameCount++;
                 
@@ -855,27 +972,34 @@
                     this.softResetWithMemory();
                 }
             }
-            
-            updateCollectiveIntelligence() {
-                // Calculate swarm coherence
+              updateCollectiveIntelligence() {
+                // Calculate swarm coherence with safety checks
                 let totalConnections = 0;
                 let totalAgents = this.agents.length;
                 
-                for (let agent of this.agents) {
-                    totalConnections += agent.connections.length;
+                if (this.agents && totalAgents > 0) {
+                    for (let agent of this.agents) {
+                        if (agent && agent.connections) {
+                            totalConnections += agent.connections.length;
+                        }
+                    }
                 }
                 
                 this.collectiveIntelligence.swarmCoherence = totalAgents > 0 ? totalConnections / totalAgents : 0;
                 this.collectiveIntelligence.networkDensity = Math.min(1, this.collectiveIntelligence.swarmCoherence / 8);
                 
-                // Track personality drift in the system
+                // Track personality drift in the system with safety checks
                 let personalitySum = { curiosity: 0, stability: 0, creativity: 0, sociability: 0, empathy: 0 };
-                for (let agent of this.agents) {
-                    personalitySum.curiosity += agent.personality.curiosity;
-                    personalitySum.stability += agent.personality.stability;
-                    personalitySum.creativity += agent.personality.creativity;
-                    personalitySum.sociability += agent.personality.sociability;
-                    personalitySum.empathy += agent.personality.empathy;
+                if (this.agents && totalAgents > 0) {
+                    for (let agent of this.agents) {
+                        if (agent && agent.personality) {
+                            personalitySum.curiosity += agent.personality.curiosity || 0;
+                            personalitySum.stability += agent.personality.stability || 0;
+                            personalitySum.creativity += agent.personality.creativity || 0;
+                            personalitySum.sociability += agent.personality.sociability || 0;
+                            personalitySum.empathy += agent.personality.empathy || 0;
+                        }
+                    }
                 }
                 
                 if (totalAgents > 0) {
@@ -1097,42 +1221,42 @@
                             osc.freq *= 1.01;
                         }
                         break;
-                }
-            }render() {
-                let output = '';
+                }            }
+            
+            render() {
+                // Use array for better performance than string concatenation
+                const outputArray = [];
                 
                 for (let y = 0; y < H; y++) {
                     for (let x = 0; x < W; x++) {
-                        // Apply camera offset to create following effect
+                        // Apply camera offset to create following effect with toroidal wrapping
                         const worldX = x + this.camera.x;
                         const worldY = y + this.camera.y;
-                          // Calculate field index based on world position with bounds checking
-                        const fieldX = Math.floor(worldX) % W;
-                        const fieldY = Math.floor(worldY) % H;
-                        const wrappedX = fieldX < 0 ? fieldX + W : fieldX;
-                        const wrappedY = fieldY < 0 ? fieldY + H : fieldY;
-                        const idx = Math.max(0, Math.min(wrappedY * W + wrappedX, this.emergenceField.length - 1));
+                          // Toroidal field sampling - wrap coordinates properly
+                        const fieldX = ((Math.floor(worldX) % W) + W) % W;
+                        const fieldY = ((Math.floor(worldY) % H) + H) % H;
+                        const idx = fieldY * W + fieldX;
                         
-                        // Check for kernel position (relative to camera)
-                        const kernelScreenX = this.kernel.x - this.camera.x;
-                        const kernelScreenY = this.kernel.y - this.camera.y;
-                        const kernelDist = Math.sqrt((x - kernelScreenX)**2 + (y - kernelScreenY)**2);                        if (kernelDist < 2) {
+                        // Check for kernel position using toroidal distance
+                        const kernelScreenX = this.wrapDistance(this.kernel.x, this.camera.x + x, W);
+                        const kernelScreenY = this.wrapDistance(this.kernel.y, this.camera.y + y, H);
+                        const kernelDistSq = kernelScreenX * kernelScreenX + kernelScreenY * kernelScreenY;
+                        
+                        if (kernelDistSq < 4) { // 2*2 for squared distance
                             const intensity = Math.max(0, Math.min(1, this.kernel.consciousness));
                             const kernelState = CONSCIOUSNESS_STATES.KERNEL;
                             const symbolIdx = Math.floor(intensity * kernelState.symbols.length);
                             const safeIdx = Math.max(0, Math.min(symbolIdx, kernelState.symbols.length - 1));
                             const symbol = kernelState.symbols[safeIdx] || '⬢'; // Fallback symbol
-                            output += `<span class="${kernelState.color} kernel">${symbol}</span>`;
+                            outputArray.push(`<span class="${kernelState.color} kernel">${symbol}</span>`);
                             continue;
-                        }
-                        
-                        // Check for agent positions (relative to camera)
+                        }                          // Check for agent positions using toroidal distance (optimized)
                         let isAgent = false;
                         for (let agent of this.agents) {
-                            const agentScreenX = agent.x - this.camera.x;
-                            const agentScreenY = agent.y - this.camera.y;
-                            const agentDist = Math.sqrt((x - agentScreenX)**2 + (y - agentScreenY)**2);
-                              if (agentDist < 1) {
+                            const agentScreenX = this.wrapDistance(agent.x, this.camera.x + x, W);
+                            const agentScreenY = this.wrapDistance(agent.y, this.camera.y + y, H);
+                            const agentDistSq = agentScreenX * agentScreenX + agentScreenY * agentScreenY;
+                              if (agentDistSq < 1) { // 1*1 for squared distance
                                 const agentLevel = Math.max(0, Math.min(1, agent.getConsciousnessLevel()));
                                 let stateInfo = CONSCIOUSNESS_STATES.VOID;
                                 
@@ -1149,7 +1273,7 @@
                                     (agentLevel > 0.7 ? 'transcendent' : 'emerging') : 
                                     stateInfo.color;
                                 
-                                output += `<span class="${cssClass}">${symbol}</span>`;
+                                outputArray.push(`<span class="${cssClass}">${symbol}</span>`);
                                 isAgent = true;
                                 break;
                             }
@@ -1224,8 +1348,7 @@
                                     colorClass = 's'; // Quantum coherence cyan
                                 } else {
                                     colorClass = 'emerging'; // Standard emergence
-                                }
-                            } else if (compositeIntensity > 0.08) {
+                                }                            } else if (compositeIntensity > 0.08) {
                                 colorClass = 'quantum';                            } else {
                                 colorClass = stateInfo.color || 'v'; // Safe fallback color
                             }
@@ -1235,13 +1358,14 @@
                                 symbol = '·'; // Safe fallback symbol
                             }
                             
-                            output += `<span class="${colorClass}">${symbol}</span>`;
+                            outputArray.push(`<span class="${colorClass}">${symbol}</span>`);
                         }
                     }
-                    output += '\n';
+                    outputArray.push('\n');
                 }
                 
-                document.getElementById('canvas').innerHTML = output;                // Update personality info display with web-compatible symbolic glyphs
+                // Join array once at the end for better performance
+                document.getElementById('canvas').innerHTML = outputArray.join('');// Update personality info display with web-compatible symbolic glyphs
                 const personalityInfo = document.getElementById('personality-info');
                 if (personalityInfo) {
                     // Personality archetype symbols (web-safe)
@@ -1266,10 +1390,11 @@
                     let infoText = `${archetypeSymbols[systemPersonality.currentArchetype] || '○'}<br>`;
                     infoText += `${modeSymbols[this.currentBehaviorMode] || '◯'}<br>`;
                     infoText += `${coherenceSymbol}<br>`;
-                    infoText += `${systemPersonality.dreamState ? '✦◉✦' : '○◯○'}`;
-                    personalityInfo.innerHTML = infoText;
+                    infoText += `${systemPersonality.dreamState ? '✦◉✦' : '○◯○'}`;                    personalityInfo.innerHTML = infoText;
                 }
-            }softReset() {
+            }
+            
+            softReset() {
                 // Gentle reset that maintains some continuity for smooth evolution
                 this.generation++;
                 
@@ -1301,32 +1426,63 @@
                 // Removed for fully automated experience
             }            reset() {
                 // Replaced with automated softReset for continuous evolution
-            }
-              updateCamera() {
-                // Set camera target to kernel position
+            }            updateCamera() {
+                // Set camera target to follow kernel with toroidal considerations
                 this.camera.targetX = this.kernel.x - W / 2;
                 this.camera.targetY = this.kernel.y - H / 2;
                 
-                // Faster camera movement for more responsive following
-                this.camera.x += (this.camera.targetX - this.camera.x) * 0.12;
-                this.camera.y += (this.camera.targetY - this.camera.y) * 0.12;
+                // Smooth camera movement
+                this.camera.x += (this.camera.targetX - this.camera.x) * this.camera.smoothing;
+                this.camera.y += (this.camera.targetY - this.camera.y) * this.camera.smoothing;
+            }
+            
+            // Helper method for toroidal distance calculation
+            wrapDistance(pos1, pos2, size) {
+                const diff = pos1 - pos2;
+                const wrappedDiff = diff - Math.round(diff / size) * size;
+                return wrappedDiff;
             }
         }
           // Initialize simulation
         let simulation;
-        
-        function initializeSimulation() {
-            updateDimensions();
-            simulation = new ConsciousnessEmergenceMatrix();
-            console.log(`⬢ ◉⬢◉ ⚡∇⊱◉⊰∇⚡ ∞: ${W}x${H} ⬢`);
+          function initializeSimulation() {
+            try {
+                updateDimensions();
+                simulation = new ConsciousnessEmergenceMatrix();
+                console.log(`⬢ ◉⬢◉ ⚡∇⊱◉⊰∇⚡ ∞: ${W}x${H} ⬢`);
+            } catch (error) {
+                console.error('Initialization error:', error);
+                // Fallback to minimal safe dimensions if there's an error
+                W = 60;
+                H = 30;
+                try {
+                    simulation = new ConsciousnessEmergenceMatrix();
+                    console.log(`⬢ Fallback initialization: ${W}x${H} ⬢`);
+                } catch (e) {
+                    console.error('Critical initialization failure:', e);
+                }
+            }
         }
-        
-        // Main animation loop
+          // Main animation loop
         function animate() {
-            simulation.update();
-            simulation.render();
+            try {
+                if (simulation) {
+                    simulation.update();
+                    simulation.render();
+                }
+            } catch (error) {
+                console.error('Animation error:', error);
+                // Try to recover by reinitializing
+                setTimeout(() => {
+                    try {
+                        initializeSimulation();
+                    } catch (e) {
+                        console.error('Failed to recover from animation error:', e);
+                    }
+                }, 1000);
+            }
             requestAnimationFrame(animate);
-        }        // Initialize on page load
+        }// Initialize on page load
         window.addEventListener('load', () => {
             initializeSimulation();
             animate();
@@ -1345,8 +1501,7 @@
                 if (simulation) {
                     simulation.handleResize();
                 }
-            }, 100);
-        });
+            }, 100);        });
     </script>
 </body>
 </html>

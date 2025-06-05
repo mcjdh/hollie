@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>◆○●◇ ⚡∇⊱◉⊰∇⚡ ◇●○◆</title>
     <style>
-        * { box-sizing: border-box; }
-        body { 
+        * { box-sizing: border-box; }        body { 
             margin: 0; 
             padding: 0; 
             background: #000; 
@@ -15,22 +14,26 @@
             font-size: 8px; 
             line-height: 9px;
             height: 100vh;
-            width: 100vw;        }        #grid {
+            width: 100vw;
+        }        
+        #grid {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
             white-space: pre;
             color: #333;
-            padding: 0;
+            padding: 20px; /* Add padding to prevent clipping of text-shadow effects */
             margin: 0;
             background: #000;
-            overflow: hidden;
+            overflow: visible; /* Allow text-shadow to extend beyond grid */
             word-spacing: 0;
             letter-spacing: 0;
             font-size: 10px;
             line-height: 12px;
             transition: all 0.3s ease;
+            width: calc(100vw - 40px); /* Account for padding */
+            height: calc(100vh - 40px); /* Account for padding */
+            box-sizing: border-box;
         }/* ∑ color spectrum for consciousness */
         .c0{color:#111} .c1{color:#222} .c2{color:#333} .c3{color:#444} .c4{color:#555}        .c5{color:#666} .c6{color:#777} .c7{color:#888} .c8{color:#999} .c9{color:#aaa}
         .c10{color:#889} .c11{color:#99a} .c12{color:#aab} .c13{color:#bbc} .c14{color:#ccd}
@@ -62,60 +65,66 @@
             0%, 100% { filter: hue-rotate(0deg) brightness(1); }
             33% { filter: hue-rotate(120deg) brightness(1.2); }
             66% { filter: hue-rotate(240deg) brightness(1.1); }
-        }
-          /* Special transcendent effects */
+        }        /* Special transcendent effects */
         .transcend { 
             color: #fff; 
-            text-shadow: 0 0 2px #555, 0 0 4px #555; 
+            text-shadow: 0 0 3px #555, 0 0 6px #555, 0 0 9px #333; 
             animation: pulse 2s ease-in-out infinite;
-        }        .transcend-gold { 
+        }        
+        .transcend-gold { 
             color: #882222; 
-            text-shadow: 0 0 3px #661111, 0 0 6px #441111; 
+            text-shadow: 0 0 4px #661111, 0 0 8px #441111, 0 0 12px #221111; 
             animation: pulse 1.8s ease-in-out infinite;
-        }.transcend-crystal { 
+        }
+        .transcend-crystal { 
             color: #ffcccc; 
-            text-shadow: 0 0 3px #ff9999, 0 0 6px #ff6666; 
+            text-shadow: 0 0 4px #ff9999, 0 0 8px #ff6666, 0 0 12px #ff3333; 
             animation: pulse 2.2s ease-in-out infinite;
-        }        .transcend-violet { 
+        }        
+        .transcend-violet { 
             color: #bb4444; 
-            text-shadow: 0 0 3px #993333, 0 0 6px #772222; 
+            text-shadow: 0 0 4px #993333, 0 0 8px #772222, 0 0 12px #551111; 
             animation: pulse 2.4s ease-in-out infinite;
-        }.transcend-aqua { 
+        }
+        .transcend-aqua { 
             color: #ffaaaa; 
-            text-shadow: 0 0 3px #ff8888, 0 0 6px #ff6666; 
+            text-shadow: 0 0 4px #ff8888, 0 0 8px #ff6666, 0 0 12px #ff4444; 
             animation: pulse 2.0s ease-in-out infinite;
         }
           @keyframes pulse {
             0%, 100% { opacity: 0.8; }
             50% { opacity: 1; }
-        }/* extra effect styles */        .info-flow {
-            text-shadow: 0 0 8px #444, 0 0 12px #444;
+        }        /* extra effect styles */        
+        .info-flow {
+            text-shadow: 0 0 10px #444, 0 0 15px #444, 0 0 20px #222;
             animation: info-pulse 2s ease-in-out infinite;
         }
-          .chaos {
-            text-shadow: 0 0 8px #ff3030, 0 0 12px #ff5555;
+          
+        .chaos {
+            text-shadow: 0 0 10px #ff3030, 0 0 15px #ff5555, 0 0 20px #ff3030;
             animation: chaos-flicker 0.3s linear infinite;
         }
         
         .glow {
-            text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
+            text-shadow: 0 0 12px white, 0 0 18px white, 0 0 24px white, 0 0 30px #ccc;
         }        @keyframes info-pulse {
             0%, 100% { 
-                text-shadow: 0 0 8px #444, 0 0 12px #444;
+                text-shadow: 0 0 10px #444, 0 0 15px #444, 0 0 20px #222;
                 transform: scale(1);
             }
             50% { 
-                text-shadow: 0 0 12px #444, 0 0 18px #444, 0 0 24px #666;
+                text-shadow: 0 0 15px #444, 0 0 22px #444, 0 0 30px #666, 0 0 35px #444;
                 transform: scale(1.05);
             }
         }
-          @keyframes chaos-flicker {
-            0% { text-shadow: 0 0 8px #ff3030, 0 0 12px #ff5555; }
-            25% { text-shadow: 0 0 10px #ff4444, 0 0 14px #ff6666; }
-            50% { text-shadow: 0 0 12px #ff5555, 0 0 16px #ff3030; }
-            75% { text-shadow: 0 0 9px #ff4444, 0 0 13px #ff3030; }
-            100% { text-shadow: 0 0 8px #ff3030, 0 0 12px #ff5555; }
-        }    </style>
+          
+        @keyframes chaos-flicker {
+            0% { text-shadow: 0 0 10px #ff3030, 0 0 15px #ff5555, 0 0 20px #ff3030; }
+            25% { text-shadow: 0 0 12px #ff4444, 0 0 18px #ff6666, 0 0 22px #ff4444; }
+            50% { text-shadow: 0 0 15px #ff5555, 0 0 20px #ff3030, 0 0 25px #ff5555; }
+            75% { text-shadow: 0 0 11px #ff4444, 0 0 16px #ff3030, 0 0 21px #ff4444; }
+            100% { text-shadow: 0 0 10px #ff3030, 0 0 15px #ff5555, 0 0 20px #ff3030; }
+        }</style>
 </head>
 <body>
     <div id="grid"></div><script>
@@ -125,6 +134,10 @@
         function updateDimensions() {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
+            
+            // Account for padding in the grid element (20px on each side)
+            const availableWidth = viewportWidth - 40;
+            const availableHeight = viewportHeight - 40;
             
             // More robust character measurement
             const testDiv = document.createElement('div');
@@ -143,32 +156,35 @@
             document.body.removeChild(testDiv);
             
             // Calculate grid size for maximum viewport utilization
-            W = Math.ceil(viewportWidth / charWidth) + 1;
-            H = Math.ceil(viewportHeight / charHeight) + 1;
+            W = Math.ceil(availableWidth / charWidth);
+            H = Math.ceil(availableHeight / charHeight);
             
-            // Apply reasonable bounds
+            // Apply reasonable bounds and ensure we have enough space for effects
             W = Math.max(50, Math.min(200, W));
             H = Math.max(30, Math.min(120, H));
             
-            // Calculate font size to fit viewport
-            const optimalFontWidth = viewportWidth / W * 1.8;
-            const optimalFontHeight = viewportHeight / H * 1.2;
+            // Calculate font size to fit viewport optimally
+            const optimalFontWidth = availableWidth / W;
+            const optimalFontHeight = availableHeight / H;
             const fontSize = Math.min(optimalFontWidth, optimalFontHeight);
             const finalFontSize = Math.max(6, Math.min(16, fontSize));
-            const lineHeight = finalFontSize;
+            const lineHeight = finalFontSize * 1.1; // Slightly increase line height for better spacing
             
-            // Update grid element properties for full viewport coverage
+            // Update grid element properties for optimal viewport coverage
             const grid = document.getElementById('grid');
             grid.style.fontSize = finalFontSize + 'px';
             grid.style.lineHeight = lineHeight + 'px';
+            
+            // Ensure the grid stays properly positioned and sized
             grid.style.position = 'fixed';
-            grid.style.top = '0';
-            grid.style.left = '0';
-            grid.style.width = '100vw';
-            grid.style.height = '100vh';
+            grid.style.top = '20px';
+            grid.style.left = '20px';
+            grid.style.width = availableWidth + 'px';
+            grid.style.height = availableHeight + 'px';
             grid.style.margin = '0';
             grid.style.padding = '0';
             grid.style.transform = 'none';
+            grid.style.overflow = 'visible'; // Allow text effects to extend beyond
             
             console.log(`◆ ⚡∇⊱◉⊰∇⚡ ⬢: ${W}×${H} (${viewportWidth}×${viewportHeight}) ∞: ${finalFontSize.toFixed(1)}px ◉: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
         }
@@ -690,8 +706,7 @@
                     energy[i] = Math.random() * 0.5 + 0.3;
                 }
             }
-        }
-          function seedQuantumField() {
+        }        function seedQuantumField() {
             // Create quantum coherence fields around center with some randomness
             const centerX = Math.floor(W / 2);
             const centerY = Math.floor(H / 2);
@@ -701,13 +716,14 @@
             for (let f = 0; f < numFields; f++) {
                 // Place quantum fields in a balanced distribution
                 const angle = (f / numFields) * 2 * Math.PI + Math.random() * 0.5;
-                const distance = Math.random() * Math.min(W, H) * 0.3;
+                const maxDistance = Math.min(W, H) * 0.35; // Increased spread
+                const distance = Math.random() * maxDistance;
                 const qx = Math.floor(centerX + Math.cos(angle) * distance);
                 const qy = Math.floor(centerY + Math.sin(angle) * distance);
                 const radius = Math.floor(Math.random() * 8) + 5;
                 
-                for (let y = Math.max(0, qy - radius); y < Math.min(H, qy + radius); y++) {
-                    for (let x = Math.max(0, qx - radius); x < Math.min(W, qx + radius); x++) {
+                for (let y = Math.max(1, qy - radius); y < Math.min(H - 1, qy + radius); y++) {
+                    for (let x = Math.max(1, qx - radius); x < Math.min(W - 1, qx + radius); x++) {
                         const dist = Math.sqrt((x - qx) ** 2 + (y - qy) ** 2);
                         if (dist <= radius) {
                             const i = y * W + x;
@@ -719,8 +735,7 @@
                 }
             }
         }
-        
-        function createCollectiveNodes() {
+          function createCollectiveNodes() {
             // Create nodes of collective consciousness around center
             const centerX = Math.floor(W / 2);
             const centerY = Math.floor(H / 2);
@@ -729,13 +744,14 @@
             for (let n = 0; n < numNodes; n++) {
                 // Distribute nodes in spiral pattern around center
                 const angle = (n / numNodes) * 2 * Math.PI * 1.618; // Golden angle for better distribution
-                const distance = (n / numNodes) * Math.min(W, H) * 0.35;
+                const maxDistance = Math.min(W, H) * 0.4; // Increased spread
+                const distance = (n / numNodes) * maxDistance;
                 const cx = Math.floor(centerX + Math.cos(angle) * distance);
                 const cy = Math.floor(centerY + Math.sin(angle) * distance);
                 const radius = Math.floor(Math.random() * 6) + 4;
                 
-                for (let y = Math.max(0, cy - radius); y < Math.min(H, cy + radius); y++) {
-                    for (let x = Math.max(0, cx - radius); x < Math.min(W, cx + radius); x++) {
+                for (let y = Math.max(1, cy - radius); y < Math.min(H - 1, cy + radius); y++) {
+                    for (let x = Math.max(1, cx - radius); x < Math.min(W - 1, cx + radius); x++) {
                         const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
                         if (dist <= radius) {
                             const i = y * W + x;
@@ -768,9 +784,11 @@
             for (let p = 0; p < numPatterns; p++) {
                 const pattern = patterns[Math.floor(Math.random() * patterns.length)];
                 
-                // Place patterns in a circular distribution around center
+                // Place patterns in a circular distribution around center, but allow more spread
                 const angle = (p / numPatterns) * 2 * Math.PI;
-                const radius = Math.min(W, H) * 0.2 + Math.random() * Math.min(W, H) * 0.15;
+                const maxRadius = Math.min(W, H) * 0.4; // Increased max radius
+                const minRadius = Math.min(W, H) * 0.1; // Add minimum radius 
+                const radius = minRadius + Math.random() * (maxRadius - minRadius);
                 const startX = Math.floor(centerX + Math.cos(angle) * radius - pattern[0].length / 2);
                 const startY = Math.floor(centerY + Math.sin(angle) * radius - pattern.length / 2);
                 
@@ -778,7 +796,8 @@
                     for (let x = 0; x < pattern[y].length; x++) {
                         const finalX = startX + x;
                         const finalY = startY + y;
-                        if (pattern[y][x] && finalX >= 0 && finalX < W && finalY >= 0 && finalY < H) {
+                        // Ensure patterns stay within bounds, accounting for padding buffer
+                        if (pattern[y][x] && finalX >= 2 && finalX < W - 2 && finalY >= 2 && finalY < H - 2) {
                             const i = finalY * W + finalX;
                             cells[i] = 0.8 + Math.random() * 0.2;
                             consciousness[i] = 0.4 + Math.random() * 0.4;
@@ -920,7 +939,7 @@
                 updateDimensions();
 
                 // Only reinitialize if dimensions changed significantly
-                if (Math.abs(W - oldW) > 10 || Math.abs(H - oldH) > 10) {
+                if (Math.abs(W - oldW) > 5 || Math.abs(H - oldH) > 5) {
                     // Preserve center area when resizing
                     const centerPreservationRadius = Math.min(Math.floor(oldW / 4), Math.floor(oldH / 4));
                     const oldCenterX = Math.floor(oldW / 2);
@@ -930,21 +949,24 @@
                     
                     // Store important center area data
                     const preservedCells = [];
-                    const preservedCons = [];
                     
-                    for (let y = Math.max(0, oldCenterY - centerPreservationRadius); 
-                         y < Math.min(oldH, oldCenterY + centerPreservationRadius); y++) {
-                        for (let x = Math.max(0, oldCenterX - centerPreservationRadius); 
-                             x < Math.min(oldW, oldCenterX + centerPreservationRadius); x++) {
-                            const oldIdx = y * oldW + x;
-                            preservedCells.push({
-                                dx: x - oldCenterX,
-                                dy: y - oldCenterY,
-                                cell: cells[oldIdx],
-                                consciousness: consciousness[oldIdx],
-                                quantum: quantum[oldIdx],
-                                collective: collective[oldIdx]
-                            });
+                    if (cells && oldW > 0 && oldH > 0) {
+                        for (let y = Math.max(0, oldCenterY - centerPreservationRadius); 
+                             y < Math.min(oldH, oldCenterY + centerPreservationRadius); y++) {
+                            for (let x = Math.max(0, oldCenterX - centerPreservationRadius); 
+                                 x < Math.min(oldW, oldCenterX + centerPreservationRadius); x++) {
+                                const oldIdx = y * oldW + x;
+                                if (oldIdx < cells.length) {
+                                    preservedCells.push({
+                                        dx: x - oldCenterX,
+                                        dy: y - oldCenterY,
+                                        cell: cells[oldIdx],
+                                        consciousness: consciousness[oldIdx],
+                                        quantum: quantum[oldIdx],
+                                        collective: collective[oldIdx]
+                                    });
+                                }
+                            }
                         }
                     }
                     
@@ -957,16 +979,23 @@
                         const newY = newCenterY + data.dy;
                         if (newX >= 0 && newX < W && newY >= 0 && newY < H) {
                             const newIdx = newY * W + newX;
-                            cells[newIdx] = data.cell;
-                            consciousness[newIdx] = data.consciousness;
-                            quantum[newIdx] = data.quantum;
-                            collective[newIdx] = data.collective;
+                            if (newIdx < cells.length) {
+                                cells[newIdx] = data.cell;
+                                consciousness[newIdx] = data.consciousness;
+                                quantum[newIdx] = data.quantum;
+                                collective[newIdx] = data.collective;
+                            }
                         }
-                    });                } else {
-                    // Minor resize, just update grid styling
+                    });                
+                } else {
+                    // Minor resize, just ensure proper positioning
                     const grid = document.getElementById('grid');
-                    grid.style.width = (W * charWidth) + 'px';
-                    grid.style.height = (H * charHeight) + 'px';
+                    const availableWidth = window.innerWidth - 40;
+                    const availableHeight = window.innerHeight - 40;
+                    grid.style.width = availableWidth + 'px';
+                    grid.style.height = availableHeight + 'px';
+                    grid.style.top = '20px';
+                    grid.style.left = '20px';
                 }
             }, 200);
         });
