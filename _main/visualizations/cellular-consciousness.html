@@ -15,24 +15,23 @@
             line-height: 9px;
             height: 100vh;
             width: 100vw;
-        }        #grid {
+        }#grid {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 20px;
+            left: 20px;
             white-space: pre;
             color: var(--cosmos-rose-dim);
-            padding: 20px; /* Add padding to prevent clipping of text-shadow effects */
             margin: 0;
-            background: var(--cosmos-dark);
+            padding: 0;
+            background: transparent;
             overflow: visible; /* Allow text-shadow to extend beyond grid */
             word-spacing: 0;
             letter-spacing: 0;
-            font-size: 10px;
-            line-height: 12px;
-            transition: all 0.3s ease;
-            width: calc(100vw - 40px); /* Account for padding */
-            height: calc(100vh - 40px); /* Account for padding */
+            /* font-size and line-height will be set by JavaScript */
+            width: calc(100vw - 40px); /* Account for positioning */
+            height: calc(100vh - 40px); /* Account for positioning */
             box-sizing: border-box;
+            transform-origin: top left;
         }/* ∑ color spectrum for consciousness using cosmos palette */
         .c0{color:var(--cosmos-dark)} .c1{color:var(--cosmos-rose-dim)} .c2{color:var(--cosmos-rose)} .c3{color:var(--cosmos-coral-dim)} .c4{color:var(--cosmos-coral)}
         .c5{color:var(--cosmos-coral-bright)} .c6{color:var(--cosmos-melon-dim)} .c7{color:var(--cosmos-melon)} .c8{color:var(--cosmos-melon-bright)} .c9{color:var(--cosmos-orange-dim)}
@@ -127,71 +126,100 @@
             100% { text-shadow: 0 0 10px var(--cosmos-coral-bright), 0 0 15px var(--cosmos-coral), 0 0 20px var(--cosmos-coral-bright); }
         }</style>
 </head>
-<body>
-    <div id="grid"></div><script>
-        // Dynamic viewport sizing - proper character measurement
-        let W, H;
-        let charWidth, charHeight;        // ◎ size via char metrics
-        function updateDimensions() {
+<body>    <div id="grid"></div><script>        // Dynamic viewport sizing - proper character measurement        let W, H;
+        let charWidth, charHeight;
+        let dimensionsInitialized = false; // Flag to prevent redundant updates
+        
+        function updateDimensions(force = false) {            if (dimensionsInitialized && !force) {
+                console.log('◆ Dimensions already initialized, skipping');
+                return;
+            }
+            
+            const stack = new Error().stack;
+            console.log(`◆ updateDimensions called from:`, stack.split('\n')[1]);
+            console.log(`◆ updateDimensions called, initialized: ${dimensionsInitialized}, force: ${force}`);
             const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+            const viewportHeight = window.innerHeight;            // Account for zero margin - use full viewport
+            const availableWidth = viewportWidth;
+            const availableHeight = viewportHeight;
             
-            // Account for padding in the grid element (20px on each side)
-            const availableWidth = viewportWidth - 40;
-            const availableHeight = viewportHeight - 40;
-            
-            // More robust character measurement
+            // More accurate character measurement with consistent base size
             const testDiv = document.createElement('div');
             testDiv.style.fontFamily = 'Courier New, monospace';
-            testDiv.style.fontSize = '10px';
+            testDiv.style.fontSize = '10px'; // Fixed base size for consistent measurement
             testDiv.style.position = 'absolute';
             testDiv.style.visibility = 'hidden';
             testDiv.style.whiteSpace = 'pre';
             testDiv.style.lineHeight = '1.0';
-            testDiv.textContent = '●'.repeat(10) + '\n'.repeat(10);
+            testDiv.style.letterSpacing = '0';
+            testDiv.style.wordSpacing = '0';
+            testDiv.style.margin = '0';
+            testDiv.style.padding = '0';
+            
+            // Measure character width with sample text
+            testDiv.textContent = '●'.repeat(20);
             document.body.appendChild(testDiv);
+            const widthRect = testDiv.getBoundingClientRect();
+            const baseCharWidth = widthRect.width / 20;
             
-            const rect = testDiv.getBoundingClientRect();
-            charWidth = rect.width / 10;
-            charHeight = rect.height / 10;
-            document.body.removeChild(testDiv);
+            // Measure line height more accurately using HTML breaks
+            testDiv.innerHTML = '●<br>●<br>●<br>●<br>●<br>●<br>●<br>●<br>●<br>●';
+            const heightRect = testDiv.getBoundingClientRect();
+            const baseCharHeight = heightRect.height / 10;
+            document.body.removeChild(testDiv);            // Calculate optimal font size for maximum fill - prioritize height coverage
+            const targetW = Math.max(100, Math.min(400, Math.floor(availableWidth / 4))); // Aim for 4px per char for maximum content
+            const targetH = Math.max(80, Math.min(400, Math.floor(availableHeight / 3))); // Aim for 3px per line for maximum rows
             
-            // Calculate grid size for maximum viewport utilization
-            W = Math.ceil(availableWidth / charWidth);
-            H = Math.ceil(availableHeight / charHeight);
+            // Calculate font size to fit the target grid into available space - prioritize height
+            const fontSizeForWidth = (availableWidth / targetW) * (10 / baseCharWidth);
+            const fontSizeForHeight = (availableHeight / targetH) * (10 / baseCharHeight);
+            // Prioritize the smaller font size to maximize content density
+            const finalFontSize = Math.max(2, Math.min(16, Math.min(fontSizeForWidth, fontSizeForHeight)));
+              // Now calculate actual grid dimensions with the chosen font size
+            const actualCharWidth = baseCharWidth * (finalFontSize / 10);
+            const actualCharHeight = baseCharHeight * (finalFontSize / 10);
             
-            // Apply reasonable bounds and ensure we have enough space for effects
-            W = Math.max(50, Math.min(200, W));
-            H = Math.max(30, Math.min(120, H));
+            // Use extremely tight line height for maximum vertical density
+            const lineHeight = finalFontSize * 0.6; // Very tight spacing for maximum vertical content
             
-            // Calculate font size to fit viewport optimally
-            const optimalFontWidth = availableWidth / W;
-            const optimalFontHeight = availableHeight / H;
-            const fontSize = Math.min(optimalFontWidth, optimalFontHeight);
-            const finalFontSize = Math.max(6, Math.min(16, fontSize));
-            const lineHeight = finalFontSize * 1.1; // Slightly increase line height for better spacing
+            W = Math.floor(availableWidth / actualCharWidth);
+            H = Math.floor(availableHeight / lineHeight); // Use line height for vertical calculation
             
-            // Update grid element properties for optimal viewport coverage
+            // Remove bounds to allow maximum coverage
+            W = Math.max(50, W);
+            H = Math.max(40, H);
+              // Update actual character dimensions - use line height for vertical spacing
+            charWidth = actualCharWidth;
+            charHeight = lineHeight; // Use line height instead of measured height for accurate spacing// Update grid element styling for maximum viewport coverage
             const grid = document.getElementById('grid');
-            grid.style.fontSize = finalFontSize + 'px';
-            grid.style.lineHeight = lineHeight + 'px';
+            if (grid) {
+                grid.style.fontSize = finalFontSize + 'px';
+                grid.style.lineHeight = lineHeight + 'px';
+                grid.style.fontFamily = 'Courier New, monospace';                grid.style.position = 'fixed';
+                grid.style.top = '0px';
+                grid.style.left = '0px';                grid.style.width = availableWidth + 'px';
+                grid.style.height = availableHeight + 'px';
+                grid.style.margin = '0';
+                grid.style.padding = '0';
+                grid.style.overflow = 'hidden';
+                grid.style.boxSizing = 'border-box';
+                grid.style.display = 'block';
+                grid.style.transition = 'none';
+                grid.style.whiteSpace = 'pre';
+                grid.style.letterSpacing = '0';
+                grid.style.wordSpacing = '0';
+                
+                // Force immediate style application
+                grid.offsetHeight; // Trigger reflow
+            }
             
-            // Ensure the grid stays properly positioned and sized
-            grid.style.position = 'fixed';
-            grid.style.top = '20px';
-            grid.style.left = '20px';
-            grid.style.width = availableWidth + 'px';
-            grid.style.height = availableHeight + 'px';
-            grid.style.margin = '0';
-            grid.style.padding = '0';
-            grid.style.transform = 'none';
-            grid.style.overflow = 'visible'; // Allow text effects to extend beyond
-            
-            console.log(`◆ ⚡∇⊱◉⊰∇⚡ ⬢: ${W}×${H} (${viewportWidth}×${viewportHeight}) ∞: ${finalFontSize.toFixed(1)}px ◉: ${charWidth.toFixed(1)}×${charHeight.toFixed(1)}`);
+            console.log(`◆ Grid: ${W}×${H} | Viewport: ${viewportWidth}×${viewportHeight} | Available: ${availableWidth}×${availableHeight} | Font: ${finalFontSize.toFixed(1)}px | LineHeight: ${lineHeight.toFixed(1)}px | Char: ${charWidth.toFixed(2)}×${charHeight.toFixed(2)} | Expected Coverage: ${(H * lineHeight).toFixed(0)}px of ${availableHeight}px`);        
+            dimensionsInitialized = true; // Mark as initialized
         }
-        
-        // Initialize dimensions
-        updateDimensions();
+
+        // Initialize dimensions only when needed (removed redundant call)
+        // Set default dimensions that will be updated in initializeEverything()
+        W = 100; H = 50; // Temporary defaults
         
         const phi = (1 + Math.sqrt(5)) / 2;
         let t = 0, generation = 0;
@@ -708,20 +736,14 @@
                 }
             }
         }        function seedQuantumField() {
-            // Create quantum coherence fields around center with some randomness
-            const centerX = Math.floor(W / 2);
-            const centerY = Math.floor(H / 2);
-            
-            const numFields = Math.floor(Math.random() * 3) + 2;
+            // Create quantum coherence fields distributed across the full viewport
+            const numFields = Math.floor(Math.random() * 5) + 4; // More fields for larger areas
             
             for (let f = 0; f < numFields; f++) {
-                // Place quantum fields in a balanced distribution
-                const angle = (f / numFields) * 2 * Math.PI + Math.random() * 0.5;
-                const maxDistance = Math.min(W, H) * 0.35; // Increased spread
-                const distance = Math.random() * maxDistance;
-                const qx = Math.floor(centerX + Math.cos(angle) * distance);
-                const qy = Math.floor(centerY + Math.sin(angle) * distance);
-                const radius = Math.floor(Math.random() * 8) + 5;
+                // Place quantum fields randomly across the entire viewport
+                const qx = Math.floor(Math.random() * (W - 20)) + 10; // Leave small border
+                const qy = Math.floor(Math.random() * (H - 20)) + 10; // Leave small border
+                const radius = Math.floor(Math.random() * 12) + 6; // Slightly larger radius
                 
                 for (let y = Math.max(1, qy - radius); y < Math.min(H - 1, qy + radius); y++) {
                     for (let x = Math.max(1, qx - radius); x < Math.min(W - 1, qx + radius); x++) {
@@ -735,21 +757,15 @@
                     }
                 }
             }
-        }
-          function createCollectiveNodes() {
-            // Create nodes of collective consciousness around center
-            const centerX = Math.floor(W / 2);
-            const centerY = Math.floor(H / 2);
-            const numNodes = Math.floor(Math.random() * 3) + 3;
+        }          function createCollectiveNodes() {
+            // Create nodes of collective consciousness distributed across the full viewport
+            const numNodes = Math.floor(Math.random() * 6) + 5; // More nodes for better coverage
             
             for (let n = 0; n < numNodes; n++) {
-                // Distribute nodes in spiral pattern around center
-                const angle = (n / numNodes) * 2 * Math.PI * 1.618; // Golden angle for better distribution
-                const maxDistance = Math.min(W, H) * 0.4; // Increased spread
-                const distance = (n / numNodes) * maxDistance;
-                const cx = Math.floor(centerX + Math.cos(angle) * distance);
-                const cy = Math.floor(centerY + Math.sin(angle) * distance);
-                const radius = Math.floor(Math.random() * 6) + 4;
+                // Distribute nodes randomly across the entire viewport
+                const cx = Math.floor(Math.random() * (W - 20)) + 10; // Leave small border
+                const cy = Math.floor(Math.random() * (H - 20)) + 10; // Leave small border
+                const radius = Math.floor(Math.random() * 8) + 5; // Slightly larger radius
                 
                 for (let y = Math.max(1, cy - radius); y < Math.min(H - 1, cy + radius); y++) {
                     for (let x = Math.max(1, cx - radius); x < Math.min(W - 1, cx + radius); x++) {
@@ -765,10 +781,7 @@
                 }
             }
         }function addConsciousness() {
-            const centerX = Math.floor(W / 2);
-            const centerY = Math.floor(H / 2);
-            
-            // Create consciousness patterns - adaptive to canvas size and centered
+            // Create consciousness patterns distributed across the full viewport
             const patterns = [
                 // Glider
                 [[1,0,0], [0,1,1], [1,1,0]],
@@ -780,25 +793,20 @@
                 [[1,1,0,0], [1,1,0,0], [0,0,1,1], [0,0,1,1]]
             ];
             
-            const numPatterns = Math.max(4, Math.min(12, Math.floor((W * H) / 600)));
+            const numPatterns = Math.max(8, Math.min(20, Math.floor((W * H) / 400))); // More patterns for better coverage
             
             for (let p = 0; p < numPatterns; p++) {
                 const pattern = patterns[Math.floor(Math.random() * patterns.length)];
                 
-                // Place patterns in a circular distribution around center, but allow more spread
-                const angle = (p / numPatterns) * 2 * Math.PI;
-                const maxRadius = Math.min(W, H) * 0.4; // Increased max radius
-                const minRadius = Math.min(W, H) * 0.1; // Add minimum radius 
-                const radius = minRadius + Math.random() * (maxRadius - minRadius);
-                const startX = Math.floor(centerX + Math.cos(angle) * radius - pattern[0].length / 2);
-                const startY = Math.floor(centerY + Math.sin(angle) * radius - pattern.length / 2);
-                
-                for (let y = 0; y < pattern.length; y++) {
+                // Place patterns randomly across the entire viewport
+                const startX = Math.floor(Math.random() * (W - pattern[0].length - 10)) + 5;
+                const startY = Math.floor(Math.random() * (H - pattern.length - 10)) + 5;
+                  for (let y = 0; y < pattern.length; y++) {
                     for (let x = 0; x < pattern[y].length; x++) {
                         const finalX = startX + x;
                         const finalY = startY + y;
-                        // Ensure patterns stay within bounds, accounting for padding buffer
-                        if (pattern[y][x] && finalX >= 2 && finalX < W - 2 && finalY >= 2 && finalY < H - 2) {
+                        // Ensure patterns stay within bounds with smaller buffer
+                        if (pattern[y][x] && finalX >= 1 && finalX < W - 1 && finalY >= 1 && finalY < H - 1) {
                             const i = finalY * W + finalX;
                             cells[i] = 0.8 + Math.random() * 0.2;
                             consciousness[i] = 0.4 + Math.random() * 0.4;
@@ -866,29 +874,49 @@
         function evolve() {
             render();
             requestAnimationFrame(evolve);
-        }
-        
-        // Initialize with enhanced seeding
-        initializeSimulation();
-        
-        // Add some classic Game of Life patterns
-        setTimeout(() => {
-            // R-pentomino at center
-            const cx = Math.floor(W/2), cy = Math.floor(H/2);
-            const rPentomino = [[0,1,1], [1,1,0], [0,1,0]];
-            for (let y = 0; y < rPentomino.length; y++) {
-                for (let x = 0; x < rPentomino[y].length; x++) {
-                    if (rPentomino[y][x]) {
-                        const i = (cy + y) * W + (cx + x);
-                        cells[i] = 1.0;
-                        consciousness[i] = 0.7;
-                        quantum[i] = 0.6;
-                        energy[i] = 0.8;
+        }        // Initialize with enhanced seeding
+        let initializationComplete = false;
+        function initializeEverything() {
+            if (initializationComplete) {
+                console.log('◆ Initialization already complete, skipping');
+                return;
+            }
+            
+            console.log('◆ Initializing everything...');
+            updateDimensions();
+            console.log(`◆ After updateDimensions: ${W}×${H}`);
+            initializeSimulation();
+            console.log('◆ Simulation initialized, starting evolution');
+              // Add some classic Game of Life patterns after initialization
+            setTimeout(() => {
+                // R-pentomino at a random location
+                const cx = Math.floor(Math.random() * (W - 10)) + 5;
+                const cy = Math.floor(Math.random() * (H - 10)) + 5;
+                const rPentomino = [[0,1,1], [1,1,0], [0,1,0]];
+                for (let y = 0; y < rPentomino.length; y++) {
+                    for (let x = 0; x < rPentomino[y].length; x++) {
+                        if (rPentomino[y][x] && cx + x < W && cy + y < H) {
+                            const i = (cy + y) * W + (cx + x);
+                            cells[i] = 1.0;
+                            consciousness[i] = 0.7;
+                            quantum[i] = 0.6;
+                            energy[i] = 0.8;
+                        }
                     }
                 }
-            }
-        }, 1000);
-          // auto evolution cycles
+                console.log('◆ R-pentomino pattern added');
+            }, 1000);
+            
+            evolve();
+            initializationComplete = true;
+        }
+        
+        // Initialize when page is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeEverything);
+        } else {
+            initializeEverything();
+        }
         setInterval(() => {
             if (Math.random() < 0.15) { // Reduced probability
                 seedRandom();
@@ -929,18 +957,22 @@
                 cells[idx] = Math.min(1, cells[idx] + 0.3); // Gentler
                 consciousness[idx] = Math.min(1, consciousness[idx] + 0.2); // Gentler
                 quantum[idx] = Math.min(1, quantum[idx] + 0.4); // Add quantum boost
-            }
-        }, 12000); // Less frequent
-        evolve();        // Handle window resize with better state preservation
+            }        }, 12000); // Less frequent        // Handle window resize with proper debouncing and state preservation
         let resizeTimeout;
         window.addEventListener('resize', () => {
+            console.log(`◆ Resize event triggered - dimensions: ${window.innerWidth}×${window.innerHeight}`);
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
+                console.log(`◆ Resize handler executing after debounce`);
                 const oldW = W, oldH = H;
-                updateDimensions();
+                
+                // Always force dimension update on resize
+                updateDimensions(true);
 
                 // Only reinitialize if dimensions changed significantly
-                if (Math.abs(W - oldW) > 5 || Math.abs(H - oldH) > 5) {
+                if (Math.abs(W - oldW) > 3 || Math.abs(H - oldH) > 3) {
+                    console.log(`◆ Resizing from ${oldW}×${oldH} to ${W}×${H} - reinitializing simulation`);
+                    
                     // Preserve center area when resizing
                     const centerPreservationRadius = Math.min(Math.floor(oldW / 4), Math.floor(oldH / 4));
                     const oldCenterX = Math.floor(oldW / 2);
@@ -970,9 +1002,11 @@
                             }
                         }
                     }
-                    
-                    // Reinitialize with new dimensions
+                      // Reinitialize with new dimensions
                     initializeSimulation();
+                    
+                    // Force an immediate render to show the resized grid
+                    render();
                     
                     // Restore preserved center data
                     preservedCells.forEach(data => {
@@ -989,16 +1023,9 @@
                         }
                     });                
                 } else {
-                    // Minor resize, just ensure proper positioning
-                    const grid = document.getElementById('grid');
-                    const availableWidth = window.innerWidth - 40;
-                    const availableHeight = window.innerHeight - 40;
-                    grid.style.width = availableWidth + 'px';
-                    grid.style.height = availableHeight + 'px';
-                    grid.style.top = '20px';
-                    grid.style.left = '20px';
+                    console.log(`◆ Minor resize, dimensions unchanged (${W}×${H})`);
                 }
-            }, 200);
+            }, 150);
         });
         
         // Temporal memory update function
@@ -1209,23 +1236,18 @@
                     energy[i] = Math.random() * 0.5 + 0.3;
                 }
             }
-            
-            // Add some structured consciousness patterns
-            const centerX = Math.floor(W / 2);
-            const centerY = Math.floor(H / 2);
-            const numSeeds = Math.floor(Math.random() * 3) + 2;
+              // Add some structured consciousness patterns distributed across viewport
+            const numSeeds = Math.floor(Math.random() * 5) + 3; // More seeds for better coverage
             
             for (let s = 0; s < numSeeds; s++) {
-                const angle = (s / numSeeds) * 2 * Math.PI + Math.random() * 0.5;
-                const distance = Math.random() * Math.min(W, H) * 0.2;
-                const sx = Math.floor(centerX + Math.cos(angle) * distance);
-                const sy = Math.floor(centerY + Math.sin(angle) * distance);
-                const radius = Math.floor(Math.random() * 5) + 3;
+                // Place seeds randomly across the entire viewport
+                const sx = Math.floor(Math.random() * (W - 20)) + 10;
+                const sy = Math.floor(Math.random() * (H - 20)) + 10;
+                const radius = Math.floor(Math.random() * 8) + 4; // Slightly larger radius
                 
                 for (let y = Math.max(0, sy - radius); y < Math.min(H, sy + radius); y++) {
                     for (let x = Math.max(0, sx - radius); x < Math.min(W, sx + radius); x++) {
-                        const dist = Math.sqrt((x - sx) ** 2 + (y - sy) ** 2);
-                        if (dist <= radius) {
+                        const dist = Math.sqrt((x - sx) ** 2 + (y - sy) ** 2);                        if (dist <= radius) {
                             const i = y * W + x;
                             const strength = 1 - (dist / radius);
                             consciousness[i] = Math.max(consciousness[i], strength * 0.5);
@@ -1235,12 +1257,6 @@
                 }
             }
         }
-        
-        // Add resize event listener for responsive scaling
-        window.addEventListener('resize', () => {
-            updateDimensions();
-            reallocateArrays();
-        });
     </script>
 </body>
 </html>
