@@ -111,7 +111,6 @@
             charWidth = fontSize * 0.6;
             charHeight = fontSize;
 
-            console.log(`Grid: ${W}x${H} (${W*H} chars), Font: ${fontSize.toFixed(1)}px, Screen: ${viewportWidth}x${viewportHeight}`);
             
             // Precompute values for performance optimization
             preR = new Float32Array(W * H);
@@ -119,9 +118,9 @@
             preDist = new Float32Array(W * H);
             const w2 = W / 2;
             const h2 = H / 2;
-            for (let y = 0; y < H; y++) {
+            for (let y = 0, row = 0; y < H; y++, row += W) {
                 for (let x = 0; x < W; x++) {
-                    const i = y * W + x;
+                    const i = row + x;
                     const xi = (x - w2) / (W / 4);
                     const yi = (y - h2) / (H / 4);
                     preR[i] = Math.sqrt(xi * xi + yi * yi);
@@ -206,9 +205,9 @@
             if (!shouldUpdate && totalCells > 8000) return;
             
             // Update stellar field with enhanced dynamics
-            for (let y = 0; y < H; y++) {
+            for (let y = 0, row = 0; y < H; y++, row += W) {
                 for (let x = 0; x < W; x++) {
-                    const idx = y * W + x;
+                    const idx = row + x;
                     const stellar = stellarField(idx, t);
                     
                     // Enhanced field evolution with stronger coupling
@@ -234,9 +233,9 @@
         function render() {
             let output = '';
             
-            for (let y = 0; y < H; y++) {
+            for (let y = 0, row = 0; y < H; y++, row += W) {
                 for (let x = 0; x < W; x++) {
-                    const idx = y * W + x;
+                    const idx = row + x;
                     const intensity = luminosity[idx];
                     const motion = velocity[idx];
                     const dist = preDist[idx];
